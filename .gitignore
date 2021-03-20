@@ -1,0 +1,20 @@
+**/*.ipynb_checkpoints/
+**/*.pyc/
+
+build/
+DL_anomaly_detection.egg-info/
+__pycache__/
+data/
+DL_anomaly_detection.egg-info/
+
+**/*.pt/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+setup.py
