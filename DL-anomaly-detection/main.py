@@ -80,7 +80,7 @@ class LSTM_forecaster():
             df = dfs.copy() if type(dfs) == pd.core.frame.DataFrame else pd.DataFrame(dfs)
             self.columns = df.columns
             self.index = df.index
-            new_df = self.preproc.fit_transform(df)
+            new_df = pd.DataFrame(self.preproc.fit_transform(df),index=df.index,columns=df.columns)
             X_train, X_test, y_train, y_test= src.ts_train_test_split(new_df,
                                                                       len_seq,
                                                                       points_ahead=points_ahead,
@@ -100,13 +100,13 @@ class LSTM_forecaster():
             self.columns = _df.columns
             self.index  =  _df.index
 
-            _list_X_train, _list_X_test, _list_y_train, _list_y_test = [],[],[],[]
+            X_train, X_test, y_train, y_test = [],[],[],[]
             for df in dfs:
                 if ((type(df) == pd.core.series.Series) | (type(df) == pd.core.frame.DataFrame))==False:
                     raise NameError('Type of dfs is unsupported')   
                 
-                new_df = self.preproc.transform(df)
-                X_train, X_test, y_train, y_test= src.ts_train_test_split(new_df,len_seq,
+                new_df = pd.DataFrame(self.preproc.transform(df),index=df.index,columns=df.columns)
+                _X_train, _X_test, _y_train, _y_test= src.ts_train_test_split(new_df,len_seq,
                                                                           points_ahead=points_ahead,
                                                                           gap=gap,
                                                                           shag=shag,
@@ -116,15 +116,11 @@ class LSTM_forecaster():
                                                                           random_state=random_state,
                                                                           shuffle=False,
                                                                           stratify=stratify)
-                _list_X_train.append(X_train)
-                _list_X_test.append(X_test)
-                _list_y_train.append(y_train)
-                _list_y_test.append(y_test)
+                X_train += _X_train
+                X_test += _X_test
+                y_train += _y_train
+                y_test += _y_test
 
-            X_train = np.concatenate(_list_X_train)
-            X_test = np.concatenate(_list_X_test)
-            y_train = np.concatenate(_list_y_train)
-            y_test = np.concatenate(_list_y_test)
         else:
             raise NameError('Type of dfs is unsupported')  
         
@@ -144,7 +140,7 @@ class LSTM_forecaster():
             criterion = nn.MSELoss()
             
         if model is None:
-            model = models.Model(X_train.shape[2],X_train.shape[2]).to(device)
+            model = models.Model(len(self.columns),len(self.columns)).to(device)
             
             
         if optimiser is None:
@@ -204,19 +200,20 @@ class LSTM_forecaster():
         self.generate_res_func = generate_res_func
         self.res_analys_alg = res_analys_alg
         
-        X,y_true = np.concatenate([X_train,X_test],0),np.concatenate([y_train,y_test],0)
-        print(X.shape)
+        X      = X_train + X_test
+        y_true = y_train + y_test
         all_data_iterator = Loader(X,y_true, batch_size,shuffle=False)
-        
+          
         y_pred = src.run_epoch(model, all_data_iterator, None, None, phase='forecast', points_ahead=points_ahead)       
-        residuals = generate_res_func(y_pred,y_true)   
-                                                # мы иногда прогнозим на 10 точек вперед, ну интересует все равно на одну точку впреред 
-        df_residuals = pd.DataFrame(residuals[:,0,:],columns=self.columns,index=self.index[-len(residuals):])
+        residuals = generate_res_func(y_pred,np.array(y_true))   
+        
+        point = 0 # мы иногда прогнозим на 10 точек вперед, ну интересует все равно на одну точку впреред 
+        res_indices = [y_true[i].index[point] for i in range(len(y_true))]                                                
+        df_residuals = pd.DataFrame(residuals[:,point,:],columns=self.columns,index=res_indices)
         anomaly_timestamps = self.res_analys_alg.fit_predict(df_residuals,show_figure=show_figures)
         
        
     
-    #остатки
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
 # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++   
@@ -229,9 +226,7 @@ class LSTM_forecaster():
         df  = df.copy()   
         points_ahead = points_ahead if points_ahead is not None else self.points_ahead
         len_seq = self.len_seq
-        batch_size = self.batch_size
-        print(df.shape)
-          
+        batch_size = self.batch_size         
 
         assert (type(df)== pd.core.series.Series) | (type(df) == pd.core.frame.DataFrame)
         df = df.copy() if type(df) == pd.core.frame.DataFrame else pd.DataFrame(df)
@@ -286,7 +281,7 @@ class LSTM_forecaster():
             df = dfs.copy() if type(dfs) == pd.core.frame.DataFrame else pd.DataFrame(dfs)
             self.columns = df.columns
             self.index = df.index
-            new_df = self.preproc.transform(df)
+            new_df = pd.DataFrame(self.preproc.fit_transform(df),index=df.index,columns=df.columns)
             X, y_true = src.ts_train_test_split(new_df,
                                           len_seq,
                                           points_ahead=1,
@@ -305,30 +300,28 @@ class LSTM_forecaster():
             self.columns = _df.columns
             self.index  =  _df.index
 
-            _list_X_train, _list_X_test, _list_y_train, _list_y_test = [],[],[],[]
+            X, y_true = [],[]
             for df in dfs:
                 if ((type(df) == pd.core.series.Series) | (type(df) == pd.core.frame.DataFrame))==False:
                     raise NameError('Type of dfs is unsupported')   
                 
-                new_df = self.preproc.transform(df)
-                X, y = src.ts_train_test_split(new_df,len_seq,
-                                              points_ahead=1,
-                                              gap=gap,
-                                              shag=shag,
-                                              intersection=intersection,
-                                              test_size=0,
-                                              random_state=random_state,
-                                              shuffle=False,
-                                              stratify=stratify)
-                _list_X.append(X)
-                _list_y.append(y)
+                new_df = pd.DataFrame(self.preproc.transform(df),index=df.index,columns=df.columns)
+                _X, _y = src.ts_train_test_split(new_df,len_seq,
+                                                                          points_ahead=1,
+                                                                          gap=gap,
+                                                                          shag=shag,
+                                                                          intersection=intersection,
+                                                                          test_size=0,
+                                                                          train_size=train_size,
+                                                                          random_state=random_state,
+                                                                          shuffle=False,
+                                                                          stratify=stratify)
+                X+= _X
+                y_true += _y
 
-            X = np.concatenate(_list_X)
-            y_true = np.concatenate(_list_y)
+
         else:
             raise NameError('Type of dfs is unsupported')  
-        all_data_iterator = Loader(X,y_true, batch_size,shuffle=False)
-        print(X.shape)
 # -----------------------------------------------------------------------------------------
 #     Генерация остатков
 # -----------------------------------------------------------------------------------------            
@@ -336,13 +329,15 @@ class LSTM_forecaster():
         generate_res_func = self.generate_res_func
         res_analys_alg = self.res_analys_alg
         
-
+        all_data_iterator = Loader(X,y_true, batch_size,shuffle=False)
+          
+        y_pred = src.run_epoch(self.model, all_data_iterator, None, None, phase='forecast', points_ahead=1)     
+        residuals = generate_res_func(y_pred,np.array(y_true))   
         
+        point = 0 # мы иногда прогнозим на 10 точек вперед, ну интересует все равно на одну точку впреред 
+        res_indices = [y_true[i].index[point] for i in range(len(y_true))]                                                
+        df_residuals = pd.DataFrame(residuals[:,point,:],columns=self.columns,index=res_indices).sort_index()  
+        anomaly_timestamps = self.res_analys_alg.fit_predict(df_residuals,show_figure=show_figures)
         
-        y_pred = src.run_epoch(self.model, all_data_iterator, None, None, phase='forecast', points_ahead=1)       
-        residuals = generate_res_func(y_pred,y_true)   
-                                                # мы иногда прогнозим на 10 точек вперед, ну интересует все равно на одну точку впреред 
-        df_residuals = pd.DataFrame(residuals[:,0,:],columns=self.columns,index=self.index[-len(residuals):])
-        anomaly_timestamps = self.res_analys_alg.predict(df_residuals,show_figure=show_figures)
 
         

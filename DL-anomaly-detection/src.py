@@ -4,10 +4,11 @@ import torch
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-def ts_train_test_split(array2d, seq_len, 
+def ts_train_test_split(df, seq_len, 
                      points_ahead=1, gap=0, shag=1, intersection=True,
                      test_size=None,train_size=None, random_state=None, shuffle=True,stratify=None):
     """
+	df - требование, но если тебе не хочется то просто сделай np.array на выходе и все
     Разбить временные ряды на трейн и тест
     seq_len- количество времменых точек в трейн
     points_ahead - количество времменых точек в прогнозе
@@ -47,24 +48,22 @@ def ts_train_test_split(array2d, seq_len,
     
     X = []
     y = []
-    while y_end <= len(array2d):
-        X.append(array2d[x_start:x_end])
-        y.append(array2d[y_start:y_end])
+    while y_end <= len(df):
+        X.append(df[x_start:x_end])
+        y.append(df[y_start:y_end])
         
         x_start= compute_new_x_start(x_start,y_end,shag)
         x_end= x_start + seq_len
         y_start = x_end + gap +1
         y_end = y_start + points_ahead
           
-    X = np.array(X)
-    y = np.array(y)
     
     if test_size==0:
         indices = np.array(range(len(X)))
         #             np.random.seed(random_state)
         np.random.shuffle(indices)
-        X = X[indices]
-        y = y[indices]
+        X = [X[i] for i in indices]
+        y = [y[i] for i in indices]
         return X,y
     else:
         return train_test_split(X,y, 
@@ -131,12 +130,13 @@ def run_epoch(model, iterator, optimizer, criterion, points_ahead=1, phase='trai
     all_y_preds = []
     with torch.set_grad_enabled(is_train):
         for i, (x,y) in enumerate(iterator):
+            x,y = np.array(x),np.array(y) #df.index rif of
             model.initHidden(x.shape[0])
             
             x = torch.tensor(x).float().to(device).requires_grad_()
             y_true = torch.tensor(y).float().to(device)
             y_pred = model(x).unsqueeze(1)
-            y_pred = forecast_multistep(model,y_pred,points_ahead)  
+            y_pred = forecast_multistep(model,y_pred,points_ahead)
             if phase == 'forecast':
                 all_y_preds.append(y_pred)
                 continue # in case of pahse = 'forecast' criterion is None
