@@ -6,10 +6,10 @@ from torch import nn
 import matplotlib.pyplot as plt
 
 
-import src
-import models
-import generate_residuals
-import stastics
+from . import src
+from . import models
+from . import generate_residuals
+from . import stastics
 
 class DL_AD():
     # TODO требования к df, len(df.index.to_series().diff.dropna().unique())>1  , упорядоченность
