@@ -7,7 +7,7 @@ __pycache__/
 data/
 DL_anomaly_detection.egg-info/
 
-**/*.pt/
+**/*.pt
 
 # OS generated files
 .DS_Store
