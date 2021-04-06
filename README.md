@@ -26,11 +26,15 @@ As forecasting algorithms were implemented or will be implemented:
 
 Actually, the possibility of the module allows you to use any own forecasting algorithm, computer of residuals, or evaluator of residuals. 
 
+!!! **Requerements for input data **
+
+Time series data **without** TODO
+
 ## Installation
 
 [Pypi](https://pypi.org/project/tsad): 
 
-```pip install -U tsad```
+pip install -U tsad
 
 #### Dependencies
 

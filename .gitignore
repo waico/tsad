@@ -1,11 +1,14 @@
 **/*.ipynb_checkpoints/
 **/*.pyc/
+**/*.exe/
 
 build/
 DL_anomaly_detection.egg-info/
 __pycache__/
 data/
 DL_anomaly_detection.egg-info/
+
+Example/tsad_test/
 
 **/*.pt
 
