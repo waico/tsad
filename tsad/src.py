@@ -4,18 +4,20 @@ import torch
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-def ts_train_test_split(df, seq_len, 
+def ts_train_test_split(df, len_seq, 
                      points_ahead=1, gap=0, shag=1, intersection=True,
                      test_size=None,train_size=None, random_state=None, shuffle=True,stratify=None):
     """
 	df - требование, но если тебе не хочется то просто сделай np.array на выходе и все
     Разбить временные ряды на трейн и тест
-    seq_len- количество времменых точек в трейн
+    len_seq- количество времменых точек в трейн
     points_ahead - количество времменых точек в прогнозе
     gap - расстояние между концом трейна и началом теста
     intersection - если нет, то в выборке нет перескающих множеств (временнызх моментов)
     shag - через сколько прыгаем
     train_size - float от 0 до 1
+    
+    return list of dfs
     
     
     
@@ -25,7 +27,7 @@ def ts_train_test_split(df, seq_len,
     #TODO переписать энергоэффективно чтобы было
     #TODO пока временные характеристики int_ами пора бы в pd.TimdDelta
     # нет индексов 
-    
+    assert len_seq + points_ahead + gap + shag-1 <= len(df)
     how='seq to seq'
 
 # -------------------------------------------------------  
@@ -34,7 +36,7 @@ def ts_train_test_split(df, seq_len,
 
 
     x_start=0
-    x_end= x_start + seq_len
+    x_end= x_start + len_seq
     y_start = x_end + gap +1
     y_end = y_start + points_ahead
     
@@ -53,7 +55,7 @@ def ts_train_test_split(df, seq_len,
         y.append(df[y_start:y_end])
         
         x_start= compute_new_x_start(x_start,y_end,shag)
-        x_end= x_start + seq_len
+        x_end= x_start + len_seq
         y_start = x_end + gap +1
         y_end = y_start + points_ahead
           
@@ -61,10 +63,11 @@ def ts_train_test_split(df, seq_len,
     if test_size==0:
         indices = np.array(range(len(X)))
         #             np.random.seed(random_state)
-        np.random.shuffle(indices)
+        if shuffle:
+            np.random.shuffle(indices)
         X = [X[i] for i in indices]
         y = [y[i] for i in indices]
-        return X,y
+        return X,[],y,[]
     else:
         return train_test_split(X,y, 
                                 test_size=test_size, 
@@ -103,53 +106,45 @@ class Loader:
             
     def __len__(self):
         return len(np.arange(0,len(self.X),self.batch_size))
-		
+		        
+        
+def split_by_repeated(series,df=None):
+    """
+    retrun dict with lists of ts whwre keys is unique values
+    """
+    series = series.copy().dropna()
+    if len(series.unique())==1:
+        result = {series.unique()[0]:series}
+    elif len(series.unique())>1:
+        result = {uni:[] for uni in series.unique()}
+        recent_i=0
+        recent_val=series.values[0]
+        for i in range(len(series)):
+            val = series.values[i]
+            if (recent_val == val):
+                continue
+            else:
+                result[recent_val].append(series[recent_i:i])
+                recent_i=i
+                recent_val = val
 
-		
-def run_epoch(model, iterator, optimizer, criterion, points_ahead=1, phase='train'):
-    is_train = (phase == 'train')
-    if is_train:
-        model.train()
+        if i == len(series)-1:
+            if (recent_val == val):
+                result[recent_val].append(series[recent_i:i+1])
+            else:
+                result[recent_val].append(series[recent_i:i+1])
     else:
-        model.eval()
-    
-    epoch_loss = 0
-    
-    if points_ahead !=1:
-        assert (points_ahead > 0) & (type(points_ahead)==type(int()))
-        def forecast_multistep(model,y_pred,points_ahead):
-            new_x = y_pred
-            for j in range(points_ahead-1):
-                new_x = model(new_x).unsqueeze(1)
-                y_pred = torch.cat([y_pred,new_x],1)
-            return y_pred
-    else:
-        def forecast_multistep(model,y_pred,points_ahead):
-            return y_pred
+        raise NameError('0 series')
 
-    all_y_preds = []
-    with torch.set_grad_enabled(is_train):
-        for i, (x,y) in enumerate(iterator):
-            x,y = np.array(x),np.array(y) #df.index rif of
-            model.initHidden(x.shape[0])
-            
-            x = torch.tensor(x).float().to(device).requires_grad_()
-            y_true = torch.tensor(y).float().to(device)
-            y_pred = model(x).unsqueeze(1)
-            y_pred = forecast_multistep(model,y_pred,points_ahead)
-            if phase == 'forecast':
-                all_y_preds.append(y_pred)
-                continue # in case of pahse = 'forecast' criterion is None
-                    
-            loss = criterion(y_pred,y_true)
-            if is_train:
-              optimizer.zero_grad()
-              loss.backward()
-              optimizer.step()
 
-            
-            epoch_loss += loss.item()
-    if phase != 'forecast':
-        return epoch_loss / len(iterator)#, n_true_predicted / n_predicted
+    if df is not None:
+        new_result = {uni:[] for uni in series.unique()}
+        for key in result:
+            for i in range(len(result[key])):
+                if len(result[key][i]) <=1:
+                    continue
+                else:
+                    new_result[key].append(df.loc[result[key][i].index])
+        return new_result
     else:
-        return torch.cat(all_y_preds).detach().cpu().numpy()
+        return result

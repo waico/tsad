@@ -13,8 +13,132 @@ from . import models
 from . import generate_residuals
 from . import stastics
 
+
 class DL_AD():
     # TODO требования к df, len(df.index.to_series().diff.dropna().unique())>1  , упорядоченность
+
+# -----------------------------------------------------------------------------------------
+#     Формирование вспомогательных функций
+# -----------------------------------------------------------------------------------------
+    def _get_Train_Test_sets(self,dfs,len_seq,
+                             points_ahead,
+                             gap,
+                             shag,
+                             intersection,
+                             test_size,
+                             train_size,
+                             random_state,
+                             shuffle,  
+                             stratify,
+                            ):
+        """
+        Вспомогательная функция, избавляющая от дубляжа
+        """
+
+        if (type(dfs)== pd.core.series.Series) | (type(dfs) == pd.core.frame.DataFrame):
+            df = dfs.copy() if type(dfs) == pd.core.frame.DataFrame else pd.DataFrame(dfs)
+            self.columns = df.columns
+            self.index = df.index
+            new_df = pd.DataFrame(self.preproc.fit_transform(df),index=df.index,columns=df.columns)
+            assert len_seq + points_ahead + gap + shag-1 <= len(df)
+            X_train, X_test, y_train, y_test= src.ts_train_test_split(df = new_df,
+                                                                      len_seq=len_seq,
+                                                                      points_ahead=points_ahead,
+                                                                      gap=gap,
+                                                                      shag=shag,
+                                                                      intersection=intersection,
+                                                                      test_size=test_size,
+                                                                      train_size=train_size,
+                                                                      random_state=random_state,
+                                                                      shuffle=False, # потому что потом нужно в основном итераторе
+                                                                      stratify=stratify)
+
+        elif type(dfs) == type(list()):
+            # уже все pd.DataFrame
+            _df = pd.concat(dfs,ignore_index=True)
+            self.preproc.fit(_df)
+            self.columns = _df.columns
+            self.index  =  _df.index
+
+            X_train, X_test, y_train, y_test = [],[],[],[]
+            _k = 0
+            for df in dfs:
+                if ((type(df) == pd.core.series.Series) | (type(df) == pd.core.frame.DataFrame))==False:
+                    raise NameError('Type of dfs is unsupported') 
+                if not (len_seq + points_ahead + gap + shag-1 <= len(df)):
+                     _k+=1
+                     continue
+                
+                new_df = pd.DataFrame(self.preproc.transform(df),index=df.index,columns=df.columns)
+                _X_train, _X_test, _y_train, _y_test= src.ts_train_test_split(new_df,len_seq,
+                                                                          points_ahead=points_ahead,
+                                                                          gap=gap,
+                                                                          shag=shag,
+                                                                          intersection=intersection,
+                                                                          test_size=test_size,
+                                                                          train_size=train_size,
+                                                                          random_state=random_state,
+                                                                          shuffle=False,
+                                                                          stratify=stratify)
+                X_train += _X_train
+                X_test += _X_test
+                y_train += _y_train
+                y_test += _y_test
+            
+            print(f'Пропущено {_k} датастов, из-за того что saples слишком малов в датасете. (len_seq + points_ahead + gap + shag-1 <= len(df))')
+
+        else:
+            raise NameError('Type of dfs is unsupported')  
+            
+        return X_train, X_test, y_train, y_test
+    
+    
+    
+    
+    def _get_anomaly_timestamps(self,
+                                dfs,
+                                Loader,
+                                len_seq,
+                                points_ahead,
+                                gap,
+                                shag,
+                                intersection,
+                                test_size,  
+                                random_state,
+                                shuffle,
+                                stratify,
+                                point_ahead_for_residuals=0):
+        """
+        Вспомогательная функция для  генерации всего
+        """
+        X, _ , y_true, _  = self._get_Train_Test_sets(dfs=dfs,
+                                                      len_seq=len_seq,
+                                                      points_ahead=points_ahead, # 1 это default, так с остатками лучше не шутить до сих пор 
+                                                      gap=gap,
+                                                      shag=shag,
+                                                      intersection=intersection,
+                                                      test_size=test_size,  
+                                                      train_size=None,
+                                                      random_state=random_state,
+                                                      shuffle=shuffle,
+                                                      stratify=stratify)
+
+
+        all_data_iterator = Loader(X,y_true, self.batch_size,shuffle=False)          
+        y_pred = self.model.run_epoch(all_data_iterator, None, None, phase='forecast', points_ahead=points_ahead)     
+        residuals = self.generate_res_func(y_pred,np.array(y_true))           
+        point_ahead_for_residuals = 0 # мы иногда прогнозим на 10 точек вперед, ну интересует все равно на одну точку впреред 
+        res_indices = [y_true[i].index[point_ahead_for_residuals] for i in range(len(y_true))]                                                
+        df_residuals = pd.DataFrame(residuals[:,point_ahead_for_residuals,:],columns=self.columns,index=res_indices).sort_index()
+        return df_residuals
+        
+        
+
+        
+# -----------------------------------------------------------------------------------------
+#     Формирование сутевой части класса 
+# -----------------------------------------------------------------------------------------    
+    
     
     def __init__(self,     
                  preproc=None,
@@ -42,7 +166,7 @@ class DL_AD():
             абсолютная разница значений. Требования к функциям описаны в 
             generate_residuals.py. 
             
-        res_analys_alg : object, default=stastics.hotteling().
+        res_analys_alg : object, default=stastics.Hotelling().
             Объект поиска аномалий в остатках. В default это
             статистика Хоттелинга.Требования к классам описаны в 
             generate_residuals.py. 
@@ -106,13 +230,14 @@ class DL_AD():
         
         self.preproc = MinMaxScaler() if preproc is None else preproc
         self.generate_res_func = generate_residuals.abs if generate_res_func is None else generate_res_func
-        self.res_analys_alg = stastics.hotteling() if res_analys_alg is None else res_analys_alg
+        self.res_analys_alg = stastics.Hotelling() if res_analys_alg is None else res_analys_alg
         
 
         
     def fit(self,
             dfs,
-            model=None,            
+            model=None,
+            encod_decode_model = False,  # ужас, нужно это править, особенность encod_decode модели. Попытаться вообще еубрать эту переменную          
             criterion=None,
             optimiser=None,
             batch_size = 64,
@@ -131,11 +256,12 @@ class DL_AD():
             best_model_file = './best_model.pt',
             stratify=None,
             Loader=None,
+            
            ):
 
         """
         Обучение модели как для задачи прогнозирования так и для задачи anomaly
-        detection на имеющихся данных. 
+        detection на имеющихся данных. fit = fit_predict_anmaloy 
         
         Parameters
         ----------
@@ -239,6 +365,7 @@ class DL_AD():
         self.batch_size = batch_size
         dfs = dfs.copy()
         self.best_model_file = best_model_file
+        self.encod_decode_model = encod_decode_model
         
          
             
@@ -253,55 +380,19 @@ class DL_AD():
 # -----------------------------------------------------------------------------------------
         if Loader is None:
             Loader = src.Loader
-
-        if (type(dfs)== pd.core.series.Series) | (type(dfs) == pd.core.frame.DataFrame):
-            df = dfs.copy() if type(dfs) == pd.core.frame.DataFrame else pd.DataFrame(dfs)
-            self.columns = df.columns
-            self.index = df.index
-            new_df = pd.DataFrame(self.preproc.fit_transform(df),index=df.index,columns=df.columns)
-            X_train, X_test, y_train, y_test= src.ts_train_test_split(new_df,
-                                                                      len_seq,
-                                                                      points_ahead=points_ahead,
-                                                                      gap=gap,
-                                                                      shag=shag,
-                                                                      intersection=intersection,
-                                                                      test_size=test_size,
-                                                                      train_size=train_size,
-                                                                      random_state=random_state,
-                                                                      shuffle=False, # потому что потом нужно в основном итераторе
-                                                                      stratify=stratify)
-
-        elif type(dfs) == type(list()):
-            # уже все pd.DataFrame
-            _df = pd.concat(dfs,ignore_index=True)
-            self.preproc.fit(_df)
-            self.columns = _df.columns
-            self.index  =  _df.index
-
-            X_train, X_test, y_train, y_test = [],[],[],[]
-            for df in dfs:
-                if ((type(df) == pd.core.series.Series) | (type(df) == pd.core.frame.DataFrame))==False:
-                    raise NameError('Type of dfs is unsupported')   
-                
-                new_df = pd.DataFrame(self.preproc.transform(df),index=df.index,columns=df.columns)
-                _X_train, _X_test, _y_train, _y_test= src.ts_train_test_split(new_df,len_seq,
-                                                                          points_ahead=points_ahead,
-                                                                          gap=gap,
-                                                                          shag=shag,
-                                                                          intersection=intersection,
-                                                                          test_size=test_size,
-                                                                          train_size=train_size,
-                                                                          random_state=random_state,
-                                                                          shuffle=False,
-                                                                          stratify=stratify)
-                X_train += _X_train
-                X_test += _X_test
-                y_train += _y_train
-                y_test += _y_test
-
-        else:
-            raise NameError('Type of dfs is unsupported')  
+            
         
+        X_train, X_test, y_train, y_test = self._get_Train_Test_sets(dfs=dfs,
+                                                               len_seq=len_seq,
+                                                               points_ahead=points_ahead,
+                                                               gap=gap,
+                                                               shag=shag,
+                                                               intersection=intersection,
+                                                               test_size=test_size,
+                                                               train_size=train_size,
+                                                               random_state=random_state,
+                                                               shuffle=shuffle,  
+                                                               stratify=stratify) 
 
         train_iterator = Loader(X_train, y_train,batch_size,shuffle=shuffle)
         val_iterator   = Loader(X_test, y_test,batch_size,shuffle=shuffle)
@@ -319,15 +410,15 @@ class DL_AD():
             
         if model is None:
             model = models.SimpleLSTM(len(self.columns),len(self.columns)).to(device)
-        model = model.to(device)
+        self.model = model.to(device)
             
             
         if optimiser is None:
             optimiser = torch.optim.Adam
-            optimiser = optimiser(model.parameters())
+            optimiser = optimiser(self.model.parameters())
         else:
             args = optimiser[1]
-            args['params']=model.parameters()
+            args['params']=self.model.parameters()
             optimiser = optimiser[0](**args)
             
             
@@ -335,15 +426,15 @@ class DL_AD():
         history_val = []
         best_val_loss = float('+inf')
         for epoch in range(n_epochs):    
-            train_loss = src.run_epoch(model, train_iterator, optimiser, criterion, phase='train', points_ahead=points_ahead)#, writer=writer)
-            val_loss = src.run_epoch(model, val_iterator, None, criterion, phase='val', points_ahead=points_ahead)#, writer=writer)
+            train_loss = self.model.run_epoch(train_iterator, optimiser, criterion, phase='train', points_ahead=points_ahead,encod_decode_model=self.encod_decode_model)#, writer=writer)
+            val_loss = self.model.run_epoch(val_iterator, None, criterion, phase='val', points_ahead=points_ahead,encod_decode_model=self.encod_decode_model)#, writer=writer)
 
             history_train.append(train_loss)
             history_val.append(val_loss)
 
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
-                torch.save(model.state_dict(), self.best_model_file)
+                torch.save(self.model.state_dict(), self.best_model_file)
             
             if show_progress:
                 print(f'Epoch: {epoch+1:02}')
@@ -351,21 +442,19 @@ class DL_AD():
                 print(f'\t Val. Loss: {val_loss:.3f} ') 
 
                 
-        model.load_state_dict(torch.load(self.best_model_file))
-        self.model = model
-        print()
+        self.model.load_state_dict(torch.load(self.best_model_file))
         
         if show_progress:
             try:
                 test_iterator  = Loader(X_test, y_test, len(X_test),shuffle=False)
-                test_loss = src.run_epoch(model, test_iterator, None, criterion, phase='val')
+                test_loss = self.model.run_epoch(test_iterator, None, criterion, phase='val',encod_decode_model=self.encod_decode_model)
                 print(f'Test Loss: {test_loss:.3f}')
             except:
                 print('Весь X_test не помещается в память, тестим усреднением по батчам')
                 test_iterator  = Loader(X_test, y_test,batch_size,shuffle=False)
                 test_loss = []
                 for epoch in range(n_epochs):  
-                    test_loss.append(src.run_epoch(model, test_iterator, None, criterion, phase='val'))
+                    test_loss.append(self.model.run_epoch(test_iterator, None, criterion, phase='val',encod_decode_model=self.encod_decode_model))
                 print(f'Test Loss: {np.mean(test_loss):.3f}')
             
         if show_figures:
@@ -380,24 +469,90 @@ class DL_AD():
 # -----------------------------------------------------------------------------------------
 #     Генерация остатков
 # -----------------------------------------------------------------------------------------            
-        # итератор для генерации остатков        
-        X      = X_train + X_test
-        y_true = y_train + y_test
-        all_data_iterator = Loader(X,y_true, batch_size,shuffle=False)
-          
-        y_pred = src.run_epoch(model, all_data_iterator, None, None, phase='forecast', points_ahead=points_ahead)       
-        residuals = self.generate_res_func(y_pred,np.array(y_true))   
+        df_residuals =  self._get_anomaly_timestamps(dfs=dfs,
+                                                    Loader=Loader,
+                                                    len_seq=len_seq,
+                                                    points_ahead=1,
+                                                    gap=gap,
+                                                    shag=shag,
+                                                    intersection=intersection,
+                                                    test_size=0,
+                                                    random_state=None,
+                                                    shuffle=False,  
+                                                    stratify=stratify,
+                                                    point_ahead_for_residuals=0)   
         
-        point = 0 # мы иногда прогнозим на 10 точек вперед, ну интересует все равно на одну точку впреред 
-        res_indices = [y_true[i].index[point] for i in range(len(y_true))]                                                
-        df_residuals = pd.DataFrame(residuals[:,point,:],columns=self.columns,index=res_indices)
-        anomaly_timestamps = self.res_analys_alg.fit_predict(df_residuals,show_figure=show_figures)
+        self.anomaly_timestamps = self.res_analys_alg.fit_predict(df_residuals,show_figure=show_figures)
+        self.statistic = self.res_analys_alg.statistic
+        self.ucl = self.res_analys_alg.ucl
+        self.lcl = self.res_analys_alg.lcl
+        return self.anomaly_timestamps
         
        
     
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
 # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++   
+
+   # накосячил тут с прогнозом на одну точку вперед. Могут быть проблемы если ahead !=1
+    def predict_anomaly(self,
+                        dfs,
+                        Loader=None,
+                        gap=0, 
+                        shag=1,
+                        intersection=True,
+                        train_size=None,
+                        random_state=None,
+                        shuffle=False,
+                        stratify=None,
+                        show_progress=True,
+                        show_figures=True
+           ):
+        
+        
+        """
+        Поиск аномалий в новом наборе данных
+        
+        Parameters
+        ----------
+        см self.fit() dockstring
+        
+        
+        Return
+        ----------
+        anomaly_timestamps : list of df.index.dtype
+            Возвращает список временных меток аномалий                
+        
+        Attributes
+        ----------
+        
+        """
+        len_seq = self.len_seq
+        
+
+        if Loader is None:
+            Loader = src.Loader
+
+
+# -----------------------------------------------------------------------------------------
+#     Генерация остатков
+# -----------------------------------------------------------------------------------------            
+        df_residuals =  self._get_anomaly_timestamps(dfs=dfs,
+                                                    Loader=Loader,
+                                                    len_seq=len_seq,
+                                                    points_ahead=1,
+                                                    gap=gap,
+                                                    shag=shag,
+                                                    intersection=intersection,
+                                                    test_size=0,
+                                                    random_state=None,
+                                                    shuffle=False,  
+                                                    stratify=stratify,
+                                                    point_ahead_for_residuals=0)                                                                   
+        self.anomaly_timestamps = self.res_analys_alg.predict(df_residuals,show_figure=show_figures)
+        self.statistic = self.res_analys_alg.statistic
+        return self.anomaly_timestamps
+
 
     
     def forecast(self,df,points_ahead=None,Loader=None, show_figures=True):
@@ -445,7 +600,7 @@ class DL_AD():
         iterator = Loader(np.expand_dims(df.values,0),np.expand_dims(df.values,0), #ничего страшного, 'y' все равно не используется
                           batch_size,shuffle=False)
 
-        y_pred = src.run_epoch(self.model, iterator, None, None, phase='forecast', points_ahead=points_ahead)[0]
+        y_pred = self.model.run_epoch(iterator, None, None, phase='forecast', points_ahead=points_ahead)[0]
         y_pred = self.preproc.inverse_transform(y_pred)
         
         t_last = np.datetime64(df.index[-1])
@@ -466,105 +621,4 @@ class DL_AD():
 
 
     
-    # накосячил тут с прогнозом на одну точку вперед. Могут быть проблемы если ahead !=1
-    def predict_anomaly(self,
-                        dfs,
-                        Loader=None,
-                        gap=0, 
-                        shag=1,
-                        intersection=True,
-                        train_size=None,
-                        random_state=None,
-                        shuffle=False,
-                        stratify=None,
-                        show_progress=True,
-                        show_figures=True
-           ):
-        
-        
-        """
-        Поиск аномалий в новом наборе данных
-        
-        Parameters
-        ----------
-        см self.fit() dockstring
-        
-        
-        Return
-        ----------
-        anomaly_timestamps : list of df.index.dtype
-            Возвращает список временных меток аномалий                
-        
-        Attributes
-        ----------
-        
-        """
-        len_seq = self.len_seq
-        batch_size = self.batch_size
-        
-
-        if Loader is None:
-            Loader = src.Loader
-
-        if (type(dfs)== pd.core.series.Series) | (type(dfs) == pd.core.frame.DataFrame):
-            df = dfs.copy() if type(dfs) == pd.core.frame.DataFrame else pd.DataFrame(dfs)
-            self.columns = df.columns
-            self.index = df.index
-            new_df = pd.DataFrame(self.preproc.fit_transform(df),index=df.index,columns=df.columns)
-            X, y_true = src.ts_train_test_split(new_df,
-                                          len_seq,
-                                          points_ahead=1,
-                                          gap=gap,
-                                          shag=shag,
-                                          intersection=intersection,
-                                          test_size=0,
-                                          random_state=random_state,
-                                          shuffle=False, # потому что потом нужно в основном итераторе
-                                          stratify=stratify)
-
-        elif type(dfs) == type(list()):
-            # уже все pd.DataFrame
-            _df = pd.concat(dfs,ignore_index=True)
-            self.preproc.fit(_df)
-            self.columns = _df.columns
-            self.index  =  _df.index
-
-            X, y_true = [],[]
-            for df in dfs:
-                if ((type(df) == pd.core.series.Series) | (type(df) == pd.core.frame.DataFrame))==False:
-                    raise NameError('Type of dfs is unsupported')   
-                
-                new_df = pd.DataFrame(self.preproc.transform(df),index=df.index,columns=df.columns)
-                _X, _y = src.ts_train_test_split(new_df,len_seq,
-                                                                          points_ahead=1,
-                                                                          gap=gap,
-                                                                          shag=shag,
-                                                                          intersection=intersection,
-                                                                          test_size=0,
-                                                                          train_size=train_size,
-                                                                          random_state=random_state,
-                                                                          shuffle=False,
-                                                                          stratify=stratify)
-                X+= _X
-                y_true += _y
-
-
-        else:
-            raise NameError('Type of dfs is unsupported')  
-# -----------------------------------------------------------------------------------------
-#     Генерация остатков
-# -----------------------------------------------------------------------------------------            
-        all_data_iterator = Loader(X,y_true, batch_size,shuffle=False)
-          
-        y_pred = src.run_epoch(self.model, all_data_iterator, None, None, phase='forecast', points_ahead=1)     
-        residuals = self.generate_res_func(y_pred,np.array(y_true))   
-        
-        point = 0 # мы иногда прогнозим на 10 точек вперед, ну интересует все равно на одну точку впреред 
-        res_indices = [y_true[i].index[point] for i in range(len(y_true))]                                                
-        df_residuals = pd.DataFrame(residuals[:,point,:],columns=self.columns,index=res_indices).sort_index()  
-        anomaly_timestamps = self.res_analys_alg.fit_predict(df_residuals,show_figure=show_figures)
-        
-        return anomaly_timestamps
-        
-
-        
+ 
