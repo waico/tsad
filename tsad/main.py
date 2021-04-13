@@ -39,7 +39,11 @@ class DL_AD():
             df = dfs.copy() if type(dfs) == pd.core.frame.DataFrame else pd.DataFrame(dfs)
             self.columns = df.columns
             self.index = df.index
-            new_df = pd.DataFrame(self.preproc.fit_transform(df),index=df.index,columns=df.columns)
+            if self._init_preproc:
+                new_df = pd.DataFrame(self.preproc.fit_transform(df),index=df.index,columns=df.columns)
+                self._init_preproc = False
+            else:
+                new_df = pd.DataFrame(self.preproc.transform(df),index=df.index,columns=df.columns)
             assert len_seq + points_ahead + gap + shag-1 <= len(df)
             X_train, X_test, y_train, y_test= src.ts_train_test_split(df = new_df,
                                                                       len_seq=len_seq,
@@ -56,7 +60,9 @@ class DL_AD():
         elif type(dfs) == type(list()):
             # уже все pd.DataFrame
             _df = pd.concat(dfs,ignore_index=True)
-            self.preproc.fit(_df)
+            if self._init_preproc:
+                self.preproc.fit(_df)
+                self._init_preproc = False            
             self.columns = _df.columns
             self.index  =  _df.index
 
@@ -360,6 +366,7 @@ class DL_AD():
         ----------
 
         """
+        self._init_preproc=True # это кастыль для _get_Train_Test_sets
         self.points_ahead = points_ahead
         self.len_seq = len_seq
         self.batch_size = batch_size
@@ -480,8 +487,7 @@ class DL_AD():
                                                     random_state=None,
                                                     shuffle=False,  
                                                     stratify=stratify,
-                                                    point_ahead_for_residuals=0)   
-        
+                                                    point_ahead_for_residuals=0)        
         self.anomaly_timestamps = self.res_analys_alg.fit_predict(df_residuals,show_figure=show_figures)
         self.statistic = self.res_analys_alg.statistic
         self.ucl = self.res_analys_alg.ucl
