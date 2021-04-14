@@ -602,8 +602,11 @@ class DL_AD():
         assert (type(df)== pd.core.series.Series) | (type(df) == pd.core.frame.DataFrame)
         df = df.copy() if type(df) == pd.core.frame.DataFrame else pd.DataFrame(df)
         df = df[-len_seq:]
+        assert not self._init_preproc
+        preproc_values = self.preproc.transform(df)
         
-        iterator = Loader(np.expand_dims(df.values,0),np.expand_dims(df.values,0), #ничего страшного, 'y' все равно не используется
+        
+        iterator = Loader(np.expand_dims(preproc_values,0),np.expand_dims(preproc_values,0), #ничего страшного, 'y' все равно не используется
                           batch_size,shuffle=False)
 
         y_pred = self.model.run_epoch(iterator, None, None, phase='forecast', points_ahead=points_ahead)[0]
@@ -615,7 +618,7 @@ class DL_AD():
         y_pred = pd.DataFrame(y_pred,index=new_index,columns=df.columns)
         
         if show_figures:
-            pd.concat([df,y_pred]).plot()
+            pd.concat([df,y_pred])[-3*points_ahead:].plot()
             plt.axvspan(t_last,y_pred.index[-1], alpha=0.2, color='green',label='forecast')
             plt.xlabel('Datetime')
             plt.ylabel('Value')
