@@ -158,7 +158,7 @@ def evaluating_change_point(true, prediction, metric='nab',
                             scale_func = "default",
                             scale_koef=1,
                             hidden_anomalies_mode = True,
-                            plot_figure=True,
+                            plot_figure=False,
                             change_point_mode = True,
                             ):
     """
@@ -217,7 +217,7 @@ def evaluating_change_point(true, prediction, metric='nab',
                             True : тогда слева значение Scoring function равно Atp, а справа Afp
                             False: тогда слева значение Scoring function равно Afp, а справа Atp
     
-    plot_figure : booleant, default=True.
+    plot_figure : booleant, default=False.
                   Если True, то прорисовка score fuction, например, 
                   чтобы откалибровать scale_koef
     
