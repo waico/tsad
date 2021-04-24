@@ -30,6 +30,12 @@ Actually, the possibility of the module allows you to use any own forecasting al
 
 Time series data **without** TODO
 
+# https://github.com/HendrikStrobelt/LSTMVis КАк у них оформить readme. 
+
+Посмотреть работы:
+
+https://github.com/khundman/telemanom 
+
 ## Installation
 
 [Pypi](https://pypi.org/project/tsad): 
