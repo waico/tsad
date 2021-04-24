@@ -519,7 +519,15 @@ def evaluating_change_point(true, prediction, metric='nab',
         detecting_boundaries = new_detecting_boundaries.copy()
 
     if metric== 'nab':
-        return evaluate_nab(detecting_boundaries, prediction)
+        return evaluate_nab(detecting_boundaries, 
+                            prediction,
+                            table_of_coef=table_of_coef,
+                            intersection_mode=intersection_mode,
+                            hidden_anomalies_mode = hidden_anomalies_mode,
+                            scale_func = scale_func,
+                            scale_koef=scale_koef,
+                            plot_figure=plot_figure,
+                            change_point_mode = change_point_mode)
     elif metric=='average_delay':
         return average_delay(detecting_boundaries, prediction)
     elif metric== 'binary':
