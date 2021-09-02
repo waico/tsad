@@ -59,6 +59,6 @@ pip install -U tsad
 
 ## Documentation
 
-Documentation will have been published later.
+Documentation you can find here:
 
-#### 
+http://tsad.waico.ru/ 
