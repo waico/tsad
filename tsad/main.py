@@ -629,5 +629,34 @@ class DL_AD():
 
 
 
+def df2dfs(df,  # Авторы не рекомендуют так делать,
+            resample_freq = None, # требования
+            thereshold_gap = None, 
+            koef_freq_of_gap = 1.2, # 1.2 проблема которая возникает которую 02.09.2021 я написал в ИИ 
+            plot = True):
+    """
+    Функция которая преообратает raw df до требований к входу на DL_AD
+    """
+    
+    df = df.dropna(how='all').dropna(1,how='all')
+    dts  = df.dropna(how='all').index.to_series().diff()
+    if resample_freq is None:
+        dts_dist = dts.value_counts()
+        if dts_dist[0] > dts_dist[1:].sum():
+            resample_freq  = dts_dist.index[0]
+        else: 
+            print(dts_dist)
+            raise Exception("Необходимо самостоятельно обработать функцию так как нет преобладающей частоты дискретизации")
+    thereshold_gap = resample_freq*koef_freq_of_gap if thereshold_gap is None else thereshold_gap
+    gaps = (dts > thereshold_gap).astype(int).cumsum()
+    dfs = [df.loc[gaps[gaps==stage].index] for stage in gaps.unique()]
+
+    if plot:
+        for i in gaps.unique():
+            tele.Lower_Moving[gaps[gaps==i].index].plot()
+    
+    return dfs
+
+
     
  

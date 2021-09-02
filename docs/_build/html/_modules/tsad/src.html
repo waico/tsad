@@ -1,0 +1,839 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>tsad.src &mdash; Time Series Anomaly Detection 0.15 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Time Series Anomaly Detection
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">tsad</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Time Series Anomaly Detection</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>tsad.src</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tsad.src</h1><div class="highlight"><pre>
+<span></span><span class="c1"># косяк, мой подсчет метрик не работает если там нет трушных 1</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">CDSDSDS</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda:0&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ts_train_test_split"><a class="viewcode-back" href="../../tsad.html#tsad.src.ts_train_test_split">[docs]</a><span class="k">def</span> <span class="nf">ts_train_test_split</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">len_seq</span><span class="p">,</span> 
+                     <span class="n">points_ahead</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">shag</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">intersection</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">test_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">train_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">stratify</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This is a conceptual class representation of a simple BLE device</span>
+<span class="sd">    (GATT Server). It is essentially an extended combination of the</span>
+<span class="sd">    :class:`bluepy.btle.Peripheral` and :class:`bluepy.btle.ScanEntry` classes</span>
+
+<span class="sd">    :param client: A handle to the :class:`simpleble.SimpleBleClient` client</span>
+<span class="sd">        object that detected the device</span>
+<span class="sd">    :type client: class:`simpleble.SimpleBleClient`</span>
+<span class="sd">    :param addr: Device MAC address, defaults to None</span>
+<span class="sd">    :type addr: str, optional</span>
+<span class="sd">    :param addrType: Device address type - one of ADDR_TYPE_PUBLIC or</span>
+<span class="sd">        ADDR_TYPE_RANDOM, defaults to ADDR_TYPE_PUBLIC</span>
+<span class="sd">    :type addrType: str, optional</span>
+<span class="sd">    :param iface: Bluetooth interface number (0 = /dev/hci0) used for the</span>
+<span class="sd">        connection, defaults to 0</span>
+<span class="sd">    :type iface: int, optional</span>
+<span class="sd">    :param data: A list of tuples (adtype, description, value) containing the</span>
+<span class="sd">        AD type code, human-readable description and value for all available</span>
+<span class="sd">        advertising data items, defaults to None</span>
+<span class="sd">    :type data: list, optional</span>
+<span class="sd">    :param rssi: Received Signal Strength Indication for the last received</span>
+<span class="sd">        broadcast from the device. This is an integer value measured in dB,</span>
+<span class="sd">        where 0 dB is the maximum (theoretical) signal strength, and more</span>
+<span class="sd">        negative numbers indicate a weaker signal, defaults to 0</span>
+<span class="sd">    :type rssi: int, optional</span>
+<span class="sd">    :param connectable: `True` if the device supports connections, and `False`</span>
+<span class="sd">        otherwise (typically used for advertising ‘beacons’).,</span>
+<span class="sd">        defaults to `False`</span>
+<span class="sd">    :type connectable: bool, optional</span>
+<span class="sd">    :param updateCount: Integer count of the number of advertising packets</span>
+<span class="sd">        received from the device so far, defaults to 0</span>
+<span class="sd">    :type updateCount: int, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="c1">#    &quot;&quot;&quot;</span>
+<span class="c1">#	df - требование, но если тебе не хочется то просто сделай np.array на выходе и все</span>
+<span class="c1">#    Разбить временные ряды на трейн и тест</span>
+<span class="c1">#    len_seq- количество времменых точек в трейн</span>
+<span class="c1">#    points_ahead - количество времменых точек в прогнозе</span>
+<span class="c1">#    gap - расстояние между концом трейна и началом теста</span>
+<span class="c1">#    intersection - если нет, то в выборке нет перескающих множеств (временнызх моментов)</span>
+<span class="c1">#    shag - через сколько прыгаем</span>
+<span class="c1">#    train_size - float от 0 до 1</span>
+<span class="c1">#    </span>
+<span class="c1">#    return list of dfs</span>
+<span class="c1">#    </span>
+<span class="c1">#    &quot;&quot;&quot;</span>
+    <span class="c1">#TODO требования к входным данным прописать</span>
+    <span class="c1">#TODO переписать энергоэффективно чтобы было</span>
+    <span class="c1">#TODO пока временные характеристики int_ами пора бы в pd.TimdDelta</span>
+    <span class="c1"># нет индексов </span>
+    <span class="k">assert</span> <span class="n">len_seq</span> <span class="o">+</span> <span class="n">points_ahead</span> <span class="o">+</span> <span class="n">gap</span> <span class="o">+</span> <span class="n">shag</span><span class="o">-</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">how</span><span class="o">=</span><span class="s1">&#39;seq to seq&#39;</span>
+
+<span class="c1"># -------------------------------------------------------  </span>
+<span class="c1">#             </span>
+<span class="c1"># -------------------------------------------------------  </span>
+
+
+    <span class="n">x_start</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">x_end</span><span class="o">=</span> <span class="n">x_start</span> <span class="o">+</span> <span class="n">len_seq</span>
+    <span class="n">y_start</span> <span class="o">=</span> <span class="n">x_end</span> <span class="o">+</span> <span class="n">gap</span> <span class="o">+</span><span class="mi">1</span>
+    <span class="n">y_end</span> <span class="o">=</span> <span class="n">y_start</span> <span class="o">+</span> <span class="n">points_ahead</span>
+    
+    <span class="k">if</span> <span class="n">intersection</span><span class="p">:</span>
+        <span class="c1"># ради вычислительной нагрузки такой кастыль</span>
+        <span class="k">def</span> <span class="nf">compute_new_x_start</span><span class="p">(</span><span class="n">x_start</span><span class="p">,</span><span class="n">y_end</span><span class="p">,</span><span class="n">shag</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">x_start</span> <span class="o">+</span> <span class="n">shag</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">compute_new_x_start</span><span class="p">(</span><span class="n">x_start</span><span class="p">,</span><span class="n">y_end</span><span class="p">,</span><span class="n">shag</span><span class="p">):</span>
+            <span class="n">y_end</span> <span class="o">+</span> <span class="n">shag</span>
+    
+    <span class="n">X</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="n">y_end</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+        <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">x_start</span><span class="p">:</span><span class="n">x_end</span><span class="p">])</span>
+        <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">y_start</span><span class="p">:</span><span class="n">y_end</span><span class="p">])</span>
+        
+        <span class="n">x_start</span><span class="o">=</span> <span class="n">compute_new_x_start</span><span class="p">(</span><span class="n">x_start</span><span class="p">,</span><span class="n">y_end</span><span class="p">,</span><span class="n">shag</span><span class="p">)</span>
+        <span class="n">x_end</span><span class="o">=</span> <span class="n">x_start</span> <span class="o">+</span> <span class="n">len_seq</span>
+        <span class="n">y_start</span> <span class="o">=</span> <span class="n">x_end</span> <span class="o">+</span> <span class="n">gap</span> <span class="o">+</span><span class="mi">1</span>
+        <span class="n">y_end</span> <span class="o">=</span> <span class="n">y_start</span> <span class="o">+</span> <span class="n">points_ahead</span>
+          
+    
+    <span class="k">if</span> <span class="n">test_size</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)))</span>
+        <span class="c1">#             np.random.seed(random_state)</span>
+        <span class="k">if</span> <span class="n">shuffle</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">X</span><span class="p">,[],</span><span class="n">y</span><span class="p">,[]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> 
+                                <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span> 
+                                <span class="n">train_size</span><span class="o">=</span><span class="n">train_size</span><span class="p">,</span> 
+                                <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span> 
+                                <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span> 
+                                <span class="n">stratify</span><span class="o">=</span><span class="n">stratify</span>
+                               <span class="p">)</span></div>
+						   
+						   
+						   
+<div class="viewcode-block" id="Loader"><a class="viewcode-back" href="../../tsad.html#tsad.src.Loader">[docs]</a><span class="k">class</span> <span class="nc">Loader</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">shuffle</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)))</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">=</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="o">+=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">):</span>        
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span>
+            
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">))</span></div>
+		        
+        
+<div class="viewcode-block" id="split_by_repeated"><a class="viewcode-back" href="../../tsad.html#tsad.src.split_by_repeated">[docs]</a><span class="k">def</span> <span class="nf">split_by_repeated</span><span class="p">(</span><span class="n">series</span><span class="p">,</span><span class="n">df</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    retrun dict with lists of ts whwre keys is unique values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">series</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="n">series</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]:</span><span class="n">series</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="n">uni</span><span class="p">:[]</span> <span class="k">for</span> <span class="n">uni</span> <span class="ow">in</span> <span class="n">series</span><span class="o">.</span><span class="n">unique</span><span class="p">()}</span>
+        <span class="n">recent_i</span><span class="o">=</span><span class="mi">0</span>
+        <span class="n">recent_val</span><span class="o">=</span><span class="n">series</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">recent_val</span> <span class="o">==</span> <span class="n">val</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">recent_val</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">series</span><span class="p">[</span><span class="n">recent_i</span><span class="p">:</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">recent_i</span><span class="o">=</span><span class="n">i</span>
+                <span class="n">recent_val</span> <span class="o">=</span> <span class="n">val</span>
+
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">recent_val</span> <span class="o">==</span> <span class="n">val</span><span class="p">):</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">recent_val</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">series</span><span class="p">[</span><span class="n">recent_i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">recent_val</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">series</span><span class="p">[</span><span class="n">recent_i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s1">&#39;0 series&#39;</span><span class="p">)</span>
+
+
+    <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">new_result</span> <span class="o">=</span> <span class="p">{</span><span class="n">uni</span><span class="p">:[]</span> <span class="k">for</span> <span class="n">uni</span> <span class="ow">in</span> <span class="n">series</span><span class="o">.</span><span class="n">unique</span><span class="p">()}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">])):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">i</span><span class="p">])</span> <span class="o">&lt;=</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">new_result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">new_result</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+        
+
+<div class="viewcode-block" id="evaluating_change_point"><a class="viewcode-back" href="../../tsad.html#tsad.src.evaluating_change_point">[docs]</a><span class="k">def</span> <span class="nf">evaluating_change_point</span><span class="p">(</span><span class="n">true</span><span class="p">,</span> <span class="n">prediction</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;nab&#39;</span><span class="p">,</span> 
+                            <span class="n">numenta_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                            <span class="n">portion</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                            <span class="n">anomaly_window_destenation</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
+                            <span class="n">intersection_mode</span><span class="o">=</span><span class="s1">&#39;cut left&#39;</span><span class="p">,</span>
+                            <span class="n">table_of_coef</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                            <span class="n">scale_func</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+                            <span class="n">scale_koef</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">hidden_anomalies_mode</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                            <span class="n">plot_figure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                            <span class="n">change_point_mode</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                            <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>
+                            <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    true - both:</span>
+<span class="sd">                list of pandas Series with binary int labels</span>
+<span class="sd">                pandas Series with binary int labels</span>
+<span class="sd">    prediction - both:</span>
+<span class="sd">                      list of pandas Series with binary int labels</span>
+<span class="sd">                      pandas Series with binary int labels</span>
+<span class="sd">    metric: &#39;nab&#39;, &#39;binary&#39; (FAR, MAR), &#39;average_delay&#39;. Default=&#39;nab&#39;</span>
+<span class="sd">    </span>
+<span class="sd">    verbose:  : booleant, default=True.</span>
+<span class="sd">                  Если True, то вывод полезной информации в output</span>
+<span class="sd">    </span>
+<span class="sd">    &lt;&lt;&lt; For &#39;nab&#39;, &#39;average_delay&#39; metrics: ...</span>
+<span class="sd">        portion : float, default=0.1</span>
+<span class="sd">                Параметр нужен, если numenta_time=None</span>
+<span class="sd">                Ширина scoring window в этом случае равна portion от </span>
+<span class="sd">                ширины всей выборки деленной на количество real CPs в </span>
+<span class="sd">                этой выборке</span>
+<span class="sd">        anomaly_window_destenation: &#39;left&#39;, &#39;right&#39;, &#39;center&#39;. Defualt=&#39;right&#39;</span>
+<span class="sd">                Параметр размещения scoring window относительно аномалии. </span>
+<span class="sd">                &#39;left&#39;  : scoring window будет по левую сторону от аномалии</span>
+<span class="sd">                &#39;right&#39; : scoring window будет по правую сторону от аномалии</span>
+<span class="sd">                &#39;center&#39;: scoring window будет по размещено относительно центра</span>
+<span class="sd">                          аномалии</span>
+
+<span class="sd">        intersection_mode: &#39;cut left&#39;, &#39;cut right&#39;, &#39;both&#39;. Defualt=&#39;right&#39;</span>
+<span class="sd">                Параметр будет задействован, в случае, если scoring windows</span>
+<span class="sd">                пересекаются, что в общем случае нежалательно, и желательно</span>
+<span class="sd">                требует иного подхода, чем просто обрезки scoring window</span>
+<span class="sd">                c помощью данного параметра.</span>
+<span class="sd">                &#39;cut left&#39;  : обрежет пересакающуюся часть левого окна</span>
+<span class="sd">                &#39;cut right&#39; : обрежет пересакающуюся часть правого окна</span>
+<span class="sd">                &#39;both&#39;  : обрежет пересакающуюся часть и левого и правого окна</span>
+
+<span class="sd">    ... For &#39;nab&#39;, &#39;average_delay&#39; metrics&gt;&gt;&gt; </span>
+<span class="sd">    &lt;&lt;&lt; For &#39;nab&#39; metric:</span>
+<span class="sd">        table_of_coef: pd.DataFrame of specific form. See bellow. </span>
+<span class="sd">                Application profiles of NAB metric.If Defaut is None:  </span>
+<span class="sd">                table_of_coef = pd.DataFrame([[1.0,-0.11,1.0,-1.0],</span>
+<span class="sd">                                              [1.0,-0.22,1.0,-1.0],</span>
+<span class="sd">                                              [1.0,-0.11,1.0,-2.0]])</span>
+<span class="sd">                table_of_coef.index = [&#39;Standart&#39;,&#39;LowFP&#39;,&#39;LowFN&#39;]</span>
+<span class="sd">                table_of_coef.index.name = &quot;Metric&quot;</span>
+<span class="sd">                table_of_coef.columns = [&#39;A_tp&#39;,&#39;A_fp&#39;,&#39;A_tn&#39;,&#39;A_fn&#39;]</span>
+<span class="sd">            </span>
+<span class="sd">    scale_func : &quot;default&quot; of &quot;improved&quot;. Defualt=&quot;default&quot;.</span>
+<span class="sd">                 Scoring function in NAB metric.</span>
+<span class="sd">                 &#39;default&#39;  : standart NAB scoring function </span>
+<span class="sd">                 &#39;improved&#39; : Our function for resolving disadvantages</span>
+<span class="sd">                              of standart NAB scoring function </span>
+<span class="sd">                  </span>
+<span class="sd">    scale_koef : float &gt; 0. Defualt=1.0. </span>
+<span class="sd">                 Коэффициент сглаживания. Чем меньше он, тем более</span>
+<span class="sd">                 сглажена scoring function</span>
+<span class="sd">                </span>
+<span class="sd">    hidden_anomalies_mode : boolean, default=True.</span>
+<span class="sd">                            True : тогда слева значение Scoring function равно Atp, а справа Afp</span>
+<span class="sd">                            False: тогда слева значение Scoring function равно Afp, а справа Atp</span>
+<span class="sd">    </span>
+<span class="sd">    plot_figure : booleant, default=False.</span>
+<span class="sd">                  Если True, то прорисовка score fuction, например, </span>
+<span class="sd">                  чтобы откалибровать scale_koef</span>
+<span class="sd">    </span>
+<span class="sd">    change_point_mode : boolean, default=True.</span>
+<span class="sd">                        Если False, тогда берется не только первая точка прогноза в </span>
+<span class="sd">                        scoring window, а все. При этом взешиваются, суммируются и нормируется так,</span>
+<span class="sd">                        что по сути можно просто смотреть на рез-тат. </span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">                </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">binary</span><span class="p">(</span><span class="n">true</span><span class="p">,</span> <span class="n">prediction</span><span class="p">):</span>      
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        true - true binary series with 1 as anomalies</span>
+<span class="sd">        prediction - trupredicted binary series with 1 as anomalies</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">single_binary</span><span class="p">(</span><span class="n">true</span><span class="p">,</span><span class="n">prediction</span><span class="p">):</span>
+            <span class="n">true_</span> <span class="o">=</span> <span class="n">true</span> <span class="o">==</span> <span class="mi">1</span> 
+            <span class="n">prediction_</span> <span class="o">=</span> <span class="n">prediction</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="n">TP</span> <span class="o">=</span> <span class="p">(</span><span class="n">true_</span> <span class="o">&amp;</span> <span class="n">prediction_</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">TN</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">true_</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">prediction_</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">FP</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">true_</span> <span class="o">&amp;</span> <span class="n">prediction_</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">FN</span> <span class="o">=</span> <span class="p">(</span><span class="n">true_</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">prediction_</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">TP</span><span class="p">,</span><span class="n">TN</span><span class="p">,</span><span class="n">FP</span><span class="p">,</span><span class="n">FN</span>
+            
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">true</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">list</span><span class="p">()):</span>
+            <span class="n">TP</span><span class="p">,</span><span class="n">TN</span><span class="p">,</span><span class="n">FP</span><span class="p">,</span><span class="n">FN</span> <span class="o">=</span> <span class="n">single_binary</span><span class="p">(</span><span class="n">true</span><span class="p">,</span><span class="n">prediction</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">TP</span><span class="p">,</span><span class="n">TN</span><span class="p">,</span><span class="n">FP</span><span class="p">,</span><span class="n">FN</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">true</span><span class="p">)):</span>
+                <span class="n">TP_</span><span class="p">,</span><span class="n">TN_</span><span class="p">,</span><span class="n">FP_</span><span class="p">,</span><span class="n">FN_</span> <span class="o">=</span> <span class="n">single_binary</span><span class="p">(</span><span class="n">true</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">prediction</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">TP</span><span class="p">,</span><span class="n">TN</span><span class="p">,</span><span class="n">FP</span><span class="p">,</span><span class="n">FN</span> <span class="o">=</span> <span class="n">TP</span><span class="o">+</span><span class="n">TP_</span><span class="p">,</span><span class="n">TN</span><span class="o">+</span><span class="n">TN_</span><span class="p">,</span><span class="n">FP</span><span class="o">+</span><span class="n">FP_</span><span class="p">,</span><span class="n">FN</span><span class="o">+</span><span class="n">FN_</span>       
+    
+        <span class="n">f1</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">TP</span><span class="o">/</span><span class="p">(</span><span class="n">TP</span><span class="o">+</span><span class="p">(</span><span class="n">FN</span><span class="o">+</span><span class="n">FP</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;False Alarm Rate </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">FP</span><span class="o">/</span><span class="p">(</span><span class="n">FP</span><span class="o">+</span><span class="n">TN</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1"> %&#39;</span> <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Missing Alarm Rate </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">FN</span><span class="o">/</span><span class="p">(</span><span class="n">FN</span><span class="o">+</span><span class="n">TP</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1"> %&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;F1 metric </span><span class="si">{</span><span class="n">f1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f1</span>
+    
+    <span class="k">def</span> <span class="nf">average_delay</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">,</span> <span class="n">prediction</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Возвращает add, missing, all_true_anom</span>
+<span class="sd">        </span>
+<span class="sd">        detecting_boundaries - где правая граница трушная аномалия, только так</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">def</span> <span class="nf">single_average_delay</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">,</span> <span class="n">prediction</span><span class="p">):</span>
+            <span class="n">missing</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">detectHistory</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">all_true_anom</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">_df_fill_bounds</span> <span class="o">=</span>  <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">prediction</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">)))</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="n">prediction</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">)):</span>
+                <span class="n">t1</span> <span class="o">=</span> <span class="n">detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">t2</span> <span class="o">=</span> <span class="n">detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">_df_fill_bounds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">t1</span><span class="p">:</span><span class="n">t2</span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+                <span class="k">if</span> <span class="n">prediction</span><span class="p">[</span><span class="n">t1</span><span class="p">:</span><span class="n">t2</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="n">missing</span><span class="o">+=</span><span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">detectHistory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prediction</span><span class="p">[</span><span class="n">prediction</span> <span class="o">==</span><span class="mi">1</span><span class="p">][</span><span class="n">t1</span><span class="p">:</span><span class="n">t2</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">t1</span><span class="p">)</span>
+                <span class="n">all_true_anom</span><span class="o">+=</span><span class="mi">1</span>
+            <span class="c1"># FPs</span>
+                        
+            
+                
+            <span class="n">ts_fp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">prediction</span><span class="p">)),</span><span class="n">index</span><span class="o">=</span><span class="n">prediction</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">ts_fp</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">_df_fill_bounds</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+            <span class="n">ts_fp</span> <span class="o">=</span> <span class="n">ts_fp</span> <span class="o">*</span> <span class="n">prediction</span>
+            <span class="n">FP</span> <span class="o">=</span> <span class="n">ts_fp</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">missing</span><span class="p">,</span> <span class="n">detectHistory</span><span class="p">,</span> <span class="n">FP</span><span class="p">,</span> <span class="n">all_true_anom</span>
+            
+        
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">prediction</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">list</span><span class="p">()):</span>
+            <span class="n">missing</span><span class="p">,</span> <span class="n">detectHistory</span><span class="p">,</span> <span class="n">FP</span><span class="p">,</span> <span class="n">all_true_anom</span> <span class="o">=</span> <span class="n">single_average_delay</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">,</span> <span class="n">prediction</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">missing</span><span class="p">,</span> <span class="n">detectHistory</span><span class="p">,</span> <span class="n">FP</span><span class="p">,</span> <span class="n">all_true_anom</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">prediction</span><span class="p">)):</span>
+                <span class="n">missing_</span><span class="p">,</span> <span class="n">detectHistory_</span><span class="p">,</span> <span class="n">FP_</span><span class="p">,</span> <span class="n">all_true_anom_</span> <span class="o">=</span> <span class="n">single_average_delay</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">prediction</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">missing</span><span class="p">,</span> <span class="n">detectHistory</span><span class="p">,</span> <span class="n">FP</span><span class="p">,</span> <span class="n">all_true_anom</span> <span class="o">=</span> <span class="n">missing</span><span class="o">+</span><span class="n">missing_</span><span class="p">,</span> <span class="n">detectHistory</span><span class="o">+</span><span class="n">detectHistory_</span><span class="p">,</span> <span class="n">FP</span><span class="o">+</span><span class="n">FP_</span><span class="p">,</span> <span class="n">all_true_anom</span><span class="o">+</span><span class="n">all_true_anom_</span>
+
+        <span class="n">add</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">detectHistory</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Amount of true anomalies&#39;</span><span class="p">,</span><span class="n">all_true_anom</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;A number of missed CPs = </span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;A number of FPs = </span><span class="si">{</span><span class="n">FP</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Average delay&#39;</span><span class="p">,</span> <span class="n">add</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">add</span><span class="p">,</span> <span class="n">missing</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">FP</span><span class="p">),</span> <span class="n">all_true_anom</span>
+    
+    <span class="k">def</span> <span class="nf">evaluate_nab</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">,</span> <span class="n">prediction</span><span class="p">,</span> 
+                     <span class="n">table_of_coef</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">intersection_mode</span><span class="o">=</span><span class="s1">&#39;cut left&#39;</span><span class="p">,</span>
+                     <span class="n">hidden_anomalies_mode</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="n">scale_func</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+                     <span class="n">scale_koef</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                     <span class="n">plot_figure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">change_point_mode</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scoring labeled time series by means of</span>
+<span class="sd">        Numenta Anomaly Benchmark methodics</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        detecting_boundaries: list of list of two float values</span>
+<span class="sd">            The list of lists of left and right boundary indices</span>
+<span class="sd">            for scoring results of labeling</span>
+<span class="sd">        prediction: pd.Series with timestamp indices, in which 1 </span>
+<span class="sd">            is change point, and 0 in other case. </span>
+<span class="sd">        table_of_coef: pandas array (3x4) of float values</span>
+<span class="sd">            Table of coefficients for NAB score function</span>
+<span class="sd">            indeces: &#39;Standart&#39;,&#39;LowFP&#39;,&#39;LowFN&#39;</span>
+<span class="sd">            columns:&#39;A_tp&#39;,&#39;A_fp&#39;,&#39;A_tn&#39;,&#39;A_fn&#39;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Scores: numpy array, shape of 3, float</span>
+<span class="sd">            Score for &#39;Standart&#39;,&#39;LowFP&#39;,&#39;LowFN&#39; profile </span>
+<span class="sd">        Scores_null: numpy array, shape 3, float</span>
+<span class="sd">            Null score for &#39;Standart&#39;,&#39;LowFP&#39;,&#39;LowFN&#39; profile             </span>
+<span class="sd">        Scores_perfect: numpy array, shape 3, float</span>
+<span class="sd">            Perfect Score for &#39;Standart&#39;,&#39;LowFP&#39;,&#39;LowFN&#39; profile  </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">single_evaluate_nab</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">,</span>
+                                <span class="n">prediction</span><span class="p">,</span> 
+                                <span class="n">table_of_coef</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                <span class="n">intersection_mode</span><span class="o">=</span><span class="s1">&#39;cut left&#39;</span><span class="p">,</span>
+                                <span class="n">hidden_anomalies_mode</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                <span class="n">scale_func</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+                                <span class="n">scale_koef</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                <span class="n">plot_figure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                <span class="n">change_point_mode</span> <span class="o">=</span> <span class="kc">False</span>
+                               <span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            недостаттки scale_func default  -</span>
+<span class="sd">            1 - зависит от относительного шага, а это значит, что если </span>
+<span class="sd">            слишком много точек в scoring window то перепад будет слишком</span>
+<span class="sd">            жестким в середение. </span>
+<span class="sd">            2-   то самая левая точка не равно  Atp, а права не равна Afp</span>
+<span class="sd">            (особенно если пррименять расплывающую множитель)</span>
+<span class="sd">   </span>
+<span class="sd">            hidden_anomalies_mode тогда слева от границы Atp срправа Afp,</span>
+<span class="sd">            иначе fault mode, когда слева от границы Afp срправа Atp</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+      
+            <span class="k">def</span> <span class="nf">sigm_scale</span><span class="p">(</span><span class="n">len_ts</span><span class="p">,</span> <span class="n">A_tp</span><span class="p">,</span> <span class="n">A_fp</span><span class="p">,</span> <span class="n">koef</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">len_ts</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">len_ts</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">len_ts</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+                
+                <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="k">if</span> <span class="n">hidden_anomalies_mode</span> <span class="k">else</span> <span class="n">x</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">A_tp</span><span class="o">-</span><span class="n">A_fp</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">koef</span><span class="p">)))</span> <span class="o">+</span> <span class="n">A_fp</span>
+                <span class="k">return</span> <span class="n">y</span>
+            <span class="k">def</span> <span class="nf">my_scale</span><span class="p">(</span><span class="n">len_ts</span><span class="p">,</span><span class="n">A_tp</span><span class="p">,</span><span class="n">A_fp</span><span class="p">,</span><span class="n">koef</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                <span class="sd">&quot;&quot;&quot;ts - участок на котором надо жахнуть окно &quot;&quot;&quot;</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">len_ts</span><span class="p">)</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="k">if</span> <span class="n">hidden_anomalies_mode</span> <span class="k">else</span> <span class="n">x</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="c1"># Приведение если неравномерный шаг.</span>
+                <span class="c1">#x_new = x_old * ( np.pi / (x_old[-1]-x_old[0])) - x_old[0]*( np.pi / (x_old[-1]-x_old[0])) - np.pi/2</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">A_tp</span><span class="o">-</span><span class="n">A_fp</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">*-</span><span class="mi">1</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">koef</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">koef</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">A_tp</span><span class="o">-</span><span class="n">A_fp</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">A_fp</span>
+                <span class="k">return</span> <span class="n">y</span> 
+            
+            <span class="k">if</span> <span class="n">scale_func</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
+                <span class="n">scale_func</span> <span class="o">=</span> <span class="n">sigm_scale</span>
+            <span class="k">elif</span> <span class="n">scale_func</span> <span class="o">==</span> <span class="s2">&quot;improved&quot;</span><span class="p">:</span>
+                <span class="n">scale_func</span> <span class="o">=</span> <span class="n">my_scale</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span><span class="p">(</span><span class="s2">&quot;choose the scale_func&quot;</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">table_of_coef</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">table_of_coef</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span><span class="o">-</span><span class="mf">0.11</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="o">-</span><span class="mf">1.0</span><span class="p">],</span>
+                                     <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span><span class="o">-</span><span class="mf">0.22</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="o">-</span><span class="mf">1.0</span><span class="p">],</span>
+                                      <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span><span class="o">-</span><span class="mf">0.11</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="o">-</span><span class="mf">2.0</span><span class="p">]])</span>
+                <span class="n">table_of_coef</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Standart&#39;</span><span class="p">,</span><span class="s1">&#39;LowFP&#39;</span><span class="p">,</span><span class="s1">&#39;LowFN&#39;</span><span class="p">]</span>
+                <span class="n">table_of_coef</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Metric&quot;</span>
+                <span class="n">table_of_coef</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;A_tp&#39;</span><span class="p">,</span><span class="s1">&#39;A_fp&#39;</span><span class="p">,</span><span class="s1">&#39;A_tn&#39;</span><span class="p">,</span><span class="s1">&#39;A_fn&#39;</span><span class="p">]</span>
+
+            <span class="n">detecting_boundaries</span> <span class="o">=</span> <span class="n">detecting_boundaries</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">prediction</span> <span class="o">=</span> <span class="n">prediction</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">_df_fill_bounds</span> <span class="o">=</span>  <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">prediction</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">)))</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="n">prediction</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">)):</span>
+                <span class="n">_df_fill_bounds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span><span class="n">detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+                <span class="k">if</span> <span class="n">plot_figure</span><span class="p">:</span>
+                    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+                    <span class="n">ts</span> <span class="o">=</span> <span class="n">_df_fill_bounds</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+                    <span class="n">ts_profile</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">scale_func</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="p">),</span>
+                                                            <span class="n">table_of_coef</span><span class="p">[</span><span class="s1">&#39;A_tp&#39;</span><span class="p">][</span><span class="s1">&#39;Standart&#39;</span><span class="p">],</span>
+                                                            <span class="n">table_of_coef</span><span class="p">[</span><span class="s1">&#39;A_fp&#39;</span><span class="p">][</span><span class="s1">&#39;Standart&#39;</span><span class="p">],</span>
+                                                            <span class="n">koef</span><span class="o">=</span><span class="n">scale_koef</span><span class="p">),</span>
+                                           <span class="n">index</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+                    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts_profile</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;profile&#39;</span><span class="p">)</span>
+                    <span class="n">ind_</span> <span class="o">=</span> <span class="n">prediction</span><span class="p">[</span><span class="n">prediction</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ts</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">ts</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">index</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind_</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">pred_anom</span> <span class="ow">in</span> <span class="n">ind_</span><span class="p">:</span>
+                            <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">pred_anom</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;predicted anomaly&#39;</span><span class="p">)</span>
+                        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+                        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+                        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+                
+            
+            <span class="n">Scores</span><span class="p">,</span> <span class="n">Scores_perfect</span><span class="p">,</span> <span class="n">Scores_null</span><span class="o">=</span><span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">profile</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Standart&#39;</span><span class="p">,</span> <span class="s1">&#39;LowFP&#39;</span><span class="p">,</span> <span class="s1">&#39;LowFN&#39;</span><span class="p">]:</span>       
+                <span class="n">A_tp</span> <span class="o">=</span> <span class="n">table_of_coef</span><span class="p">[</span><span class="s1">&#39;A_tp&#39;</span><span class="p">][</span><span class="n">profile</span><span class="p">]</span>
+                <span class="n">A_fp</span> <span class="o">=</span> <span class="n">table_of_coef</span><span class="p">[</span><span class="s1">&#39;A_fp&#39;</span><span class="p">][</span><span class="n">profile</span><span class="p">]</span>
+                <span class="n">A_fn</span> <span class="o">=</span> <span class="n">table_of_coef</span><span class="p">[</span><span class="s1">&#39;A_fn&#39;</span><span class="p">][</span><span class="n">profile</span><span class="p">]</span>
+                
+                <span class="n">score</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="c1"># FPs</span>
+                <span class="n">ts_fp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">prediction</span><span class="p">)),</span><span class="n">index</span><span class="o">=</span><span class="n">prediction</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+                <span class="n">ts_fp</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">_df_fill_bounds</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+                <span class="n">ts_fp</span> <span class="o">=</span> <span class="n">ts_fp</span> <span class="o">*</span> <span class="n">prediction</span>
+                <span class="n">score</span> <span class="o">+=</span> <span class="n">A_fp</span><span class="o">*</span><span class="n">ts_fp</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="c1">#FNs and TPs</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">)):</span>
+                    <span class="n">ts_tp</span> <span class="o">=</span> <span class="n">_df_fill_bounds</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+                    <span class="n">ts_tp</span> <span class="o">=</span> <span class="n">ts_tp</span> <span class="o">*</span> <span class="n">prediction</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ts_tp</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">ts_tp</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                        <span class="n">score</span><span class="o">+=</span><span class="n">A_fn</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">ts_profile</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">scale_func</span><span class="p">(</span>
+                                                                <span class="nb">len</span><span class="p">(</span><span class="n">ts_tp</span><span class="p">),</span><span class="n">A_tp</span><span class="p">,</span><span class="n">A_fp</span><span class="p">,</span><span class="n">koef</span><span class="o">=</span><span class="n">scale_koef</span><span class="p">),</span>
+                                               <span class="n">index</span> <span class="o">=</span> <span class="n">ts_tp</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">change_point_mode</span><span class="p">:</span>
+                            <span class="n">ts_tp</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ts_tp</span><span class="p">[</span><span class="n">ts_tp</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span> <span class="o">=</span> <span class="mi">0</span>
+                            <span class="n">score</span> <span class="o">+=</span> <span class="p">(</span><span class="n">ts_profile</span> <span class="o">*</span> <span class="n">ts_tp</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">score</span> <span class="o">+=</span> <span class="p">(</span><span class="n">ts_profile</span><span class="o">*</span><span class="n">ts_tp</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="p">(</span><span class="n">ts_profile</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_profile</span><span class="p">)</span>
+                <span class="n">Scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+                <span class="n">Scores_perfect</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">)</span><span class="o">*</span><span class="n">A_tp</span><span class="p">)</span>
+                <span class="n">Scores_null</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">)</span><span class="o">*</span><span class="n">A_fn</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Scores</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Scores_null</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Scores_perfect</span><span class="p">)])</span>
+       <span class="c1">#======      </span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">prediction</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">list</span><span class="p">()):</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">single_evaluate_nab</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">,</span> 
+                                         <span class="n">prediction</span><span class="p">,</span> 
+                                         <span class="n">table_of_coef</span><span class="o">=</span><span class="n">table_of_coef</span><span class="p">,</span>
+                                         <span class="n">intersection_mode</span><span class="o">=</span><span class="n">intersection_mode</span><span class="p">,</span>
+                                         <span class="n">hidden_anomalies_mode</span> <span class="o">=</span> <span class="n">hidden_anomalies_mode</span><span class="p">,</span>
+                                         <span class="n">scale_func</span> <span class="o">=</span> <span class="n">scale_func</span><span class="p">,</span>
+                                         <span class="n">scale_koef</span><span class="o">=</span><span class="n">scale_koef</span><span class="p">,</span>
+                                         <span class="n">plot_figure</span><span class="o">=</span><span class="n">plot_figure</span><span class="p">,</span>
+                                         <span class="n">change_point_mode</span> <span class="o">=</span> <span class="n">change_point_mode</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">prediction</span><span class="p">)):</span>
+                <span class="n">matrix_</span> <span class="o">=</span> <span class="n">single_evaluate_nab</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                              <span class="n">prediction</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                              <span class="n">table_of_coef</span><span class="o">=</span><span class="n">table_of_coef</span><span class="p">,</span>
+                                              <span class="n">intersection_mode</span><span class="o">=</span><span class="n">intersection_mode</span><span class="p">,</span>
+                                              <span class="n">hidden_anomalies_mode</span> <span class="o">=</span> <span class="n">hidden_anomalies_mode</span><span class="p">,</span>
+                                              <span class="n">scale_func</span> <span class="o">=</span> <span class="n">scale_func</span><span class="p">,</span>
+                                              <span class="n">scale_koef</span><span class="o">=</span><span class="n">scale_koef</span><span class="p">,</span>
+                                              <span class="n">plot_figure</span><span class="o">=</span><span class="n">plot_figure</span><span class="p">,</span>
+                                              <span class="n">change_point_mode</span> <span class="o">=</span> <span class="n">change_point_mode</span><span class="p">)</span>
+                <span class="n">matrix</span> <span class="o">=</span> <span class="n">matrix</span> <span class="o">+</span> <span class="n">matrix_</span>      
+                
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Standart&#39;</span><span class="p">,</span> <span class="s1">&#39;LowFP&#39;</span><span class="p">,</span> <span class="s1">&#39;LowFN&#39;</span><span class="p">]</span> 
+        <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">profile_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">desc</span><span class="p">):</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">profile_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">t</span><span class="p">]</span><span class="o">-</span><span class="n">matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">t</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">matrix</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="n">t</span><span class="p">]</span><span class="o">-</span><span class="n">matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">t</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">profile_name</span><span class="p">,</span><span class="s1">&#39; - &#39;</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="n">profile_name</span><span class="p">])</span>
+        
+        <span class="k">return</span> <span class="n">results</span>
+            
+            
+    <span class="c1">#=========================================================================</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">true</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">list</span><span class="p">()):</span>
+        <span class="n">true_1_indexes</span> <span class="o">=</span> <span class="n">true</span><span class="p">[</span><span class="n">true</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">true_1_indexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">true</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">true</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">true</span><span class="p">))]</span>
+        
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">metric</span><span class="o">==</span><span class="s1">&#39;binary&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">metric</span><span class="o">==</span><span class="s1">&#39;average_delay&#39;</span><span class="p">:</span>
+            <span class="n">anomaly_window_destenation</span><span class="o">=</span> <span class="s1">&#39;left&#39;</span>
+        <span class="k">def</span> <span class="nf">single_detecting_boundaries</span><span class="p">(</span><span class="n">true</span><span class="p">,</span> <span class="n">prediction</span><span class="p">,</span> <span class="n">numenta_time</span><span class="p">,</span> <span class="n">true_1_indexes</span><span class="p">,</span>
+                                        <span class="n">anomaly_window_destenation</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span><span class="n">portion</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+            <span class="n">detecting_boundaries</span><span class="o">=</span><span class="p">[]</span>
+            <span class="n">td</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">numenta_time</span><span class="p">)</span> <span class="k">if</span> <span class="n">numenta_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> \
+                        <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">((</span><span class="n">true</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">true</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">true_1_indexes</span><span class="p">)</span><span class="o">*</span><span class="n">portion</span><span class="p">)</span>  
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">true_1_indexes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">anomaly_window_destenation</span> <span class="o">==</span> <span class="s1">&#39;left&#39;</span><span class="p">:</span>
+                    <span class="n">detecting_boundaries</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">val</span><span class="p">,</span> <span class="n">val</span> <span class="o">+</span> <span class="n">td</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">anomaly_window_destenation</span> <span class="o">==</span> <span class="s1">&#39;right&#39;</span><span class="p">:</span>
+                    <span class="n">detecting_boundaries</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">val</span> <span class="o">-</span> <span class="n">td</span><span class="p">,</span> <span class="n">val</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">anomaly_destenation</span> <span class="o">==</span> <span class="s1">&#39;center&#39;</span><span class="p">:</span>
+                    <span class="n">anomaly_window_destenation</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">val</span> <span class="o">-</span> <span class="n">td</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">val</span> <span class="o">+</span> <span class="n">td</span><span class="o">/</span><span class="mi">2</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span><span class="p">(</span><span class="s1">&#39;choose anomaly_window_destenation&#39;</span><span class="p">)</span>
+                    
+                    
+            <span class="c1"># block for resolving intersection problem:</span>
+            <span class="c1"># важно не ошибиться, и всегда следить, чтобы везде правая граница далее</span>
+            <span class="c1"># не включалась, иначе будет пересечения окон             </span>
+            <span class="n">new_detecting_boundaries</span> <span class="o">=</span> <span class="n">detecting_boundaries</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">prediction</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">prediction</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">prediction</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">prediction</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_detecting_boundaries</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Intersection of scoring windows</span><span class="si">{</span><span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">intersection_mode</span> <span class="o">==</span> <span class="s1">&#39;cut left&#39;</span><span class="p">:</span>
+                        <span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">intersection_mode</span> <span class="o">==</span> <span class="s1">&#39;cut right&#39;</span><span class="p">:</span>
+                        <span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">intersection_mode</span> <span class="o">==</span> <span class="s1">&#39;cut both&#39;</span><span class="p">:</span>
+                        <span class="n">_a</span>  <span class="o">=</span> <span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">new_detecting_boundaries</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">_a</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span><span class="p">(</span><span class="s2">&quot;choose the intersection_mode&quot;</span><span class="p">)</span>
+            <span class="n">detecting_boundaries</span> <span class="o">=</span> <span class="n">new_detecting_boundaries</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>        
+                    
+                    
+                    
+            
+            <span class="k">return</span> <span class="n">detecting_boundaries</span>
+        
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">true</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">list</span><span class="p">()):</span>
+            <span class="n">detecting_boundaries</span> <span class="o">=</span> <span class="n">single_detecting_boundaries</span><span class="p">(</span><span class="n">true</span><span class="o">=</span><span class="n">true</span><span class="p">,</span>
+                                                               <span class="n">prediction</span><span class="o">=</span><span class="n">prediction</span><span class="p">,</span> 
+                                                               <span class="n">numenta_time</span><span class="o">=</span><span class="n">numenta_time</span><span class="p">,</span> 
+                                                               <span class="n">true_1_indexes</span><span class="o">=</span><span class="n">true_1_indexes</span><span class="p">,</span>
+                                                               <span class="n">anomaly_window_destenation</span><span class="o">=</span><span class="n">anomaly_window_destenation</span><span class="p">,</span>
+                                                               <span class="n">portion</span><span class="o">=</span><span class="n">portion</span>
+                                                              <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">detecting_boundaries</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">true</span><span class="p">)):</span>
+                <span class="n">detecting_boundaries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">single_detecting_boundaries</span><span class="p">(</span><span class="n">true</span><span class="o">=</span><span class="n">true</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> 
+                                                                        <span class="n">prediction</span><span class="o">=</span><span class="n">prediction</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>                                                                
+                                                                        <span class="n">numenta_time</span><span class="o">=</span><span class="n">numenta_time</span><span class="p">,</span> 
+                                                                        <span class="n">true_1_indexes</span><span class="o">=</span><span class="n">true_1_indexes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                                                        <span class="n">anomaly_window_destenation</span><span class="o">=</span><span class="n">anomaly_window_destenation</span><span class="p">,</span>
+                                                                        <span class="n">portion</span><span class="o">=</span><span class="n">portion</span><span class="p">))</span>
+
+
+    <span class="k">if</span> <span class="n">metric</span><span class="o">==</span> <span class="s1">&#39;nab&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">evaluate_nab</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">,</span> 
+                            <span class="n">prediction</span><span class="p">,</span>
+                            <span class="n">table_of_coef</span><span class="o">=</span><span class="n">table_of_coef</span><span class="p">,</span>
+                            <span class="n">intersection_mode</span><span class="o">=</span><span class="n">intersection_mode</span><span class="p">,</span>
+                            <span class="n">hidden_anomalies_mode</span> <span class="o">=</span> <span class="n">hidden_anomalies_mode</span><span class="p">,</span>
+                            <span class="n">scale_func</span> <span class="o">=</span> <span class="n">scale_func</span><span class="p">,</span>
+                            <span class="n">scale_koef</span><span class="o">=</span><span class="n">scale_koef</span><span class="p">,</span>
+                            <span class="n">plot_figure</span><span class="o">=</span><span class="n">plot_figure</span><span class="p">,</span>
+                            <span class="n">change_point_mode</span> <span class="o">=</span> <span class="n">change_point_mode</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">metric</span><span class="o">==</span><span class="s1">&#39;average_delay&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">average_delay</span><span class="p">(</span><span class="n">detecting_boundaries</span><span class="p">,</span> <span class="n">prediction</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">metric</span><span class="o">==</span> <span class="s1">&#39;binary&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">binary</span><span class="p">(</span><span class="n">true</span><span class="p">,</span> <span class="n">prediction</span><span class="p">)</span></div>
+        
+        
+<div class="viewcode-block" id="df2dfs"><a class="viewcode-back" href="../../tsad.html#tsad.src.df2dfs">[docs]</a><span class="k">def</span> <span class="nf">df2dfs</span><span class="p">(</span><span class="n">df</span><span class="p">,</span>  <span class="c1"># Авторы не рекомендуют так делать,</span>
+            <span class="n">resample_freq</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># требования</span>
+            <span class="n">thereshold_gap</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+            <span class="n">koef_freq_of_gap</span> <span class="o">=</span> <span class="mf">1.2</span><span class="p">,</span> <span class="c1"># 1.2 проблема которая возникает которую 02.09.2021 я написал в ИИ </span>
+            <span class="n">plot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Функция которая преообратает raw df до требований к входу на DL_AD</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+    <span class="n">dts</span>  <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_series</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">resample_freq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dts_dist</span> <span class="o">=</span> <span class="n">dts</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">dts_dist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">dts_dist</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">():</span>
+            <span class="n">resample_freq</span>  <span class="o">=</span> <span class="n">dts_dist</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="nb">print</span><span class="p">(</span><span class="n">dts_dist</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Необходимо самостоятельно обработать функцию так как нет преобладающей частоты дискретизации&quot;</span><span class="p">)</span>
+    <span class="n">thereshold_gap</span> <span class="o">=</span> <span class="n">resample_freq</span><span class="o">*</span><span class="n">koef_freq_of_gap</span> <span class="k">if</span> <span class="n">thereshold_gap</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">thereshold_gap</span>
+    <span class="n">gaps</span> <span class="o">=</span> <span class="p">(</span><span class="n">dts</span> <span class="o">&gt;</span> <span class="n">thereshold_gap</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+    <span class="n">dfs</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">gaps</span><span class="p">[</span><span class="n">gaps</span><span class="o">==</span><span class="n">stage</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="k">for</span> <span class="n">stage</span> <span class="ow">in</span> <span class="n">gaps</span><span class="o">.</span><span class="n">unique</span><span class="p">()]</span>
+
+    <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">gaps</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+            <span class="n">tele</span><span class="o">.</span><span class="n">Lower_Moving</span><span class="p">[</span><span class="n">gaps</span><span class="p">[</span><span class="n">gaps</span><span class="o">==</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="n">dfs</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, MIT Licence.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -32,9 +32,15 @@ Time series data **without** TODO
 
 # https://github.com/HendrikStrobelt/LSTMVis КАк у них оформить readme. 
 
-Посмотреть работы:
+https://github.com/TezRomacH/python-package-template 
+
+Посмотреть работы (конкуретны и партнеры):
 
 https://github.com/khundman/telemanom 
+
+https://github.com/signals-dev/Orion 
+
+https://github.com/NetManAIOps/OmniAnomaly 
 
 ## Installation
 

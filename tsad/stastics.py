@@ -11,7 +11,9 @@ from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 
-
+"""
+nan - недопустимы
+"""
 class Hotelling():
     def __init__(self,koef_ucl=3):
         self.koef_ucl = koef_ucl
@@ -46,8 +48,27 @@ class Hotelling():
             plt.title('Аномалии в нормальном режиме')
             plt.xticks(rotation=30)
             plt.legend()
-            plt.show()  
+            plt.show()            
         return anomalies
+    
+    
+    def feature_importances(self,df):
+        if not('ucl' in dir(self)):
+            raise NameError("Fitting must be perfomed")
+        feat_impor = []
+        for col in df:
+            _df = df.copy()
+            _df[:] = 0
+            _df[col] = (df - self.mean)[col]
+            feat_impor.append(pd.Series(((_df.values @ self.inv_cov) @ _df.values.T).diagonal(),
+                                        index=df.index) )
+        feat_impor = pd.concat(feat_impor,1)#.rename(columns=df.columns)
+        # нормировочка 
+        _sum = feat_impor.sum(1).values
+        for col in feat_impor:
+            feat_impor[col] = (feat_impor[col].values / _sum) *100
+        feat_impor.columns = df.columns
+        return feat_impor
     
     def fit_predict(self,df,show_figure=False):
         self.fit(df)

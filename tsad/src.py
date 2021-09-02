@@ -1,3 +1,8 @@
+# косяк, мой подсчет метрик не работает если там нет трушных 1
+"""
+CDSDSDS
+"""
+
 from sklearn.model_selection import train_test_split
 import numpy as np
 import pandas as pd
@@ -9,22 +14,52 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 def ts_train_test_split(df, len_seq, 
                      points_ahead=1, gap=0, shag=1, intersection=True,
                      test_size=None,train_size=None, random_state=None, shuffle=True,stratify=None):
+    """This is a conceptual class representation of a simple BLE device
+    (GATT Server). It is essentially an extended combination of the
+    :class:`bluepy.btle.Peripheral` and :class:`bluepy.btle.ScanEntry` classes
+
+    :param client: A handle to the :class:`simpleble.SimpleBleClient` client
+        object that detected the device
+    :type client: class:`simpleble.SimpleBleClient`
+    :param addr: Device MAC address, defaults to None
+    :type addr: str, optional
+    :param addrType: Device address type - one of ADDR_TYPE_PUBLIC or
+        ADDR_TYPE_RANDOM, defaults to ADDR_TYPE_PUBLIC
+    :type addrType: str, optional
+    :param iface: Bluetooth interface number (0 = /dev/hci0) used for the
+        connection, defaults to 0
+    :type iface: int, optional
+    :param data: A list of tuples (adtype, description, value) containing the
+        AD type code, human-readable description and value for all available
+        advertising data items, defaults to None
+    :type data: list, optional
+    :param rssi: Received Signal Strength Indication for the last received
+        broadcast from the device. This is an integer value measured in dB,
+        where 0 dB is the maximum (theoretical) signal strength, and more
+        negative numbers indicate a weaker signal, defaults to 0
+    :type rssi: int, optional
+    :param connectable: `True` if the device supports connections, and `False`
+        otherwise (typically used for advertising ‘beacons’).,
+        defaults to `False`
+    :type connectable: bool, optional
+    :param updateCount: Integer count of the number of advertising packets
+        received from the device so far, defaults to 0
+    :type updateCount: int, optional
     """
-	df - требование, но если тебе не хочется то просто сделай np.array на выходе и все
-    Разбить временные ряды на трейн и тест
-    len_seq- количество времменых точек в трейн
-    points_ahead - количество времменых точек в прогнозе
-    gap - расстояние между концом трейна и началом теста
-    intersection - если нет, то в выборке нет перескающих множеств (временнызх моментов)
-    shag - через сколько прыгаем
-    train_size - float от 0 до 1
-    
-    return list of dfs
-    
-    
-    
-    
-    """
+
+#    """
+#	df - требование, но если тебе не хочется то просто сделай np.array на выходе и все
+#    Разбить временные ряды на трейн и тест
+#    len_seq- количество времменых точек в трейн
+#    points_ahead - количество времменых точек в прогнозе
+#    gap - расстояние между концом трейна и началом теста
+#    intersection - если нет, то в выборке нет перескающих множеств (временнызх моментов)
+#    shag - через сколько прыгаем
+#    train_size - float от 0 до 1
+#    
+#    return list of dfs
+#    
+#    """
     #TODO требования к входным данным прописать
     #TODO переписать энергоэффективно чтобы было
     #TODO пока временные характеристики int_ами пора бы в pd.TimdDelta
@@ -151,6 +186,7 @@ def split_by_repeated(series,df=None):
     else:
         return result
         
+
 def evaluating_change_point(true, prediction, metric='nab', 
                             numenta_time=None,
                             portion=0.1,
@@ -162,6 +198,7 @@ def evaluating_change_point(true, prediction, metric='nab',
                             hidden_anomalies_mode = True,
                             plot_figure=False,
                             change_point_mode = True,
+                            verbose=True
                             ):
     """
     true - both:
@@ -171,6 +208,9 @@ def evaluating_change_point(true, prediction, metric='nab',
                       list of pandas Series with binary int labels
                       pandas Series with binary int labels
     metric: 'nab', 'binary' (FAR, MAR), 'average_delay'. Default='nab'
+    
+    verbose:  : booleant, default=True.
+                  Если True, то вывод полезной информации в output
     
     <<< For 'nab', 'average_delay' metrics: ...
         portion : float, default=0.1
@@ -182,7 +222,7 @@ def evaluating_change_point(true, prediction, metric='nab',
                 Параметр размещения scoring window относительно аномалии. 
                 'left'  : scoring window будет по левую сторону от аномалии
                 'right' : scoring window будет по правую сторону от аномалии
-                'left'  : scoring window будет по размещено относительно центра
+                'center': scoring window будет по размещено относительно центра
                           аномалии
 
         intersection_mode: 'cut left', 'cut right', 'both'. Defualt='right'
@@ -261,32 +301,53 @@ def evaluating_change_point(true, prediction, metric='nab',
         return f1
     
     def average_delay(detecting_boundaries, prediction):
+        """
+        Возвращает add, missing, all_true_anom
+        
+        detecting_boundaries - где правая граница трушная аномалия, только так
+        """
         
         def single_average_delay(detecting_boundaries, prediction):
             missing = 0
             detectHistory = []
-            for couple in detecting_boundaries:
-                t1 = couple[0]
-                t2 = couple[1]
+            all_true_anom = 0
+            _df_fill_bounds =  pd.DataFrame(np.ones((len(prediction),len(detecting_boundaries)))*np.nan,index=prediction.index)
+            for i in range(len(detecting_boundaries)):
+                t1 = detecting_boundaries[i][0]
+                t2 = detecting_boundaries[i][1]
+                _df_fill_bounds.loc[t1:t2,i]=1
                 if prediction[t1:t2].sum()==0:
                     missing+=1
                 else:
                     detectHistory.append(prediction[prediction ==1][t1:t2].index[0]-t1)
-            return missing, detectHistory
+                all_true_anom+=1
+            # FPs
+                        
+            
+                
+            ts_fp = pd.Series(np.ones(len(prediction)),index=prediction.index)
+            ts_fp.loc[_df_fill_bounds.dropna(how='all').index]=0
+            ts_fp = ts_fp * prediction
+            FP = ts_fp.sum()
+            return missing, detectHistory, FP, all_true_anom
             
         
         if type(prediction) != type(list()):
-            missing, detectHistory = single_average_delay(detecting_boundaries, prediction)
+            missing, detectHistory, FP, all_true_anom = single_average_delay(detecting_boundaries, prediction)
         else:
-            missing, detectHistory = 0, []
+            missing, detectHistory, FP, all_true_anom = 0, [], 0, 0
             for i in range(len(prediction)):
-                missing_, detectHistory_ = single_average_delay(detecting_boundaries[i], prediction[i])
-                missing, detectHistory = missing+missing_, detectHistory+detectHistory_
+                missing_, detectHistory_, FP_, all_true_anom_ = single_average_delay(detecting_boundaries[i], prediction[i])
+                missing, detectHistory, FP, all_true_anom = missing+missing_, detectHistory+detectHistory_, FP+FP_, all_true_anom+all_true_anom_
 
         add = pd.Series(detectHistory).mean()
-        print('Average delay', add)
-        print(f'A number of missed CPs = {missing}')
-        return add
+        if verbose:
+            print('Amount of true anomalies',all_true_anom)
+            print(f'A number of missed CPs = {missing}')
+            print(f'A number of FPs = {FP}')
+            print('Average delay', add)
+            
+        return add, missing, int(FP), all_true_anom
     
     def evaluate_nab(detecting_boundaries, prediction, 
                      table_of_coef=None,
@@ -385,10 +446,14 @@ def evaluating_change_point(true, prediction, metric='nab',
                                                             table_of_coef['A_fp']['Standart'],
                                                             koef=scale_koef),
                                            index = ts.index)
-                    plt.plot(ts_profile)
-                    for pred_anom in prediction.loc[ts.index[0]:ts.index[-1]].index:
-                        plt.axvline(pred_anom,c='r')
-                    plt.show()
+                    plt.plot(ts_profile,label='profile')
+                    ind_ = prediction[prediction==1].loc[ts.index[0]:ts.index[-1]].index
+                    if len(ind_)>0:
+                        for pred_anom in ind_:
+                            plt.axvline(pred_anom,c='r',label='predicted anomaly')
+                        plt.legend()
+                        plt.title(str(i))
+                        plt.show()
                 
             
             Scores, Scores_perfect, Scores_null=[], [], []
@@ -464,7 +529,9 @@ def evaluating_change_point(true, prediction, metric='nab',
         
 
     if not metric=='binary':
-        def single_detecting_boundaries(true, numenta_time, true_1_indexes,
+        if metric=='average_delay':
+            anomaly_window_destenation= 'left'
+        def single_detecting_boundaries(true, prediction, numenta_time, true_1_indexes,
                                         anomaly_window_destenation='left',portion=0.1):
             detecting_boundaries=[]
             td = pd.Timedelta(numenta_time) if numenta_time is not None else \
@@ -478,10 +545,39 @@ def evaluating_change_point(true, prediction, metric='nab',
                     anomaly_window_destenation.append([val - td/2, val + td/2])
                 else:
                     raise('choose anomaly_window_destenation')
+                    
+                    
+            # block for resolving intersection problem:
+            # важно не ошибиться, и всегда следить, чтобы везде правая граница далее
+            # не включалась, иначе будет пересечения окон             
+            new_detecting_boundaries = detecting_boundaries.copy()
+            if new_detecting_boundaries[0][0] < prediction.index[0]:
+                new_detecting_boundaries[0][0] = prediction.index[0]
+            if new_detecting_boundaries[-1][-1] > prediction.index[-1]:
+                new_detecting_boundaries[-1][-1] = prediction.index[-1]
+            for i in range(len(new_detecting_boundaries)-1):
+                if new_detecting_boundaries[i][1] >= new_detecting_boundaries[i+1][0]:
+                    print(f'Intersection of scoring windows{new_detecting_boundaries[i][1], new_detecting_boundaries[i+1][0]}')
+                    if intersection_mode == 'cut left':
+                        new_detecting_boundaries[i][1] = new_detecting_boundaries[i+1][0]
+                    elif intersection_mode == 'cut right':
+                        new_detecting_boundaries[i+1][0] = new_detecting_boundaries[i][1]
+                    elif intersection_mode == 'cut both':
+                        _a  = new_detecting_boundaries[i][1]
+                        new_detecting_boundaries[i][1] = new_detecting_boundaries[i+1][0]
+                        new_detecting_boundaries[i+1][0] = _a
+                    else:
+                        raise("choose the intersection_mode")
+            detecting_boundaries = new_detecting_boundaries.copy()        
+                    
+                    
+                    
+            
             return detecting_boundaries
         
         if type(true) != type(list()):
-            detecting_boundaries = single_detecting_boundaries(true=true, 
+            detecting_boundaries = single_detecting_boundaries(true=true,
+                                                               prediction=prediction, 
                                                                numenta_time=numenta_time, 
                                                                true_1_indexes=true_1_indexes,
                                                                anomaly_window_destenation=anomaly_window_destenation,
@@ -491,32 +587,12 @@ def evaluating_change_point(true, prediction, metric='nab',
             detecting_boundaries=[]
             for i in range(len(true)):
                 detecting_boundaries.append(single_detecting_boundaries(true=true[i], 
+                                                                        prediction=prediction[i],                                                                
                                                                         numenta_time=numenta_time, 
                                                                         true_1_indexes=true_1_indexes[i],
                                                                         anomaly_window_destenation=anomaly_window_destenation,
                                                                         portion=portion))
-        # block for resolving intersection problem:
-        # важно не ошибиться, и всегда следить, чтобы везде правая граница далее
-        # не включалась, иначе будет пересечения окон             
-        new_detecting_boundaries = detecting_boundaries.copy() 
-        if new_detecting_boundaries[0][0] < prediction.index[0]:
-            new_detecting_boundaries[0][0] = prediction.index[0]
-        if new_detecting_boundaries[-1][-1] > prediction.index[-1]:
-            new_detecting_boundaries[-1][-1] = prediction.index[-1]
-        for i in range(len(new_detecting_boundaries)-1):
-            if new_detecting_boundaries[i][1] >= new_detecting_boundaries[i+1][0]:
-                print("Intersection of scoring windows")
-                if intersection_mode == 'cut left':
-                    new_detecting_boundaries[i][1] = new_detecting_boundaries[i+1][0]
-                elif intersection_mode == 'cut right':
-                    new_detecting_boundaries[i+1][0] = new_detecting_boundaries[i][1]
-                elif intersection_mode == 'cut both':
-                    _a  = new_detecting_boundaries[i][1]
-                    new_detecting_boundaries[i][1] = new_detecting_boundaries[i+1][0]
-                    new_detecting_boundaries[i+1][0] = _a
-                else:
-                    raise("choose the intersection_mode")
-        detecting_boundaries = new_detecting_boundaries.copy()
+
 
     if metric== 'nab':
         return evaluate_nab(detecting_boundaries, 
@@ -532,3 +608,32 @@ def evaluating_change_point(true, prediction, metric='nab',
         return average_delay(detecting_boundaries, prediction)
     elif metric== 'binary':
         return binary(true, prediction)
+        
+        
+def df2dfs(df,  # Авторы не рекомендуют так делать,
+            resample_freq = None, # требования
+            thereshold_gap = None, 
+            koef_freq_of_gap = 1.2, # 1.2 проблема которая возникает которую 02.09.2021 я написал в ИИ 
+            plot = True):
+    """
+    Функция которая преообратает raw df до требований к входу на DL_AD
+    """
+    
+    df = df.dropna(how='all').dropna(1,how='all')
+    dts  = df.dropna(how='all').index.to_series().diff()
+    if resample_freq is None:
+        dts_dist = dts.value_counts()
+        if dts_dist[0] > dts_dist[1:].sum():
+            resample_freq  = dts_dist.index[0]
+        else: 
+            print(dts_dist)
+            raise Exception("Необходимо самостоятельно обработать функцию так как нет преобладающей частоты дискретизации")
+    thereshold_gap = resample_freq*koef_freq_of_gap if thereshold_gap is None else thereshold_gap
+    gaps = (dts > thereshold_gap).astype(int).cumsum()
+    dfs = [df.loc[gaps[gaps==stage].index] for stage in gaps.unique()]
+
+    if plot:
+        for i in gaps.unique():
+            tele.Lower_Moving[gaps[gaps==i].index].plot()
+    
+    return dfs

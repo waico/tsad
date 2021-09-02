@@ -1,0 +1,597 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>tsad package &mdash; Time Series Anomaly Detection 0.15 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="tsad.useful package" href="tsad.useful.html" />
+    <link rel="prev" title="tsad" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Time Series Anomaly Detection
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">tsad</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">tsad package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tsad.useful.html">tsad.useful package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-tsad.feature_importance">tsad.feature_importance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-tsad.generate_residuals">tsad.generate_residuals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-tsad.main">tsad.main module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-tsad.models">tsad.models module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-tsad.src">tsad.src module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-tsad.stastics">tsad.stastics module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-tsad">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Time Series Anomaly Detection</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">tsad</a> &raquo;</li>
+        
+      <li>tsad package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/tsad.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tsad-package">
+<h1>tsad package<a class="headerlink" href="#tsad-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tsad.useful.html">tsad.useful package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tsad.useful.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tsad.useful.html#module-tsad.useful.iterators">tsad.useful.iterators module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tsad.useful.html#module-tsad.useful">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-tsad.feature_importance">
+<span id="tsad-feature-importance-module"></span><h2>tsad.feature_importance module<a class="headerlink" href="#module-tsad.feature_importance" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="tsad.feature_importance.feature_importance">
+<code class="sig-prename descclassname">tsad.feature_importance.</code><code class="sig-name descname">feature_importance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">residuals</span></em>, <em class="sig-param"><span class="n">analysis_type</span><span class="o">=</span><span class="default_value">'collective'</span></em>, <em class="sig-param"><span class="n">date_from</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">date_till</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">weigh</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/feature_importance.html#feature_importance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.feature_importance.feature_importance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Feature importance calculation</p>
+<p>residuals : pandas.DataFrame()</p>
+<p>analysis_type : str, “single”/”collective”, “single” by default</p>
+<p>date_from : str in format ‘yyyy-mm-dd HH:MM:SS’, None by default</p>
+<p>date_till : str in format ‘yyyy-mm-dd HH:MM:SS’, None by default</p>
+<dl class="simple">
+<dt>weigh<span class="classifier">boolean, True by default</span></dt><dd><p>If analysis_type == “collective”.</p>
+</dd>
+</dl>
+<p>data : pandas.DataFrame().</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tsad.generate_residuals">
+<span id="tsad-generate-residuals-module"></span><h2>tsad.generate_residuals module<a class="headerlink" href="#module-tsad.generate_residuals" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="tsad.generate_residuals.abs">
+<code class="sig-prename descclassname">tsad.generate_residuals.</code><code class="sig-name descname">abs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">y_pred</span></em>, <em class="sig-param"><span class="n">y_true</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/generate_residuals.html#abs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.generate_residuals.abs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Функция позволяющая получить разницу</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tsad.main">
+<span id="tsad-main-module"></span><h2>tsad.main module<a class="headerlink" href="#module-tsad.main" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="tsad.main.DL_AD">
+<em class="property">class </em><code class="sig-prename descclassname">tsad.main.</code><code class="sig-name descname">DL_AD</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">preproc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">generate_res_func</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">res_analys_alg</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/main.html#DL_AD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.main.DL_AD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="tsad.main.DL_AD.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dfs</span></em>, <em class="sig-param"><span class="n">model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">encod_decode_model</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">criterion</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">optimiser</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">64</span></em>, <em class="sig-param"><span class="n">len_seq</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">points_ahead</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">n_epochs</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">gap</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">shag</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">intersection</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">test_size</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">train_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">shuffle</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">show_progress</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">show_figures</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">best_model_file</span><span class="o">=</span><span class="default_value">'./best_model.pt'</span></em>, <em class="sig-param"><span class="n">stratify</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">Loader</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/main.html#DL_AD.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.main.DL_AD.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Обучение модели как для задачи прогнозирования так и для задачи anomaly
+detection на имеющихся данных. fit = fit_predict_anmaloy</p>
+<dl class="simple">
+<dt>dfs<span class="classifier">{{df*,ts*}, list of {df*,ts*}}</span></dt><dd><p>df*,ts* are pd.core.series.Seriesor or pd.core.frame.DataFrame data type.
+Исходные данные. Данные не долнжны содержать np.nan вовсе, иметь постоянную 
+и одинковую частоту of df.index и при этом не иметь пропусков. Проблему с 
+пропуском решают дробление одно df на list of df.</p>
+</dd>
+<dt>model<span class="classifier">object of torch.nn.Module class, default=models.SimpleLSTM()</span></dt><dd><p>Используемая модель нейронной сети.</p>
+</dd>
+<dt>criterion<span class="classifier">object of torch.nn class, default=nn.MSELoss()</span></dt><dd><p>Критерий подсчета ошибки для оптмизации.</p>
+</dd>
+<dt>optimiser<span class="classifier">tuple = (torch.optim class ,default = torch.optim.Adam,</span></dt><dd><p>dict  (dict of arguments without params models) , default=default)
+Example of optimiser : optimiser=(torch.optim.Adam,{‘lr’:0.001})
+Метод оптимизации нейронной сети и его параметры, указанные в 
+документации к torch.</p>
+</dd>
+<dt>batch_size<span class="classifier">int, default=64</span></dt><dd><p>Размер батча (Число сэмплов по которым усредняется градиент)</p>
+</dd>
+<dt>len_seq<span class="classifier">int, default=10</span></dt><dd><p>Размер окна (количество последовательных точек ряда), на котором
+модель реально работает. По сути аналог порядка в авторегрессии.</p>
+</dd>
+<dt>points_ahead<span class="classifier">int, default=5</span></dt><dd><p>Горизонт прогнозирования.</p>
+</dd>
+<dt>n_epochs<span class="classifier">int, default=100 </span></dt><dd><p>Количество эпох.</p>
+</dd>
+</dl>
+<p>———train_test_split—————————-
+gap :  int, default=0</p>
+<blockquote>
+<div><p>Сколько точек между трейном и тестом. Условно говоря,
+если крайняя точка train а это t, то первая точка теста t + gap +1.
+Параметр создан, чтобы можно было прогнозировать одну точку через большой 
+дополнительный интервал времени.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>shag<span class="classifier">int, default=1.</span></dt><dd><p>Шаг генерации выборки. Если первая точка была t у 1-ого сэмпла трейна,
+то у 2-ого сэмла трейна она будет t + shag, если intersection=True, иначе 
+тоже самое но без пересечений значений ряда.</p>
+</dd>
+<dt>intersection<span class="classifier">bool, default=True</span></dt><dd><p>Наличие значений ряда (одного момента времени) в различных сэмплах выборки.</p>
+</dd>
+<dt>test_size<span class="classifier">float or int, default=None</span></dt><dd><p>If float, should be between 0.0 and 1.0 and represent the proportion
+of the dataset to include in the test split. If int, represents the
+absolute number of test samples. If None, the value is set to the
+complement of the train size. If <code class="docutils literal notranslate"><span class="pre">train_size</span></code> is also None, it will
+be set to 0.25. *
+<a href="#id1"><span class="problematic" id="id2">*</span></a><a class="reference external" href="https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076">https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076</a> 
+Может быть 0, тогда вернет значения X,y</p>
+</dd>
+<dt>train_size<span class="classifier">float or int, default=None</span></dt><dd><p>If float, should be between 0.0 and 1.0 and represent the
+proportion of the dataset to include in the train split. If
+int, represents the absolute number of train samples. If None,
+the value is automatically set to the complement of the test size. *
+<a href="#id3"><span class="problematic" id="id4">*</span></a><a class="reference external" href="https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076">https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076</a></p>
+</dd>
+<dt>random_state<span class="classifier">int, RandomState instance or None, default=None</span></dt><dd><p>Controls the shuffling applied to the data before applying the split.
+Pass an int for reproducible output across multiple function calls.
+See <span class="xref std std-term">Glossary</span>.*
+<a href="#id5"><span class="problematic" id="id6">*</span></a><a class="reference external" href="https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076">https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076</a></p>
+</dd>
+<dt>shuffle<span class="classifier">bool, default=True</span></dt><dd><p>Whether or not to shuffle the data before splitting. If shuffle=False
+then stratify must be None. *</p>
+</dd>
+<dt>show_progress<span class="classifier">bool, default=True</span></dt><dd><p>Показывать или нет прогресс обучения с детализацией по эпохам.</p>
+</dd>
+<dt>show_figures<span class="classifier">bool, default=True</span></dt><dd><p>Показывать или нет результаты решения задачии anomaly detection 
+и кривую трейна и валидации по эпохам.</p>
+</dd>
+<dt>best_model_file<span class="classifier">string, ‘./best_model.pt’</span></dt><dd><p>Путь до файла, где будет хранится лучшие веса модели</p>
+</dd>
+<dt>Loader<span class="classifier">class, default=src.Loader.</span></dt><dd><p>Тип загрузчика, которую будет использовать как итератор в будущем, 
+благодаря которому, есть возможность бить на бачи.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="tsad.main.DL_AD.forecast">
+<code class="sig-name descname">forecast</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">points_ahead</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">Loader</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_figures</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/main.html#DL_AD.forecast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.main.DL_AD.forecast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Прогнозирование временного ряда, в том числе векторного.</p>
+<dl class="simple">
+<dt>df<span class="classifier">pd.core.series.Series or pd.core.frame.DataFrame data type</span></dt><dd><p>Исходные данные. Данные не долнжны содержать np.nan вовсе, иметь постоянную 
+и одинковую частоту of df.index и при этом не иметь пропусков.</p>
+</dd>
+<dt>points_ahead<span class="classifier">int, default=5</span></dt><dd><p>Горизонт прогнозирования.</p>
+</dd>
+<dt>show_figures<span class="classifier">bool, default=True</span></dt><dd><p>Показывать или нет результаты решения задачии anomaly detection 
+и кривую трейна и валидации по эпохам.</p>
+</dd>
+<dt>Loader<span class="classifier">class, default=src.Loader.</span></dt><dd><p>Тип загрузчика, которую будет использовать как итератор в будущем, 
+благодаря которому, есть возможность бить на бачи.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="tsad.main.DL_AD.predict_anomaly">
+<code class="sig-name descname">predict_anomaly</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dfs</span></em>, <em class="sig-param"><span class="n">Loader</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">gap</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">shag</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">intersection</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">train_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">shuffle</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">stratify</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_progress</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">show_figures</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/main.html#DL_AD.predict_anomaly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.main.DL_AD.predict_anomaly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Поиск аномалий в новом наборе данных</p>
+<p>см self.fit() dockstring</p>
+<dl class="simple">
+<dt>anomaly_timestamps<span class="classifier">list of df.index.dtype</span></dt><dd><p>Возвращает список временных меток аномалий</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="tsad.main.df2dfs">
+<code class="sig-prename descclassname">tsad.main.</code><code class="sig-name descname">df2dfs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">resample_freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">thereshold_gap</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">koef_freq_of_gap</span><span class="o">=</span><span class="default_value">1.2</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/main.html#df2dfs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.main.df2dfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Функция которая преообратает raw df до требований к входу на DL_AD</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tsad.models">
+<span id="tsad-models-module"></span><h2>tsad.models module<a class="headerlink" href="#module-tsad.models" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="tsad.models.SimpleLSTM">
+<em class="property">class </em><code class="sig-prename descclassname">tsad.models.</code><code class="sig-name descname">SimpleLSTM</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_features</span></em>, <em class="sig-param"><span class="n">n_hidden</span></em>, <em class="sig-param"><span class="n">n_layers</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">bidirectional</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">dropout</span><span class="o">=</span><span class="default_value">0.5</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/models.html#SimpleLSTM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.models.SimpleLSTM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt id="tsad.models.SimpleLSTM.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sequences</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/models.html#SimpleLSTM.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.models.SimpleLSTM.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="tsad.models.SimpleLSTM.initHidden">
+<code class="sig-name descname">initHidden</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">batch_size</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/models.html#SimpleLSTM.initHidden"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.models.SimpleLSTM.initHidden" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="tsad.models.SimpleLSTM.run_epoch">
+<code class="sig-name descname">run_epoch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterator</span></em>, <em class="sig-param"><span class="n">optimizer</span></em>, <em class="sig-param"><span class="n">criterion</span></em>, <em class="sig-param"><span class="n">points_ahead</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">'train'</span></em>, <em class="sig-param"><span class="n">encod_decode_model</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/models.html#SimpleLSTM.run_epoch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.models.SimpleLSTM.run_epoch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tsad.src">
+<span id="tsad-src-module"></span><h2>tsad.src module<a class="headerlink" href="#module-tsad.src" title="Permalink to this headline">¶</a></h2>
+<p>CDSDSDS</p>
+<dl class="py class">
+<dt id="tsad.src.Loader">
+<em class="property">class </em><code class="sig-prename descclassname">tsad.src.</code><code class="sig-name descname">Loader</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">batch_size</span></em>, <em class="sig-param"><span class="n">shuffle</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/src.html#Loader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.src.Loader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tsad.src.df2dfs">
+<code class="sig-prename descclassname">tsad.src.</code><code class="sig-name descname">df2dfs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">resample_freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">thereshold_gap</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">koef_freq_of_gap</span><span class="o">=</span><span class="default_value">1.2</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/src.html#df2dfs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.src.df2dfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Функция которая преообратает raw df до требований к входу на DL_AD</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tsad.src.evaluating_change_point">
+<code class="sig-prename descclassname">tsad.src.</code><code class="sig-name descname">evaluating_change_point</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">true</span></em>, <em class="sig-param"><span class="n">prediction</span></em>, <em class="sig-param"><span class="n">metric</span><span class="o">=</span><span class="default_value">'nab'</span></em>, <em class="sig-param"><span class="n">numenta_time</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">portion</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">anomaly_window_destenation</span><span class="o">=</span><span class="default_value">'left'</span></em>, <em class="sig-param"><span class="n">intersection_mode</span><span class="o">=</span><span class="default_value">'cut left'</span></em>, <em class="sig-param"><span class="n">table_of_coef</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale_func</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">scale_koef</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">hidden_anomalies_mode</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">plot_figure</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">change_point_mode</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/src.html#evaluating_change_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.src.evaluating_change_point" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>true - both:</dt><dd><p>list of pandas Series with binary int labels
+pandas Series with binary int labels</p>
+</dd>
+<dt>prediction - both:</dt><dd><p>list of pandas Series with binary int labels
+pandas Series with binary int labels</p>
+</dd>
+</dl>
+<p>metric: ‘nab’, ‘binary’ (FAR, MAR), ‘average_delay’. Default=’nab’</p>
+<dl>
+<dt>verbose:<span class="classifier">booleant, default=True.</span></dt><dd><p>Если True, то вывод полезной информации в output</p>
+</dd>
+<dt>&lt;&lt;&lt; For ‘nab’, ‘average_delay’ metrics: …</dt><dd><dl>
+<dt>portion<span class="classifier">float, default=0.1</span></dt><dd><p>Параметр нужен, если numenta_time=None
+Ширина scoring window в этом случае равна portion от 
+ширины всей выборки деленной на количество real CPs в 
+этой выборке</p>
+</dd>
+<dt>anomaly_window_destenation: ‘left’, ‘right’, ‘center’. Defualt=’right’</dt><dd><p>Параметр размещения scoring window относительно аномалии. 
+‘left’  : scoring window будет по левую сторону от аномалии
+‘right’ : scoring window будет по правую сторону от аномалии
+‘center’: scoring window будет по размещено относительно центра</p>
+<blockquote>
+<div><p>аномалии</p>
+</div></blockquote>
+</dd>
+<dt>intersection_mode: ‘cut left’, ‘cut right’, ‘both’. Defualt=’right’</dt><dd><p>Параметр будет задействован, в случае, если scoring windows
+пересекаются, что в общем случае нежалательно, и желательно
+требует иного подхода, чем просто обрезки scoring window
+c помощью данного параметра.
+‘cut left’  : обрежет пересакающуюся часть левого окна
+‘cut right’ : обрежет пересакающуюся часть правого окна
+‘both’  : обрежет пересакающуюся часть и левого и правого окна</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>… For ‘nab’, ‘average_delay’ metrics&gt;&gt;&gt; 
+&lt;&lt;&lt; For ‘nab’ metric:</p>
+<blockquote>
+<div><dl>
+<dt>table_of_coef: pd.DataFrame of specific form. See bellow. </dt><dd><p>Application profiles of NAB metric.If Defaut is None:  
+table_of_coef = pd.DataFrame([[1.0,-0.11,1.0,-1.0],</p>
+<blockquote>
+<div><p>[1.0,-0.22,1.0,-1.0],
+[1.0,-0.11,1.0,-2.0]])</p>
+</div></blockquote>
+<p>table_of_coef.index = [‘Standart’,’LowFP’,’LowFN’]
+table_of_coef.index.name = “Metric”
+table_of_coef.columns = [‘A_tp’,’A_fp’,’A_tn’,’A_fn’]</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl>
+<dt>scale_func<span class="classifier">“default” of “improved”. Defualt=”default”.</span></dt><dd><p>Scoring function in NAB metric.
+‘default’  : standart NAB scoring function 
+‘improved’ : Our function for resolving disadvantages</p>
+<blockquote>
+<div><p>of standart NAB scoring function</p>
+</div></blockquote>
+</dd>
+<dt>scale_koef<span class="classifier">float &gt; 0. Defualt=1.0. </span></dt><dd><p>Коэффициент сглаживания. Чем меньше он, тем более
+сглажена scoring function</p>
+</dd>
+<dt>hidden_anomalies_mode<span class="classifier">boolean, default=True.</span></dt><dd><p>True : тогда слева значение Scoring function равно Atp, а справа Afp
+False: тогда слева значение Scoring function равно Afp, а справа Atp</p>
+</dd>
+<dt>plot_figure<span class="classifier">booleant, default=False.</span></dt><dd><p>Если True, то прорисовка score fuction, например, 
+чтобы откалибровать scale_koef</p>
+</dd>
+<dt>change_point_mode<span class="classifier">boolean, default=True.</span></dt><dd><p>Если False, тогда берется не только первая точка прогноза в 
+scoring window, а все. При этом взешиваются, суммируются и нормируется так,
+что по сути можно просто смотреть на рез-тат.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tsad.src.split_by_repeated">
+<code class="sig-prename descclassname">tsad.src.</code><code class="sig-name descname">split_by_repeated</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series</span></em>, <em class="sig-param"><span class="n">df</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/src.html#split_by_repeated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.src.split_by_repeated" title="Permalink to this definition">¶</a></dt>
+<dd><p>retrun dict with lists of ts whwre keys is unique values</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tsad.src.ts_train_test_split">
+<code class="sig-prename descclassname">tsad.src.</code><code class="sig-name descname">ts_train_test_split</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">len_seq</span></em>, <em class="sig-param"><span class="n">points_ahead</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">gap</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">shag</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">intersection</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">test_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">train_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">shuffle</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">stratify</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/src.html#ts_train_test_split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.src.ts_train_test_split" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a conceptual class representation of a simple BLE device
+(GATT Server). It is essentially an extended combination of the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">bluepy.btle.Peripheral</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">bluepy.btle.ScanEntry</span></code> classes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (class:<cite>simpleble.SimpleBleClient</cite>) – A handle to the <code class="xref py py-class docutils literal notranslate"><span class="pre">simpleble.SimpleBleClient</span></code> client
+object that detected the device</p></li>
+<li><p><strong>addr</strong> (<em>str</em><em>, </em><em>optional</em>) – Device MAC address, defaults to None</p></li>
+<li><p><strong>addrType</strong> (<em>str</em><em>, </em><em>optional</em>) – Device address type - one of ADDR_TYPE_PUBLIC or
+ADDR_TYPE_RANDOM, defaults to ADDR_TYPE_PUBLIC</p></li>
+<li><p><strong>iface</strong> (<em>int</em><em>, </em><em>optional</em>) – Bluetooth interface number (0 = /dev/hci0) used for the
+connection, defaults to 0</p></li>
+<li><p><strong>data</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of tuples (adtype, description, value) containing the
+AD type code, human-readable description and value for all available
+advertising data items, defaults to None</p></li>
+<li><p><strong>rssi</strong> (<em>int</em><em>, </em><em>optional</em>) – Received Signal Strength Indication for the last received
+broadcast from the device. This is an integer value measured in dB,
+where 0 dB is the maximum (theoretical) signal strength, and more
+negative numbers indicate a weaker signal, defaults to 0</p></li>
+<li><p><strong>connectable</strong> (<em>bool</em><em>, </em><em>optional</em>) – <cite>True</cite> if the device supports connections, and <cite>False</cite>
+otherwise (typically used for advertising ‘beacons’).,
+defaults to <cite>False</cite></p></li>
+<li><p><strong>updateCount</strong> (<em>int</em><em>, </em><em>optional</em>) – Integer count of the number of advertising packets
+received from the device so far, defaults to 0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tsad.stastics">
+<span id="tsad-stastics-module"></span><h2>tsad.stastics module<a class="headerlink" href="#module-tsad.stastics" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="tsad.stastics.Hotelling">
+<em class="property">class </em><code class="sig-prename descclassname">tsad.stastics.</code><code class="sig-name descname">Hotelling</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">koef_ucl</span><span class="o">=</span><span class="default_value">3</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/stastics.html#Hotelling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.stastics.Hotelling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="tsad.stastics.Hotelling.feature_importances">
+<code class="sig-name descname">feature_importances</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/stastics.html#Hotelling.feature_importances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.stastics.Hotelling.feature_importances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="tsad.stastics.Hotelling.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/stastics.html#Hotelling.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.stastics.Hotelling.fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="tsad.stastics.Hotelling.fit_predict">
+<code class="sig-name descname">fit_predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">show_figure</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/stastics.html#Hotelling.fit_predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.stastics.Hotelling.fit_predict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="tsad.stastics.Hotelling.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">show_figure</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/stastics.html#Hotelling.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tsad.stastics.Hotelling.predict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tsad">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-tsad" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="tsad.useful.html" class="btn btn-neutral float-right" title="tsad.useful package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="modules.html" class="btn btn-neutral float-left" title="tsad" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, MIT Licence.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
