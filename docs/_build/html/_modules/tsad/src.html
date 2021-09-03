@@ -7,12 +7,16 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>tsad.src &mdash; Time Series Anomaly Detection 0.15 documentation</title>
+  <title>tsad.src &mdash; sklearn-template 12 documentation</title>
   
 
   
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/project-template.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-rendered-html.css" type="text/css" />
 
   
   
@@ -52,7 +56,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> Time Series Anomaly Detection
+            <a href="../../index.html" class="icon icon-home"> sklearn-template
           
 
           
@@ -60,6 +64,10 @@
 
           
             
+            
+              <div class="version">
+                12
+              </div>
             
           
 
@@ -83,7 +91,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Quick Start with the project-template</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">tsad</a></li>
 </ul>
@@ -101,7 +113,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Time Series Anomaly Detection</a>
+          <a href="../../index.html">sklearn-template</a>
         
       </nav>
 
@@ -168,37 +180,39 @@
 <div class="viewcode-block" id="ts_train_test_split"><a class="viewcode-back" href="../../tsad.html#tsad.src.ts_train_test_split">[docs]</a><span class="k">def</span> <span class="nf">ts_train_test_split</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">len_seq</span><span class="p">,</span> 
                      <span class="n">points_ahead</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">shag</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">intersection</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                      <span class="n">test_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">train_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">stratify</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;This is a conceptual class representation of a simple BLE device</span>
-<span class="sd">    (GATT Server). It is essentially an extended combination of the</span>
-<span class="sd">    :class:`bluepy.btle.Peripheral` and :class:`bluepy.btle.ScanEntry` classes</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Функция которая разбивает временной ряд на трейн и тест выборки </span>
+<span class="sd">    </span>
+<span class="sd">    Временной ряд здесь это вообще вся история</span>
+<span class="sd">    Функционал позволяет разбивать ....</span>
 
-<span class="sd">    :param client: A handle to the :class:`simpleble.SimpleBleClient` client</span>
-<span class="sd">        object that detected the device</span>
-<span class="sd">    :type client: class:`simpleble.SimpleBleClient`</span>
-<span class="sd">    :param addr: Device MAC address, defaults to None</span>
-<span class="sd">    :type addr: str, optional</span>
-<span class="sd">    :param addrType: Device address type - one of ADDR_TYPE_PUBLIC or</span>
-<span class="sd">        ADDR_TYPE_RANDOM, defaults to ADDR_TYPE_PUBLIC</span>
-<span class="sd">    :type addrType: str, optional</span>
-<span class="sd">    :param iface: Bluetooth interface number (0 = /dev/hci0) used for the</span>
-<span class="sd">        connection, defaults to 0</span>
-<span class="sd">    :type iface: int, optional</span>
-<span class="sd">    :param data: A list of tuples (adtype, description, value) containing the</span>
-<span class="sd">        AD type code, human-readable description and value for all available</span>
-<span class="sd">        advertising data items, defaults to None</span>
-<span class="sd">    :type data: list, optional</span>
-<span class="sd">    :param rssi: Received Signal Strength Indication for the last received</span>
-<span class="sd">        broadcast from the device. This is an integer value measured in dB,</span>
-<span class="sd">        where 0 dB is the maximum (theoretical) signal strength, and more</span>
-<span class="sd">        negative numbers indicate a weaker signal, defaults to 0</span>
-<span class="sd">    :type rssi: int, optional</span>
-<span class="sd">    :param connectable: `True` if the device supports connections, and `False`</span>
-<span class="sd">        otherwise (typically used for advertising ‘beacons’).,</span>
-<span class="sd">        defaults to `False`</span>
-<span class="sd">    :type connectable: bool, optional</span>
-<span class="sd">    :param updateCount: Integer count of the number of advertising packets</span>
-<span class="sd">        received from the device so far, defaults to 0</span>
-<span class="sd">    :type updateCount: int, optional</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df : pd.DataFrame</span>
+<span class="sd">        Array of shape (n_samples, n_features) with timestamp index.</span>
+<span class="sd">    len_seq : int </span>
+<span class="sd">        Длина </span>
+<span class="sd">    flag : bool (optional, default=True)</span>
+<span class="sd">        If true, then do one thing.</span>
+<span class="sd">        If false, then do another thing.</span>
+<span class="sd">    f : callable (optional, default=None)</span>
+<span class="sd">        Call-back function.  If not specified, then some other function</span>
+<span class="sd">        will be used</span>
+<span class="sd">    **kwargs :</span>
+<span class="sd">        Additional keyword arguments will be passed to name_of_function</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    z : ndarray</span>
+<span class="sd">        result of shape (n_samples,).  Note that here we use &quot;ndarray&quot; rather</span>
+<span class="sd">        than &quot;array_like&quot;, because we assure we&#39;ll return a numpy array.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; X = np.ones((4, 3))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.ones(4)</span>
+<span class="sd">    &gt;&gt;&gt; sklearn_template(X, y)</span>
+<span class="sd">    (z, xmin, xmax)  # this should match the actual output</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <span class="c1">#    &quot;&quot;&quot;</span>
@@ -791,6 +805,8 @@
             <span class="n">tele</span><span class="o">.</span><span class="n">Lower_Moving</span><span class="p">[</span><span class="n">gaps</span><span class="p">[</span><span class="n">gaps</span><span class="o">==</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
     
     <span class="k">return</span> <span class="n">dfs</span></div>
+    
+    
 </pre></div>
 
            </div>
@@ -802,7 +818,7 @@
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2021, MIT Licence.
+        &#169; Copyright 2016, Vighnesh Birodkar.
 
     </p>
   </div>
