@@ -30,6 +30,16 @@ Actually, the possibility of the module allows you to use any own forecasting al
 
 Time series data **without** TODO
 
+## Documentation
+
+Documentation you can find here:
+
+https://tsad.readthedocs.io/
+
+http://tsad.waico.ru/ 
+
+
+
 # https://github.com/HendrikStrobelt/LSTMVis КАк у них оформить readme. 
 
 https://github.com/TezRomacH/python-package-template 
@@ -57,8 +67,5 @@ pip install -U tsad
 * scikit-learn>=0.24.1
 * torch==1.5.0
 
-## Documentation
 
-Documentation you can find here:
 
-http://tsad.waico.ru/ 
