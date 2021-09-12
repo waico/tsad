@@ -27,14 +27,22 @@ class Hotelling():
             except:
                 self.inv_cov =  np.linalg.pinv(np.cov(df.T))
         self.mean = df.mean()
-        statistic  = (((df - self.mean).values @ self.inv_cov) @ (df - self.mean).values.T).diagonal()
+        # try так как, когда много считает он в шоке. 
+        try: 
+            statistic  = (((df - self.mean).values @ self.inv_cov) @ (df - self.mean).values.T).diagonal()
+        except:
+            statistic = df.apply(lambda x: (((x - self.mean).values @ self.inv_cov) @ (x - self.mean).values.T) ,1 )
+        
         self.ucl = statistic.mean()+self.koef_ucl*statistic.std()
         self.lcl = None
     
     def predict(self,df,show_figure=False):
-        self.statistic  = pd.Series((((df - self.mean).values @ self.inv_cov) @ (df - self.mean).values.T).diagonal(),
-                                 index=df.index
-                                )
+        try: 
+            statistic  = (((df - self.mean).values @ self.inv_cov) @ (df - self.mean).values.T).diagonal()
+        except:
+            statistic = df.apply(lambda x: (((x - self.mean).values @ self.inv_cov) @ (x - self.mean).values.T) ,1 )
+    
+        self.statistic  = pd.Series(statistic,index=df.index)
         anomalies = self.statistic[self.statistic>=self.ucl].index
         if show_figure:
             plt.figure()
@@ -60,8 +68,13 @@ class Hotelling():
             _df = df.copy()
             _df[:] = 0
             _df[col] = (df - self.mean)[col]
-            feat_impor.append(pd.Series(((_df.values @ self.inv_cov) @ _df.values.T).diagonal(),
-                                        index=df.index) )
+            try:
+                feat_impor.append(pd.Series(((_df.values @ self.inv_cov) @ _df.values.T).diagonal(),
+                                            index=df.index) )                      
+            except:
+                feat_impor.append(pd.Series(_df.apply(lambda x: ((x.values @ self.inv_cov) @ x.values.T) ,1 ),
+                                            index=df.index) )
+            
         feat_impor = pd.concat(feat_impor,1)#.rename(columns=df.columns)
         # нормировочка 
         _sum = feat_impor.sum(1).values

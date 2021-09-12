@@ -15,11 +15,54 @@ from . import stastics
 
 
 class DL_AD():
-    # TODO требования к df, len(df.index.to_series().diff.dropna().unique())>1  , упорядоченность
+    """        
+    Пайплайн Time Series Anomaly Detection based on 
+    SOTA deep learning forecasting algorithms.
+    
+    Данный пайплайн избавит вас от проблем написания кода для: \n
+    1) формирование выборок для подачи в sequence модели \n
+    2) обучения моделей \n
+    3) поиска аномалий в невязках \n
+    
+    Данный пайплайн позволяет: \n
+    1) пронгозировать временные ряды, в том числе многомерные. \n
+    2) вычислять невязку между прогнозом и настоящими значениями \n
+    3) анализировать невязку, и возращать разметку аномалиями \n
+    
+    Parameters
+    ----------
+    preproc : object, default = sklearn.preprocessing.MinMaxScaler()
+        Объект предобратки значений временного ряда.
+        Требования к классу по методами атрибутам одинаковы с default.
+    
+    generate_res_func : func, default = generate_residuals.abs
+        Функция генерация невязки. На вход y_pred, y_true. В default это
+        абсолютная разница значений. Требования к функциям описаны в 
+        generate_residuals.py. 
+        
+    res_analys_alg : object, default=stastics.Hotelling().
+        Объект поиска аномалий в остатках. В default это
+        статистика Хоттелинга.Требования к классам описаны в 
+        generate_residuals.py. 
+        
+    
+    Attributes
+    ----------
+    
+    
+    Return 
+    ----------
+    object : object Объект этого класса DL_AD
 
-# -----------------------------------------------------------------------------------------
-#     Формирование вспомогательных функций
-# -----------------------------------------------------------------------------------------
+    References
+    ----------
+    
+    Links to the papers 
+
+    Examples
+    --------
+    https://github.com/waico/tsad/tree/main/examples 
+    """
     def _get_Train_Test_sets(self,dfs,len_seq,
                              points_ahead,
                              gap,
@@ -44,7 +87,7 @@ class DL_AD():
                 self._init_preproc = False
             else:
                 new_df = pd.DataFrame(self.preproc.transform(df),index=df.index,columns=df.columns)
-            assert len_seq + points_ahead + gap + shag-1 <= len(df)
+            assert len_seq + points_ahead + gap -1 <= len(df)                       
             X_train, X_test, y_train, y_test= src.ts_train_test_split(df = new_df,
                                                                       len_seq=len_seq,
                                                                       points_ahead=points_ahead,
@@ -71,7 +114,7 @@ class DL_AD():
             for df in dfs:
                 if ((type(df) == pd.core.series.Series) | (type(df) == pd.core.frame.DataFrame))==False:
                     raise NameError('Type of dfs is unsupported') 
-                if not (len_seq + points_ahead + gap + shag-1 <= len(df)):
+                if not (len_seq + points_ahead + gap + 1 <= len(df)):
                      _k+=1
                      continue
                 
@@ -91,7 +134,7 @@ class DL_AD():
                 y_train += _y_train
                 y_test += _y_test
             
-            print(f'Пропущено {_k} датастов, из-за того что saples слишком малов в датасете. (len_seq + points_ahead + gap + shag-1 <= len(df))')
+            print(f'Пропущено {_k} датастов, из-за того что saples слишком малов в датасете. (len_seq + points_ahead + gap -1 <= len(df))')
 
         else:
             raise NameError('Type of dfs is unsupported')  
@@ -152,87 +195,7 @@ class DL_AD():
                  res_analys_alg=None,
                  
                 ):
-        """
-        Данный класс предназначен для прогнозирования временный рядов
-        и обнаружение аномалий во временных рядах на основе алгоритмов
-        глубокого обучения. 
-        
-        Преимущества:
-        Недостатки:
-        Read more in the :ref:`User Guide <svm_classification>`.
-        
-        Parameters
-        ----------
-        preproc : object, default=sklearn.preprocessing.MinMaxScaler()
-            Данный объект для предобратки значений временного ряда.
-            Требования к классу по методами атрибутам одинаковы с default.
-        
-        generate_res_func : func, default= generate_residuals.abs
-            Функция генерация остатков имея y_pred, y_true. В default это
-            абсолютная разница значений. Требования к функциям описаны в 
-            generate_residuals.py. 
-            
-        res_analys_alg : object, default=stastics.Hotelling().
-            Объект поиска аномалий в остатках. В default это
-            статистика Хоттелинга.Требования к классам описаны в 
-            generate_residuals.py. 
-            
-                
-        
-        Attributes
-        ----------
-        
-        
-        Return 
-        ----------
-        object : object Объект этого класса DL_AD
-        
-            
-        See Also ----------------------Next TODO- -------------
-        --------
-        SVC : About
-
-        Notes
-        -----
-        The underlying C implementation uses a random number generator to
-        select features when fitting the model. It is thus not uncommon
-        to have slightly different results for the same input data. If
-        that happens, try with a smaller ``tol`` parameter.
-
-        The underlying implementation, liblinear, uses a sparse internal
-        representation for the data that will incur a memory copy.
-
-        Predict output may not match that of standalone liblinear in certain
-        cases. See :ref:`differences from liblinear <liblinear_differences>`
-        in the narrative documentation.
-
-        References
-        ----------
-        
-        Links to the papers 
-
-        Examples
-        --------
-        >>> from sklearn.svm import LinearSVC
-        >>> from sklearn.pipeline import make_pipeline
-        >>> from sklearn.preprocessing import StandardScaler
-        >>> from sklearn.datasets import make_classification
-        >>> X, y = make_classification(n_features=4, random_state=0)
-        >>> clf = make_pipeline(StandardScaler(),
-        ...                     LinearSVC(random_state=0, tol=1e-5))
-        >>> clf.fit(X, y)
-        Pipeline(steps=[('standardscaler', StandardScaler()),
-                        ('linearsvc', LinearSVC(random_state=0, tol=1e-05))])
-
-        >>> print(clf.named_steps['linearsvc'].coef_)
-        [[0.141...   0.526... 0.679... 0.493...]]
-
-        >>> print(clf.named_steps['linearsvc'].intercept_)
-        [0.1693...]
-        >>> print(clf.predict([[0, 0, 0, 0]]))
-            
-         
-        """
+       
         
         self.preproc = MinMaxScaler() if preproc is None else preproc
         self.generate_res_func = generate_residuals.abs if generate_res_func is None else generate_res_func
@@ -302,69 +265,71 @@ class DL_AD():
         n_epochs :  int, default=100 
             Количество эпох.
         
-        ---------train_test_split----------------------------
-        gap :  int, default=0
-            Сколько точек между трейном и тестом. Условно говоря,
-            если крайняя точка train а это t, то первая точка теста t + gap +1.
-            Параметр создан, чтобы можно было прогнозировать одну точку через большой 
-            дополнительный интервал времени. 
+        >>> train_test_split vars
         
-        shag :  int, default=1.
-            Шаг генерации выборки. Если первая точка была t у 1-ого сэмпла трейна,
-            то у 2-ого сэмла трейна она будет t + shag, если intersection=True, иначе 
-            тоже самое но без пересечений значений ряда. 
-        
-        intersection :  bool, default=True
-            Наличие значений ряда (одного момента времени) в различных сэмплах выборки. 
-        
-        test_size : float or int, default=None
-            If float, should be between 0.0 and 1.0 and represent the proportion
-            of the dataset to include in the test split. If int, represents the
-            absolute number of test samples. If None, the value is set to the
-            complement of the train size. If ``train_size`` is also None, it will
-            be set to 0.25. *
-            *https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076 
-            Может быть 0, тогда вернет значения X,y
-        
-        train_size : float or int, default=None
-            If float, should be between 0.0 and 1.0 and represent the
-            proportion of the dataset to include in the train split. If
-            int, represents the absolute number of train samples. If None,
-            the value is automatically set to the complement of the test size. *
-            *https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076
-        
-        random_state : int, RandomState instance or None, default=None
-            Controls the shuffling applied to the data before applying the split.
-            Pass an int for reproducible output across multiple function calls.
-            See :term:`Glossary <random_state>`.*
-            *https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076
+            gap :  int, default=0
+                Сколько точек между трейном и тестом. Условно говоря,
+                если крайняя точка train а это t, то первая точка теста t + gap +1.
+                Параметр создан, чтобы можно было прогнозировать одну точку через большой 
+                дополнительный интервал времени. 
             
+            shag :  int, default=1.
+                Шаг генерации выборки. Если первая точка была t у 1-ого сэмпла трейна,
+                то у 2-ого сэмла трейна она будет t + shag, если intersection=True, иначе 
+                тоже самое но без пересечений значений ряда. 
         
-        shuffle : bool, default=True
-            Whether or not to shuffle the data before splitting. If shuffle=False
-            then stratify must be None. *
-        
-        show_progress : bool, default=True
-            Показывать или нет прогресс обучения с детализацией по эпохам. 
-
-        
-        show_figures : bool, default=True
-            Показывать или нет результаты решения задачии anomaly detection 
-            и кривую трейна и валидации по эпохам. 
-        
-        
-        best_model_file : string, './best_model.pt'
-            Путь до файла, где будет хранится лучшие веса модели
-        
-        Loader : class, default=src.Loader.
-            Тип загрузчика, которую будет использовать как итератор в будущем, 
-            благодаря которому, есть возможность бить на бачи.
-        
+            intersection :  bool, default=True
+                Наличие значений ряда (одного момента времени) в различных сэмплах выборки. 
+            
+            test_size : float or int, default=None
+                If float, should be between 0.0 and 1.0 and represent the proportion
+                of the dataset to include in the test split. If int, represents the
+                absolute number of test samples. If None, the value is set to the
+                complement of the train size. If ``train_size`` is also None, it will
+                be set to 0.25. *
+                *https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076 
+                Может быть 0, тогда вернет значения X,y
+            
+            train_size : float or int, default=None
+                If float, should be between 0.0 and 1.0 and represent the
+                proportion of the dataset to include in the train split. If
+                int, represents the absolute number of train samples. If None,
+                the value is automatically set to the complement of the test size. *
+                *https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076
+            
+            random_state : int, RandomState instance or None, default=None
+                Controls the shuffling applied to the data before applying the split.
+                Pass an int for reproducible output across multiple function calls.
+                See :term:`Glossary <random_state>`.*
+                *https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076
                 
+            
+            shuffle : bool, default=True
+                Whether or not to shuffle the data before splitting. If shuffle=False
+                then stratify must be None. *
+            
+            show_progress : bool, default=True
+                Показывать или нет прогресс обучения с детализацией по эпохам. 
+
+            
+            show_figures : bool, default=True
+                Показывать или нет результаты решения задачии anomaly detection 
+                и кривую трейна и валидации по эпохам. 
+            
+            
+            best_model_file : string, './best_model.pt'
+                Путь до файла, где будет хранится лучшие веса модели
+            
+            Loader : class, default=src.Loader.
+                Тип загрузчика, которую будет использовать как итератор в будущем, 
+                благодаря которому, есть возможность бить на бачи.
         
         Attributes
         ----------
 
+        Return 
+        ----------
+        list of pd.datetime anomalies on initial dataset
         """
         self._init_preproc=True # это кастыль для _get_Train_Test_sets
         self.points_ahead = points_ahead
@@ -375,12 +340,6 @@ class DL_AD():
         self.encod_decode_model = encod_decode_model
         
          
-            
-                
-        
-        
-        
-        
 
 # -----------------------------------------------------------------------------------------
 #     Формирование train_iterator и val_iteraror
@@ -626,37 +585,6 @@ class DL_AD():
             plt.show()
         
         return y_pred
-
-
-
-def df2dfs(df,  # Авторы не рекомендуют так делать,
-            resample_freq = None, # требования
-            thereshold_gap = None, 
-            koef_freq_of_gap = 1.2, # 1.2 проблема которая возникает которую 02.09.2021 я написал в ИИ 
-            plot = True):
-    """
-    Функция которая преообратает raw df до требований к входу на DL_AD
-    """
-    
-    df = df.dropna(how='all').dropna(1,how='all')
-    dts  = df.dropna(how='all').index.to_series().diff()
-    if resample_freq is None:
-        dts_dist = dts.value_counts()
-        if dts_dist[0] > dts_dist[1:].sum():
-            resample_freq  = dts_dist.index[0]
-        else: 
-            print(dts_dist)
-            raise Exception("Необходимо самостоятельно обработать функцию так как нет преобладающей частоты дискретизации")
-    thereshold_gap = resample_freq*koef_freq_of_gap if thereshold_gap is None else thereshold_gap
-    gaps = (dts > thereshold_gap).astype(int).cumsum()
-    dfs = [df.loc[gaps[gaps==stage].index] for stage in gaps.unique()]
-
-    if plot:
-        for i in gaps.unique():
-            tele.Lower_Moving[gaps[gaps==i].index].plot()
-    
-    return dfs
-
 
     
  

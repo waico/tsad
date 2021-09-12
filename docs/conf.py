@@ -77,15 +77,15 @@ plot_gallery = True
 master_doc = 'index'
 
 # General information about the project.
-project = u'sklearn-template'
-copyright = u'2016, Vighnesh Birodkar'
+project = u'Time Series Anomaly Detection'
+copyright = u'2021, V. Kozitsin'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-__version__ = "12"
+__version__ = "0.15"
 version = __version__
 # The full version, including alpha/beta/rc tags.
 release = __version__

@@ -66,8 +66,8 @@ def ts_train_test_split(df, len_seq,
     #TODO переписать энергоэффективно чтобы было
     #TODO пока временные характеристики int_ами пора бы в pd.TimdDelta
     # нет индексов 
-    assert len_seq + points_ahead + gap + shag-1 <= len(df)
-    how='seq to seq'
+    assert len_seq + points_ahead + gap + 1 <= len(df)
+    how='seq to seq'   
 
 # -------------------------------------------------------  
 #             
@@ -85,7 +85,7 @@ def ts_train_test_split(df, len_seq,
             return x_start + shag
     else:
         def compute_new_x_start(x_start,y_end,shag):
-            y_end + shag
+            return y_end + shag
     
     X = []
     y = []
@@ -99,11 +99,13 @@ def ts_train_test_split(df, len_seq,
         y_end = y_start + points_ahead
           
     
-    if test_size==0:
+    if (test_size==0) | (len(X)==1):
         indices = np.array(range(len(X)))
         #             np.random.seed(random_state)
         if shuffle:
+            print(indices)
             np.random.shuffle(indices)
+            print(indices)
         X = [X[i] for i in indices]
         y = [y[i] for i in indices]
         return X,[],y,[]
@@ -203,6 +205,7 @@ def evaluating_change_point(true, prediction, metric='nab',
                             verbose=True
                             ):
     """
+    
     true - both:
                 list of pandas Series with binary int labels
                 pandas Series with binary int labels
@@ -616,9 +619,46 @@ def df2dfs(df,  # Авторы не рекомендуют так делать,
             resample_freq = None, # требования
             thereshold_gap = None, 
             koef_freq_of_gap = 1.2, # 1.2 проблема которая возникает которую 02.09.2021 я написал в ИИ 
-            plot = True):
+            plot = True,
+            col = None):
     """
-    Функция которая преообратает raw df до требований к входу на DL_AD
+    Функция которая преообратает raw df до требований к входу на DL_AD:
+    
+    то есть разбивает df на лист of dfs by gaps 
+    
+    Не ресемлирует так как это тяжелая задача, но если частота реже чем 
+    koef_freq_of_gap of thereshold_gap то это воспринимается как пропуск. 
+    Основной посыл: если сигнал приходит чаще, то он не уползает сильно, 
+    а значит не приводит к аномалии, а если редко то приводит, поэтому воспри-
+    нимается как пропуск. 
+    
+    Parameters
+    ----------   
+    df : pd.DataFrame
+        Исходный временной ряд полностью за всю историю   
+        
+    resample_freq: pd.TimeDelta (optional, default=None)
+        Частота дискретизации временного ряда. 
+        Если default то самая частая частота дискретизации. При этом, 
+        если нет выраженной частоты вылетит ошибка. 
+    thereshold_gap : pd.TimeDelta (optional, default=None)
+        Порог периода, превышая который функция будет воспринимать
+        данный период как пропуск. 
+    koef_freq_of_gap : float or int (optional if thereshold_gap==None,
+        default=1.2)  
+        thereshold_gap = koef_freq_of_gap * resample_freq
+    plot : bool (optional, default=True)
+        If true, then отрисуется нарезка
+        If false, then не отрисуется нарезка   
+    col : int of str (optional, default=True)
+        Название или номер колонки для отрисовки
+        Если None первая колонка
+
+    Returns
+    -------
+    dfs : list of pd.DataFrame
+        Список времменных рядов без пропусков с относительно стабильной 
+        частотой дискретизации. 
     """
     
     df = df.dropna(how='all').dropna(1,how='all')
@@ -635,9 +675,14 @@ def df2dfs(df,  # Авторы не рекомендуют так делать,
     dfs = [df.loc[gaps[gaps==stage].index] for stage in gaps.unique()]
 
     if plot:
-        for i in gaps.unique():
-            tele.Lower_Moving[gaps[gaps==i].index].plot()
-    
+        f, ax = plt.subplots()
+        if col is None:
+            col = df.columns[0]
+        else:
+            if type(col)==type(int):
+                col = df.columns[col]
+        for df in dfs:
+            df[col].plot(ax=ax)
     return dfs
     
     

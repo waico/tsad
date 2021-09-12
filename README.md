@@ -36,7 +36,7 @@ Documentation you can find here:
 
 https://tsad.readthedocs.io/
 
-http://tsad.waico.ru/ 
+---
 
 
 
