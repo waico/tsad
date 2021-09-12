@@ -1,62 +1,131 @@
-# Time Series Anomaly detection based on Deep Learning
+# Time Series Anomaly detection. 
 
+**The primary purpose** of the TSAD (Python module) is to make life easier for researchers who use deep learning techniques for time series. 
 
+In particular, TSAD is created for solving Time Series Anomaly Detection problem by widely known technique:
 
-**TSAD** is a Python module created for solving Anomaly Detection problems with time series data. The module is based on deep learning techniques.
-
-The main meaning of this module are:
-
-1. Forecast a multivariate Time Series (TS) one point ahead (Also works for univariate TS)
-2. Compute residuals between forecast and true values
-3. Apply analysis of residuals (default is Hoteling Statics)
-4. Plot and return anomalies
-
-This module allows forecast multi-step ahead both multivariate and univariate time series also.
-
-As forecasting algorithms were implemented or will be implemented:
-
-- A simple one-layer LSTM network (LSTM) 
-- A two-layer LSTM network (DeepLSTM) 
-- A bi-directional LSTM network (BLSTM) 
-- LSTM encoder-decoder (EncDec-AD) 
-- LSTM autoencoder (LSTM-AE);
-- Convolutional LSTM network (ConvLSTM) 
-- Convolutional Bi-directional LSTM network (CBLSTM) 
-- Multi-Scale Convolutional Recurrent Encoder-Decoder (MSCRED) 
-
-Actually, the possibility of the module allows you to use any own forecasting algorithm, computer of residuals, or evaluator of residuals. 
-
-!!! **Requerements for input data **
-
-Time series data **without** TODO
-
-## Documentation
-
-Documentation you can find here:
-
-https://tsad.readthedocs.io/
+- Forecast a multivariate Time Series (TS) one point ahead (Also works for univariate TS)
+- Compute residuals between forecast and true values
+- Apply analysis of residuals and thus find anomalies
 
 ---
 
+**The functionality** of the TSAD:
 
+- Preprocessing of Time Series ([tsad.src](https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.src) module):
 
-# https://github.com/HendrikStrobelt/LSTMVis КАк у них оформить readme. 
+  - Automatic search for gaps or groups of missing values and solving this problem (tsad.src.df2dfs)
 
-https://github.com/TezRomacH/python-package-template 
+  - Conversion to a single sample rate or solving unevenly spaced time series problem n(tsad.src.df2dfs)
 
-Посмотреть работы (конкуретны и партнеры):
+  - Splitting the entire history dataset, that is, one large time series, into a train and a test (tsad.src.ts_train_test_split) with a specific length of time series in one sample. Also, you can adjust the step, intersection of samples, and much more.
+  - Collecting samples in batches by using a Loader (tsad.src.Loader)
 
-https://github.com/khundman/telemanom 
+- Forecasting multi-step ahead both multivariate and univariate time series. As forecasting algorithms were implemented or will be implemented [tsad.models](https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.models):
 
-https://github.com/signals-dev/Orion 
+  - A simple one-layer LSTM network (LSTM) 
+  -   A two-layer LSTM network (DeepLSTM)
+  - bi-directional LSTM network (BLSTM)
+  - LSTM encoder-decoder (EncDec-AD) 
+  - LSTM autoencoder (LSTM-AE) 
+  - Convolutional LSTM network (ConvLSTM) 
+  - Convolutional Bi-directional LSTM network (CBLSTM) 
+  - Multi-Scale Convolutional Recurrent Encoder-Decoder (MSCRED)
 
-https://github.com/NetManAIOps/OmniAnomaly 
+- Calculation of residuals between forecast and real values. By default, the absolute difference is calculated. Still, you can write your function taking into account the requirements (requirements and other functions for calculating the residuals can be found in (tsad. Generate_residuals) [https://tsad.readthedocs.io/en/latest/tsad.html#module- tsad.generate_residuals]) and use it in the pipeline.
 
-## Installation
+- Residual analysis to find anomalies. There are various techniques for analyzing residuals. By default, [T2 statistic](https://en.wikipedia.org/wiki/Hotelling's_T-squared_distribution) is implemented , but you can write your function taking into account the requirements (requirements and other functions for analyzing residuals can be found in [tsad. stastics](https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.stastics)) and use it in the pipeline.
 
-[Pypi](https://pypi.org/project/tsad): 
+- Grouping of repeated time series values. tsad.src.split_by_repeated
 
-pip install -U tsad
+- Convenient loading of hyperparameters.  tsad.useful.iterators.MeshLoader
+
+**Documentation**: https://tsad.readthedocs.io/
+
+**The main class of the pipeline is** [tsad.main.DL_AD](https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.main)
+
+---
+
+#### Examples
+
+**Installation** through [PyPi](https://pypi.org/project/tsad): 
+
+`pip install -U tsad`
+
+1. Primitive case 
+
+```python
+import pandas as pd
+from tsad import main
+
+# Loading ideal time series without any problem
+df = pd.read_csv('example.csv',parse_dates='DT').set_index('DT') 
+
+pipeline = maim.DL_AD() 
+pipeline.fit(df)
+list_anomalies = pipeline.predict_anomaly(df)
+forecast = pipeline.forecast(df)
+```
+
+2. Advanced case
+
+```python
+import pandas as pd
+from tsad import main
+from tsad.src import df2dfs
+import torch
+
+# Loading time series
+df = pd.read_csv('example.csv',parse_dates='DT').set_index('DT') 
+
+class my_preproc_func(...):
+    ...
+    
+
+pipeline = maim.DL_AD(preproc=my_preproc_func) 
+pipeline.fit(df2dfs(df),
+             n_epochs=3,
+             optimiser=(torch.optim.Adam,{‘lr’:0.001}),
+             batch_size=8,
+             len_seq=60*3,
+             test_size=0.4)
+```
+
+After that, you can see:
+
+![image-1](./examples/figures/1.png)
+
+And then you can perform:
+
+```python
+list_anomalies = pipeline.predict_anomaly(df2dfs(df))
+forecast = pipeline.forecast(df2dfs(df))
+```
+
+More details you can find [here](https://github.com/waico/tsad/tree/main/examples)
+
+---
+
+#### Thoughts
+
+We encourage the community also to provide feedback on the desired functionality.
+
+We plan to implement:
+
+1. More complex preprocessing of time series, especially in the area of reduction to a single sampling rate (problem of unevenly spaced time series)
+
+2. Implement other SOTA algorithms
+
+3. The ability to implement any model in our pipeline by just providing a link to GitHub. It seems to be a handy feature as many researchers need to verify their models with others.
+4. Integration with most forecasting and anomaly detection benchmarks.
+
+Some interesting links: 
+
+1.  https://github.com/HendrikStrobelt/LSTMVis 
+2. https://github.com/TezRomacH/python-package-template 
+3. https://github.com/khundman/telemanom 
+4. https://github.com/signals-dev/Orion 
+5. https://github.com/NetManAIOps/OmniAnomaly 
 
 #### Dependencies
 
@@ -67,5 +136,13 @@ pip install -U tsad
 * scikit-learn>=0.24.1
 * torch==1.5.0
 
+#### Repo structure
+
+```
+  └── data 
+    ├───docs       # documentation
+    ├───examples   # examples
+    ├───tsad       # files of library
+```
 
 
