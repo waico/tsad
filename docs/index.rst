@@ -3,11 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to sklearn-template's documentation!
+Welcome to Time Series Anomaly Detection!
 ============================================
 
-This project is a reference implementation to anyone who wishes to develop
-scikit-learn compatible classes.
+This project is about the application of deep learning 
+for time series anomaly detection problems.
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Description
+
+   readme_link
    
 .. toctree::
    :maxdepth: 2

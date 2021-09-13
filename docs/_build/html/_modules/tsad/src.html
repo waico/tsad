@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>tsad.src &mdash; sklearn-template 12 documentation</title>
+  <title>tsad.src &mdash; Time Series Anomaly Detection 0.15 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> sklearn-template
+            <a href="../../index.html" class="icon icon-home"> Time Series Anomaly Detection
           
 
           
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                12
+                0.15
               </div>
             
           
@@ -93,11 +93,7 @@
               
             
             
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Quick Start with the project-template</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">tsad</a></li>
 </ul>
@@ -115,7 +111,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">sklearn-template</a>
+          <a href="../../index.html">Time Series Anomaly Detection</a>
         
       </nav>
 
@@ -234,8 +230,8 @@
     <span class="c1">#TODO переписать энергоэффективно чтобы было</span>
     <span class="c1">#TODO пока временные характеристики int_ами пора бы в pd.TimdDelta</span>
     <span class="c1"># нет индексов </span>
-    <span class="k">assert</span> <span class="n">len_seq</span> <span class="o">+</span> <span class="n">points_ahead</span> <span class="o">+</span> <span class="n">gap</span> <span class="o">+</span> <span class="n">shag</span><span class="o">-</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-    <span class="n">how</span><span class="o">=</span><span class="s1">&#39;seq to seq&#39;</span>
+    <span class="k">assert</span> <span class="n">len_seq</span> <span class="o">+</span> <span class="n">points_ahead</span> <span class="o">+</span> <span class="n">gap</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">how</span><span class="o">=</span><span class="s1">&#39;seq to seq&#39;</span>   
 
 <span class="c1"># -------------------------------------------------------  </span>
 <span class="c1">#             </span>
@@ -253,7 +249,7 @@
             <span class="k">return</span> <span class="n">x_start</span> <span class="o">+</span> <span class="n">shag</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">def</span> <span class="nf">compute_new_x_start</span><span class="p">(</span><span class="n">x_start</span><span class="p">,</span><span class="n">y_end</span><span class="p">,</span><span class="n">shag</span><span class="p">):</span>
-            <span class="n">y_end</span> <span class="o">+</span> <span class="n">shag</span>
+            <span class="k">return</span> <span class="n">y_end</span> <span class="o">+</span> <span class="n">shag</span>
     
     <span class="n">X</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
@@ -267,11 +263,13 @@
         <span class="n">y_end</span> <span class="o">=</span> <span class="n">y_start</span> <span class="o">+</span> <span class="n">points_ahead</span>
           
     
-    <span class="k">if</span> <span class="n">test_size</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">test_size</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)))</span>
         <span class="c1">#             np.random.seed(random_state)</span>
         <span class="k">if</span> <span class="n">shuffle</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
             <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
         <span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
         <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">X</span><span class="p">,[],</span><span class="n">y</span><span class="p">,[]</span>
@@ -371,6 +369,7 @@
                             <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>
                             <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    </span>
 <span class="sd">    true - both:</span>
 <span class="sd">                list of pandas Series with binary int labels</span>
 <span class="sd">                pandas Series with binary int labels</span>
@@ -784,9 +783,46 @@
             <span class="n">resample_freq</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># требования</span>
             <span class="n">thereshold_gap</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
             <span class="n">koef_freq_of_gap</span> <span class="o">=</span> <span class="mf">1.2</span><span class="p">,</span> <span class="c1"># 1.2 проблема которая возникает которую 02.09.2021 я написал в ИИ </span>
-            <span class="n">plot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+            <span class="n">plot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Функция которая преообратает raw df до требований к входу на DL_AD</span>
+<span class="sd">    Функция которая преообратает raw df до требований к входу на DL_AD:</span>
+<span class="sd">    </span>
+<span class="sd">    то есть разбивает df на лист of dfs by gaps </span>
+<span class="sd">    </span>
+<span class="sd">    Не ресемлирует так как это тяжелая задача, но если частота реже чем </span>
+<span class="sd">    koef_freq_of_gap of thereshold_gap то это воспринимается как пропуск. </span>
+<span class="sd">    Основной посыл: если сигнал приходит чаще, то он не уползает сильно, </span>
+<span class="sd">    а значит не приводит к аномалии, а если редко то приводит, поэтому воспри-</span>
+<span class="sd">    нимается как пропуск. </span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------   </span>
+<span class="sd">    df : pd.DataFrame</span>
+<span class="sd">        Исходный временной ряд полностью за всю историю   </span>
+<span class="sd">        </span>
+<span class="sd">    resample_freq: pd.TimeDelta (optional, default=None)</span>
+<span class="sd">        Частота дискретизации временного ряда. </span>
+<span class="sd">        Если default то самая частая частота дискретизации. При этом, </span>
+<span class="sd">        если нет выраженной частоты вылетит ошибка. </span>
+<span class="sd">    thereshold_gap : pd.TimeDelta (optional, default=None)</span>
+<span class="sd">        Порог периода, превышая который функция будет воспринимать</span>
+<span class="sd">        данный период как пропуск. </span>
+<span class="sd">    koef_freq_of_gap : float or int (optional if thereshold_gap==None,</span>
+<span class="sd">        default=1.2)  </span>
+<span class="sd">        thereshold_gap = koef_freq_of_gap * resample_freq</span>
+<span class="sd">    plot : bool (optional, default=True)</span>
+<span class="sd">        If true, then отрисуется нарезка</span>
+<span class="sd">        If false, then не отрисуется нарезка   </span>
+<span class="sd">    col : int of str (optional, default=True)</span>
+<span class="sd">        Название или номер колонки для отрисовки</span>
+<span class="sd">        Если None первая колонка</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dfs : list of pd.DataFrame</span>
+<span class="sd">        Список времменных рядов без пропусков с относительно стабильной </span>
+<span class="sd">        частотой дискретизации. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
@@ -803,9 +839,14 @@
     <span class="n">dfs</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">gaps</span><span class="p">[</span><span class="n">gaps</span><span class="o">==</span><span class="n">stage</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="k">for</span> <span class="n">stage</span> <span class="ow">in</span> <span class="n">gaps</span><span class="o">.</span><span class="n">unique</span><span class="p">()]</span>
 
     <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">gaps</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
-            <span class="n">tele</span><span class="o">.</span><span class="n">Lower_Moving</span><span class="p">[</span><span class="n">gaps</span><span class="p">[</span><span class="n">gaps</span><span class="o">==</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-    
+        <span class="n">f</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">col</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">col</span><span class="p">)</span><span class="o">==</span><span class="nb">type</span><span class="p">(</span><span class="nb">int</span><span class="p">):</span>
+                <span class="n">col</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">dfs</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dfs</span></div>
     
     
@@ -820,7 +861,7 @@
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2016, Vighnesh Birodkar.
+        &#169; Copyright 2021, V. Kozitsin.
 
     </p>
   </div>

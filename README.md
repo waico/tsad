@@ -32,7 +32,7 @@ In particular, TSAD is created for solving Time Series Anomaly Detection problem
   - Convolutional Bi-directional LSTM network (CBLSTM) 
   - Multi-Scale Convolutional Recurrent Encoder-Decoder (MSCRED)
 
-- Calculation of residuals between forecast and real values. By default, the absolute difference is calculated. Still, you can write your function taking into account the requirements (requirements and other functions for calculating the residuals can be found in (tsad. Generate_residuals) [https://tsad.readthedocs.io/en/latest/tsad.html#module- tsad.generate_residuals]) and use it in the pipeline.
+- Calculation of residuals between forecast and real values. By default, the absolute difference is calculated. Still, you can write your function taking into account the requirements (requirements and other functions for calculating the residuals can be found in [tsad.generate_residuals](https://tsad.readthedocs.io/en/latest/tsad.html#module- tsad.generate_residuals))and use it in the pipeline.
 
 - Residual analysis to find anomalies. There are various techniques for analyzing residuals. By default, [T2 statistic](https://en.wikipedia.org/wiki/Hotelling's_T-squared_distribution) is implemented , but you can write your function taking into account the requirements (requirements and other functions for analyzing residuals can be found in [tsad. stastics](https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.stastics)) and use it in the pipeline.
 
@@ -46,7 +46,7 @@ In particular, TSAD is created for solving Time Series Anomaly Detection problem
 
 ---
 
-#### Examples
+#### Getting Started
 
 **Installation** through [PyPi](https://pypi.org/project/tsad): 
 
@@ -139,10 +139,9 @@ Some interesting links:
 #### Repo structure
 
 ```
-  └── data 
+  └── repo 
     ├───docs       # documentation
     ├───examples   # examples
     ├───tsad       # files of library
 ```
-
 

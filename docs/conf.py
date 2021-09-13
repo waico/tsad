@@ -42,6 +42,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'numpydoc',
     'sphinx_gallery.gen_gallery',
+    'myst_parser',
 ]
 
 # this is needed for some reason...
