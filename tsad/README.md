@@ -23,3 +23,7 @@ As forecasting algorithms were implemented or will be implemented:
 - Multi-Scale Convolutional Recurrent Encoder-Decoder (MSCRED) 
 
 Actually, the possibility of the module allows you to use any own forecasting algorithm, computer of residuals, or evaluator of residuals. 
+
+#### Documentation
+
+https://tsad.readthedocs.io/
