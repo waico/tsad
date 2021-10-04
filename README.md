@@ -120,11 +120,13 @@ We plan to implement:
 
 Some interesting links: 
 
-1.  https://github.com/HendrikStrobelt/LSTMVis 
-2. https://github.com/TezRomacH/python-package-template 
-3. https://github.com/khundman/telemanom 
-4. https://github.com/signals-dev/Orion 
-5. https://github.com/NetManAIOps/OmniAnomaly 
+1.  https://github.com/salesforce/Merlion 
+2.  https://github.com/fastforwardlabs/deepad
+3.  https://github.com/HendrikStrobelt/LSTMVis 
+4.  https://github.com/TezRomacH/python-package-template 
+5.  https://github.com/khundman/telemanom 
+6.  https://github.com/signals-dev/Orion 
+7.  https://github.com/NetManAIOps/OmniAnomaly 
 
 #### Dependencies
 

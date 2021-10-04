@@ -375,8 +375,8 @@ class DL_AD():
             criterion = nn.MSELoss()
             
         if model is None:
-            model = models.SimpleLSTM(len(self.columns),len(self.columns)).to(device)
-        self.model = model.to(device)
+            model = models.SimpleLSTM(len(self.columns),len(self.columns),device=device, seed=random_state)
+        self.model = model
             
             
         if optimiser is None:
