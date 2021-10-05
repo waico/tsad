@@ -25,9 +25,10 @@ def set_determenistic(seed=None,precision=10):
     torch.set_printoptions(precision=precision)
 
 class SimpleLSTM(nn.Module):
-    def __init__(self, in_features, n_hidden, n_layers=3, bidirectional=False, dropout=0.5, device=torch.device('cpu'), seed=None):
+    def __init__(self, in_features, n_hidden, n_layers=3, bidirectional=False, dropout=0.5, seed=None):
         set_determenistic(seed)
         super(SimpleLSTM, self).__init__()
+        self.in_features = in_features
         self.n_hidden = n_hidden
         self.n_layers = n_layers
         self.lstm = nn.LSTM(input_size=in_features,
@@ -39,15 +40,13 @@ class SimpleLSTM(nn.Module):
                            )
         self.k_bidir = 2 if bidirectional else 1 
 
-        self.linear = nn.Linear(in_features=n_hidden, out_features=in_features)
-        self.device = device
-        
+        self.linear = nn.Linear(in_features=n_hidden, out_features=in_features)        
     
     
-    def initHidden(self,batch_size):
+    def initHidden(self,batch_size,device):
         self.hidden = (
-            torch.zeros(self.n_layers*self.k_bidir, batch_size, self.n_hidden).to(self.device),
-            torch.zeros(self.n_layers*self.k_bidir, batch_size, self.n_hidden).to(self.device)
+            torch.zeros(self.n_layers*self.k_bidir, batch_size, self.n_hidden).to(device),
+            torch.zeros(self.n_layers*self.k_bidir, batch_size, self.n_hidden).to(device)
         )
     def forward(self, sequences):
         batch_size  = len(sequences)
@@ -57,7 +56,9 @@ class SimpleLSTM(nn.Module):
         y_pred = self.linear(last_time_step)
         return y_pred
 
-    def run_epoch(self, iterator, optimizer, criterion, points_ahead=1, phase='train',encod_decode_model=False):
+    def run_epoch(self, iterator, optimizer, criterion, points_ahead=1, phase='train', device=torch.device('cuda:0'), encod_decode_model=False):
+        self.to(device)
+        
         is_train = (phase == 'train')
         if is_train:
             self.train()
@@ -82,10 +83,10 @@ class SimpleLSTM(nn.Module):
         with torch.set_grad_enabled(is_train):
             for i, (x,y) in enumerate(iterator):
                 x,y = np.array(x),np.array(y) #df.index rif of
-                self.initHidden(x.shape[0])
+                self.initHidden(x.shape[0],device=device)
                 
-                x = torch.tensor(x).float().to(self.device).requires_grad_()
-                y_true = torch.tensor(y).float().to(self.device)
+                x = torch.tensor(x).float().to(device).requires_grad_()
+                y_true = torch.tensor(y).float().to(device)
                 y_pred = self.forward(x).unsqueeze(1)
                 y_pred = forecast_multistep(y_pred,points_ahead)
                 

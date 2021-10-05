@@ -4,8 +4,7 @@ import pandas as pd
 import torch
 from torch import nn
 import matplotlib.pyplot as plt
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+import pickle
 
 
 from . import src
@@ -156,6 +155,7 @@ class DL_AD():
                                 random_state,
                                 shuffle,
                                 stratify,
+                                device,
                                 point_ahead_for_residuals=0):
         """
         Вспомогательная функция для  генерации всего
@@ -174,7 +174,7 @@ class DL_AD():
 
 
         all_data_iterator = Loader(X,y_true, self.batch_size,shuffle=False)          
-        y_pred = self.model.run_epoch(all_data_iterator, None, None, phase='forecast', points_ahead=points_ahead)     
+        y_pred = self.model.run_epoch(all_data_iterator, None, None, phase='forecast', points_ahead=points_ahead,device=device)     
         residuals = self.generate_res_func(y_pred,np.array(y_true))           
         point_ahead_for_residuals = 0 # мы иногда прогнозим на 10 точек вперед, ну интересует все равно на одну точку впреред 
         res_indices = [y_true[i].index[point_ahead_for_residuals] for i in range(len(y_true))]                                                
@@ -375,7 +375,7 @@ class DL_AD():
             criterion = nn.MSELoss()
             
         if model is None:
-            model = models.SimpleLSTM(len(self.columns),len(self.columns),device=device, seed=random_state)
+            model = models.SimpleLSTM(len(self.columns),len(self.columns), seed=random_state)
         self.model = model
             
             
@@ -392,8 +392,8 @@ class DL_AD():
         history_val = []
         best_val_loss = float('+inf')
         for epoch in range(n_epochs):    
-            train_loss = self.model.run_epoch(train_iterator, optimiser, criterion, phase='train', points_ahead=points_ahead,encod_decode_model=self.encod_decode_model)#, writer=writer)
-            val_loss = self.model.run_epoch(val_iterator, None, criterion, phase='val', points_ahead=points_ahead,encod_decode_model=self.encod_decode_model)#, writer=writer)
+            train_loss = self.model.run_epoch(train_iterator, optimiser, criterion, phase='train', points_ahead=points_ahead,encod_decode_model=self.encod_decode_model,device=device)#, writer=writer)
+            val_loss = self.model.run_epoch(val_iterator, None, criterion, phase='val', points_ahead=points_ahead,encod_decode_model=self.encod_decode_model,device=device)#, writer=writer)
 
             history_train.append(train_loss)
             history_val.append(val_loss)
@@ -413,14 +413,14 @@ class DL_AD():
         if show_progress:
             try:
                 test_iterator  = Loader(X_test, y_test, len(X_test),shuffle=False)
-                test_loss = self.model.run_epoch(test_iterator, None, criterion, phase='val',encod_decode_model=self.encod_decode_model)
+                test_loss = self.model.run_epoch(test_iterator, None, criterion, phase='val',encod_decode_model=self.encod_decode_model,device=device)
                 print(f'Test Loss: {test_loss:.3f}')
             except:
                 print('Весь X_test не помещается в память, тестим усреднением по батчам')
                 test_iterator  = Loader(X_test, y_test,batch_size,shuffle=False)
                 test_loss = []
                 for epoch in range(n_epochs):  
-                    test_loss.append(self.model.run_epoch(test_iterator, None, criterion, phase='val',encod_decode_model=self.encod_decode_model))
+                    test_loss.append(self.model.run_epoch(test_iterator, None, criterion, phase='val',encod_decode_model=self.encod_decode_model,device=device))
                 print(f'Test Loss: {np.mean(test_loss):.3f}')
             
         if show_figures:
@@ -446,6 +446,7 @@ class DL_AD():
                                                     random_state=None,
                                                     shuffle=False,  
                                                     stratify=stratify,
+                                                    device=device,
                                                     point_ahead_for_residuals=0)        
         self.anomaly_timestamps = self.res_analys_alg.fit_predict(df_residuals,show_figure=show_figures)
         self.statistic = self.res_analys_alg.statistic
@@ -497,6 +498,8 @@ class DL_AD():
 
         if Loader is None:
             Loader = src.Loader
+            
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 # -----------------------------------------------------------------------------------------
@@ -513,6 +516,7 @@ class DL_AD():
                                                     random_state=None,
                                                     shuffle=False,  
                                                     stratify=stratify,
+                                                    device=device,
                                                     point_ahead_for_residuals=0)                                                                   
         self.anomaly_timestamps = self.res_analys_alg.predict(df_residuals,show_figure=show_figures)
         self.statistic = self.res_analys_alg.statistic
@@ -550,6 +554,8 @@ class DL_AD():
         ----------
         
         """
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        
         if Loader is None:
             Loader = src.Loader
         
@@ -568,7 +574,7 @@ class DL_AD():
         iterator = Loader(np.expand_dims(preproc_values,0),np.expand_dims(preproc_values,0), #ничего страшного, 'y' все равно не используется
                           batch_size,shuffle=False)
 
-        y_pred = self.model.run_epoch(iterator, None, None, phase='forecast', points_ahead=points_ahead)[0]
+        y_pred = self.model.run_epoch(iterator, None, None, phase='forecast', points_ahead=points_ahead,device=device)[0]
         y_pred = self.preproc.inverse_transform(y_pred)
         
         t_last = np.datetime64(df.index[-1])
@@ -585,6 +591,43 @@ class DL_AD():
             plt.show()
         
         return y_pred
-
+        
+        
+    def save(self,path='./pipeline.pcl'):
+        """
+        Method for saving pipeline.
+        It may be required for example after training.
+        CPU.
+        
+        Parameters
+        ----------
+            path : str
+        Путь до файла, для сохранения пайплайна. 
+        Пайлайн сохраняется в формате pickle
+        """      
+        
+        self.model.run_epoch(src.Loader(torch.zeros((1,self.len_seq,self.model.in_features),dtype=float),
+                                        torch.zeros((1,self.len_seq,self.model.in_features),dtype=float),
+                                        batch_size=1),
+                             None, None, phase='forecast', points_ahead=1,device=torch.device("cpu"))   
+        with open(path, 'wb') as f:
+            pickle.dump(self, f)  
+   
+    def load(self,path='./pipeline.pcl'):
+        """
+        Method for loading pipeline.
+        It may be required for example after training.
+        
+        Parameters
+        ----------
+            path : str
+        Путь до сохраненного файла пайплайна. 
+        Пайлайн должен быть в формате pickle
+        """      
+        with open(path, 'rb') as f:
+            pipeline = pickle.load(f)            
+        self.__dict__.update(pipeline.__dict__)
+            
+        
     
  

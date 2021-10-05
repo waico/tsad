@@ -11,3 +11,9 @@
 11. to example - manually plot через атрибуты 
 12. в evaluating_change_point в prediction добавить list of timestamps
 13. Понять подходящая ли лецензия
+
+
+
+В описание добавитт:
+
+1. По дефолту куда, если нет cpu
