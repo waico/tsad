@@ -1,12 +1,10 @@
-tsad package
-============
-
 Subpackages
 -----------
 
 .. toctree::
    :maxdepth: 4
 
+   tsad.evaluating
    tsad.useful
 
 Submodules

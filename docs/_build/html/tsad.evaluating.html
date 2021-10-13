@@ -1,0 +1,482 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>tsad.evaluating package &mdash; Time Series Anomaly Detection 0.15 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/project-template.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/project-template.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery-rendered-html.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="tsad.useful package" href="tsad.useful.html" />
+    <link rel="prev" title="Subpackages" href="tsad.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Time Series Anomaly Detection
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.15
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Description</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Time Series Anomaly detection.</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Evaluating.html">Evaluation of AD algorithms perfomance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="tsad.html">Subpackages</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">tsad.evaluating package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-tsad.evaluating.evaluating">tsad.evaluating.evaluating module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-tsad.evaluating.multivariate_funcs">tsad.evaluating.multivariate_funcs module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-tsad.evaluating.src">tsad.evaluating.src module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-tsad.evaluating.univariate_funcs">tsad.evaluating.univariate_funcs module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-tsad.evaluating">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tsad.useful.html">tsad.useful package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#submodules">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.feature_importance">tsad.feature_importance module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.generate_residuals">tsad.generate_residuals module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.main">tsad.main module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.models">tsad.models module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.src">tsad.src module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.stastics">tsad.stastics module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad">Module contents</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Time Series Anomaly Detection</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="tsad.html">Subpackages</a> &raquo;</li>
+        
+      <li>tsad.evaluating package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/tsad.evaluating.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tsad-evaluating-package">
+<h1>tsad.evaluating package<a class="headerlink" href="#tsad-evaluating-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-tsad.evaluating.evaluating">
+<span id="tsad-evaluating-evaluating-module"></span><h2>tsad.evaluating.evaluating module<a class="headerlink" href="#module-tsad.evaluating.evaluating" title="Permalink to this headline">¶</a></h2>
+<p>CDSDSDS</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="tsad.evaluating.evaluating.evaluating">
+<span class="sig-prename descclassname"><span class="pre">tsad.evaluating.evaluating.</span></span><span class="sig-name descname"><span class="pre">evaluating</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prediction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nab'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numenta_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">portion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anomaly_window_destenation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lefter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_anomalies_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intersection_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cut</span> <span class="pre">right</span> <span class="pre">window'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_of_coef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'improved'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_koef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/evaluating/evaluating.html#evaluating"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.evaluating.evaluating.evaluating" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>true: variants:</strong></dt><dd><p>or: if one  dataset : pd.Series with binary int labels (1 is 
+anomaly, 0 is not anomaly);
+or: if one  dataset : list of pd.Timestamp of true labels, or [] 
+if haven’t labels 
+or: if one  dataset : list of list of t1,t2: left and right 
+detection, boundaries of pd.Timestamp or [[]] if haven’t labels</p>
+<p>or: if many datasets: list (len of number of datasets) of pd.Series 
+with binary int labels;
+or: if many datasets: list of list of pd.Timestamp of true labels, or
+true = [ts,[]] if haven’t labels for specific dataset
+or: if many datasets: list of list of list of t1,t2: left and right 
+detection boundaries of pd.Timestamp;
+If we haven’t true labels for specific dataset then we must insert 
+empty list of labels: true = [[[]],[[t1,t2],[t1,t2]]].</p>
+<p>__True labels of anomalies or changepoints.
+It is important to have appropriate labels (CP or 
+anomaly) for corresponding metric (See later “metric”)</p>
+</dd>
+<dt><strong>prediction: variants:</strong></dt><dd><p>or: if one  dataset : pd.Series with binary int labels
+(1 is anomaly, 0 is not anomaly);
+or: if many datasets: list (len of number of datasets) 
+of pd.Series with binary int labels.</p>
+<p>__Predicted labels of anomalies or changepoints.
+It is important to have appropriate labels (CP or 
+anomaly) for corresponding metric (See later “metric”)</p>
+</dd>
+<dt><strong>metric: {‘nab’, ‘binary’, ‘average_time’, ‘confusion_matrix’}.</strong></dt><dd><p>Default=’nab’
+Affects to output (see later: Returns)
+Changepoint problem: {‘nab’, ‘average_time’}. 
+Standart AD problem: {‘binary’, ‘confusion_matrix’}. 
+‘nab’ is Numenta Anomaly Benchmark metric
+‘average_time’ is both average delay or time to failure
+depend on situatuion.
+‘binary’: FAR, MAR, F1.
+‘confusion_matrix’ standart confusion_matrix for any point.</p>
+</dd>
+<dt><strong>numenta_time: ‘str’ for pd.Tiemdelta</strong></dt><dd><p>Width of detection window. Default=None.</p>
+</dd>
+<dt><strong>portion</strong><span class="classifier">float, default=0.1</span></dt><dd><p>The portion is needed if numenta_time = None. 
+The width of the detection window in this case is equal 
+to a portion of the width of the length of prediction divided 
+by the number of real CPs in this dataset. Default=0.1.</p>
+</dd>
+<dt><strong>anomaly_window_destenation: {‘lefter’, ‘righter’, ‘center’}. Defualt=’right’</strong></dt><dd><p>The parameter of the location of the detection window relative to the anomaly. 
+‘lefter’  : the detection window will be on the left side of the anomaly
+‘righter’ : the detection window will be on the right side of the anomaly
+‘center’  : the scoring window will be positioned relative to the center of anom.</p>
+</dd>
+<dt><strong>clear_anomalies_mode</strong><span class="classifier">boolean, default=True.</span></dt><dd><p>True : then the <a href="#id1"><span class="problematic" id="id2">`</span></a>left value of a Scoring function is Atp and the 
+<a href="#id3"><span class="problematic" id="id4">`</span></a>right is Afp. Only the <a href="#id5"><span class="problematic" id="id6">`</span></a>first value inside the detection window is taken.
+False: then the <a href="#id7"><span class="problematic" id="id8">`</span></a>right value of a Scoring function is Atp and the 
+<a href="#id9"><span class="problematic" id="id10">`</span></a>left is Afp. Only the <a href="#id11"><span class="problematic" id="id12">`</span></a>last value inside the detection window is taken.</p>
+</dd>
+<dt><strong>intersection_mode: {‘cut left widnow’, ‘cut right window’, ‘both’}.</strong></dt><dd><p>Defualt=’cut right window’
+The parameter will be used if the detection windows overlap for 
+true changepoints, which is generally undesirable and requires a 
+different approach than simply cropping the scoring window using 
+this parameter.
+‘cut left window’ : will cut the overlapping part of the left window
+‘cut right window’: will cut the intersecting part of the right window
+‘both’            : will crop the intersecting portion of both the left 
+and right windows</p>
+</dd>
+<dt><strong>verbose:  booleant, default=True.</strong></dt><dd><p>If True, then output useful information</p>
+</dd>
+<dt><strong>plot_figure</strong><span class="classifier">booleant, default=False.</span></dt><dd><p>If True, then drawing the score fuctions, detection windows and predictions
+It is used for example, for calibration the scale_koef.</p>
+</dd>
+<dt><strong>table_of_coef (metric=’nab’): pd.DataFrame of specific form. See bellow.</strong></dt><dd><p>Application profiles of NAB metric.If Defaut is None:  
+table_of_coef = pd.DataFrame([[1.0,-0.11,1.0,-1.0],</p>
+<blockquote>
+<div><p>[1.0,-0.22,1.0,-1.0],
+[1.0,-0.11,1.0,-2.0]])</p>
+</div></blockquote>
+<p>table_of_coef.index = [‘Standart’,’LowFP’,’LowFN’]
+table_of_coef.index.name = “Metric”
+table_of_coef.columns = [‘A_tp’,’A_fp’,’A_tn’,’A_fn’]</p>
+</dd>
+<dt><strong>scale_func (metric=’nab’): “default” of “improved”. Defualt=”improved”.</strong></dt><dd><p>Scoring function in NAB metric.
+‘default’  : standart NAB scoring function 
+‘improved’ : Our function for resolving disadvantages
+of standart NAB scoring function</p>
+</dd>
+<dt><strong>scale_koef</strong><span class="classifier">float &gt; 0. Defualt=1.0.</span></dt><dd><p>Smoothing factor. The smaller it is, 
+the smoother the scoring function is.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>metrics</strong><span class="classifier">value of metrics, depend on metric</span></dt><dd><dl class="simple">
+<dt>‘nab’: tuple</dt><dd><ul class="simple">
+<li><p>Standart profile, float</p></li>
+<li><p>Low FP profile, float</p></li>
+<li><p>Low FN profilet</p></li>
+</ul>
+</dd>
+<dt>‘average_time’: tuple</dt><dd><ul class="simple">
+<li><p>Average time (average delay, or time to failure)</p></li>
+<li><p>Missing changepoints, int</p></li>
+<li><p>FPs, int</p></li>
+<li><p>Number of true changepoints, int</p></li>
+</ul>
+</dd>
+<dt>‘binary’: tuple</dt><dd><ul class="simple">
+<li><p>F1 metric, float</p></li>
+<li><p>False alarm rate, %, float</p></li>
+<li><p>Missing Alarm Rate, %, float</p></li>
+</ul>
+</dd>
+<dt>‘binary’: tuple</dt><dd><ul class="simple">
+<li><p>TPs, int</p></li>
+<li><p>TNs, int</p></li>
+<li><p>FPs, int</p></li>
+<li><p>FNS, int</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tsad.evaluating.multivariate_funcs">
+<span id="tsad-evaluating-multivariate-funcs-module"></span><h2>tsad.evaluating.multivariate_funcs module<a class="headerlink" href="#module-tsad.evaluating.multivariate_funcs" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-tsad.evaluating.src">
+<span id="tsad-evaluating-src-module"></span><h2>tsad.evaluating.src module<a class="headerlink" href="#module-tsad.evaluating.src" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="tsad.evaluating.src.check_errors">
+<span class="sig-prename descclassname"><span class="pre">tsad.evaluating.src.</span></span><span class="sig-name descname"><span class="pre">check_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/evaluating/src.html#check_errors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.evaluating.src.check_errors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check format of input true data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>my_list - uniform format of true (See evaluating.evaluating)</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>mx</strong><span class="classifier">depth of list, or variant of processing</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tsad.evaluating.src.extract_cp_confusion_matrix">
+<span class="sig-prename descclassname"><span class="pre">tsad.evaluating.src.</span></span><span class="sig-name descname"><span class="pre">extract_cp_confusion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detecting_boundaries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prediction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/evaluating/src.html#extract_cp_confusion_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.evaluating.src.extract_cp_confusion_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>prediction: pd.Series</p>
+<p>point=None for binary case
+Returns
+———-
+dict: TPs: dict of numer window of [t1,t_cp,t2]
+FPs: list of timestamps
+FNs: list of of numer window</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tsad.evaluating.src.filter_detecting_boundaries">
+<span class="sig-prename descclassname"><span class="pre">tsad.evaluating.src.</span></span><span class="sig-name descname"><span class="pre">filter_detecting_boundaries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detecting_boundaries</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/evaluating/src.html#filter_detecting_boundaries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.evaluating.src.filter_detecting_boundaries" title="Permalink to this definition">¶</a></dt>
+<dd><p>[[t1,t2],[],[t1,t2]] -&gt; [[t1,t2],[t1,t2]]
+[[],[]] -&gt; []</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tsad.evaluating.src.single_detecting_boundaries">
+<span class="sig-prename descclassname"><span class="pre">tsad.evaluating.src.</span></span><span class="sig-name descname"><span class="pre">single_detecting_boundaries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">true_series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_list_ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prediction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">portion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numenta_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anomaly_window_destenation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intersection_mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/evaluating/src.html#single_detecting_boundaries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.evaluating.src.single_detecting_boundaries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extrcaty detecting_boundaries from series or list of timestamps</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tsad.evaluating.univariate_funcs">
+<span id="tsad-evaluating-univariate-funcs-module"></span><h2>tsad.evaluating.univariate_funcs module<a class="headerlink" href="#module-tsad.evaluating.univariate_funcs" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="tsad.evaluating.univariate_funcs.confusion_matrix">
+<span class="sig-prename descclassname"><span class="pre">tsad.evaluating.univariate_funcs.</span></span><span class="sig-name descname"><span class="pre">confusion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prediction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/evaluating/univariate_funcs.html#confusion_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.evaluating.univariate_funcs.confusion_matrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tsad.evaluating.univariate_funcs.my_scale">
+<span class="sig-prename descclassname"><span class="pre">tsad.evaluating.univariate_funcs.</span></span><span class="sig-name descname"><span class="pre">my_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fp_case_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_tp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_fp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">koef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detalization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_anomalies_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/evaluating/univariate_funcs.html#my_scale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.evaluating.univariate_funcs.my_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>ts - участок на котором надо жахнуть окно</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tsad.evaluating.univariate_funcs.single_average_delay">
+<span class="sig-prename descclassname"><span class="pre">tsad.evaluating.univariate_funcs.</span></span><span class="sig-name descname"><span class="pre">single_average_delay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detecting_boundaries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prediction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anomaly_window_destenation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_anomalies_mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/evaluating/univariate_funcs.html#single_average_delay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.evaluating.univariate_funcs.single_average_delay" title="Permalink to this definition">¶</a></dt>
+<dd><p>anomaly_window_destenation: ‘lefter’, ‘righter’, ‘center’. Defualt=’right’</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tsad.evaluating.univariate_funcs.single_evaluate_nab">
+<span class="sig-prename descclassname"><span class="pre">tsad.evaluating.univariate_funcs.</span></span><span class="sig-name descname"><span class="pre">single_evaluate_nab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detecting_boundaries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prediction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_of_coef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_anomalies_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'improved'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_koef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/evaluating/univariate_funcs.html#single_evaluate_nab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.evaluating.univariate_funcs.single_evaluate_nab" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>detecting_boundaries: list of list of two float values</dt><dd><p>The list of lists of left and right boundary indices
+for scoring results of labeling if empty. Can be [[]], or [[],[t1,t2],[]]</p>
+</dd>
+<dt>table_of_coef: pandas array (3x4) of float values</dt><dd><p>Table of coefficients for NAB score function
+indeces: ‘Standart’,’LowFP’,’LowFN’
+columns:’A_tp’,’A_fp’,’A_tn’,’A_fn’</p>
+</dd>
+</dl>
+<p>scale_func {default}, improved
+недостаттки scale_func default  -
+1 - зависит от относительного шага, а это значит, что если 
+слишком много точек в scoring window то перепад будет слишком
+жестким в середение. 
+2-   то самая левая точка не равно  Atp, а права не равна Afp
+(особенно если пррименять расплывающую множитель)</p>
+<p>clear_anomalies_mode тогда слева от границы Atp срправа Afp,
+иначе fault mode, когда слева от границы Afp срправа Atp</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tsad.evaluating">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-tsad.evaluating" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="tsad.useful.html" class="btn btn-neutral float-right" title="tsad.useful package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tsad.html" class="btn btn-neutral float-left" title="Subpackages" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, V. Kozitsin.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

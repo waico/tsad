@@ -15,7 +15,7 @@ from . import stastics
 
 class DL_AD():
     """        
-    Пайплайн Time Series Anomaly Detection based on 
+    Pipeline Time Series Anomaly Detection based on 
     SOTA deep learning forecasting algorithms.
     
     Данный пайплайн избавит вас от проблем написания кода для: \n

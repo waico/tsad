@@ -1,6 +1,7 @@
 """
 Very useful librray
 """
+import numpy as np
 
 class MeshLoader:
     def __init__(self, params):

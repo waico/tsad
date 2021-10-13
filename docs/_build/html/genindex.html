@@ -103,7 +103,15 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">tsad</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#submodules">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.feature_importance">tsad.feature_importance module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.generate_residuals">tsad.generate_residuals module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.main">tsad.main module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.models">tsad.models module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.src">tsad.src module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.stastics">tsad.stastics module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad">Module contents</a></li>
 </ul>
 
             
@@ -174,6 +182,7 @@
 
 <div class="genindex-jumpbox">
  <a href="#A"><strong>A</strong></a>
+ | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
@@ -195,12 +204,20 @@
   </ul></td>
 </tr></table>
 
-<h2 id="D">D</h2>
+<h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tsad.html#tsad.src.df2dfs">df2dfs() (in module tsad.src)</a>
+      <li><a href="tsad.evaluating.html#tsad.evaluating.src.check_errors">check_errors() (in module tsad.evaluating.src)</a>
 </li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="tsad.evaluating.html#tsad.evaluating.univariate_funcs.confusion_matrix">confusion_matrix() (in module tsad.evaluating.univariate_funcs)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="tsad.html#tsad.main.DL_AD">DL_AD (class in tsad.main)</a>
 </li>
@@ -210,7 +227,11 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tsad.html#tsad.src.evaluating">evaluating() (in module tsad.src)</a>
+      <li><a href="tsad.evaluating.html#tsad.evaluating.evaluating.evaluating">evaluating() (in module tsad.evaluating.evaluating)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="tsad.evaluating.html#tsad.evaluating.src.extract_cp_confusion_matrix">extract_cp_confusion_matrix() (in module tsad.evaluating.src)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -221,6 +242,8 @@
       <li><a href="tsad.html#tsad.feature_importance.feature_importance">feature_importance() (in module tsad.feature_importance)</a>
 </li>
       <li><a href="tsad.html#tsad.stastics.Hotelling.feature_importances">feature_importances() (tsad.stastics.Hotelling method)</a>
+</li>
+      <li><a href="tsad.evaluating.html#tsad.evaluating.src.filter_detecting_boundaries">filter_detecting_boundaries() (in module tsad.evaluating.src)</a>
 </li>
       <li><a href="tsad.html#tsad.main.DL_AD.fit">fit() (tsad.main.DL_AD method)</a>
 
@@ -282,6 +305,16 @@
       <ul>
         <li><a href="tsad.html#module-tsad">tsad</a>
 </li>
+        <li><a href="tsad.evaluating.html#module-tsad.evaluating">tsad.evaluating</a>
+</li>
+        <li><a href="tsad.evaluating.html#module-tsad.evaluating.evaluating">tsad.evaluating.evaluating</a>
+</li>
+        <li><a href="tsad.evaluating.html#module-tsad.evaluating.multivariate_funcs">tsad.evaluating.multivariate_funcs</a>
+</li>
+        <li><a href="tsad.evaluating.html#module-tsad.evaluating.src">tsad.evaluating.src</a>
+</li>
+        <li><a href="tsad.evaluating.html#module-tsad.evaluating.univariate_funcs">tsad.evaluating.univariate_funcs</a>
+</li>
         <li><a href="tsad.html#module-tsad.feature_importance">tsad.feature_importance</a>
 </li>
         <li><a href="tsad.html#module-tsad.generate_residuals">tsad.generate_residuals</a>
@@ -299,6 +332,10 @@
         <li><a href="tsad.useful.html#module-tsad.useful.iterators">tsad.useful.iterators</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="tsad.evaluating.html#tsad.evaluating.univariate_funcs.my_scale">my_scale() (in module tsad.evaluating.univariate_funcs)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -329,9 +366,15 @@
 </li>
       <li><a href="tsad.html#tsad.models.set_determenistic">set_determenistic() (in module tsad.models)</a>
 </li>
+      <li><a href="tsad.html#tsad.models.SimpleLSTM">SimpleLSTM (class in tsad.models)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tsad.html#tsad.models.SimpleLSTM">SimpleLSTM (class in tsad.models)</a>
+      <li><a href="tsad.evaluating.html#tsad.evaluating.univariate_funcs.single_average_delay">single_average_delay() (in module tsad.evaluating.univariate_funcs)</a>
+</li>
+      <li><a href="tsad.evaluating.html#tsad.evaluating.src.single_detecting_boundaries">single_detecting_boundaries() (in module tsad.evaluating.src)</a>
+</li>
+      <li><a href="tsad.evaluating.html#tsad.evaluating.univariate_funcs.single_evaluate_nab">single_evaluate_nab() (in module tsad.evaluating.univariate_funcs)</a>
 </li>
       <li><a href="tsad.html#tsad.src.split_by_repeated">split_by_repeated() (in module tsad.src)</a>
 </li>
@@ -351,12 +394,49 @@
 </li>
       </ul></li>
       <li>
+    tsad.evaluating
+
+      <ul>
+        <li><a href="tsad.evaluating.html#module-tsad.evaluating">module</a>
+</li>
+      </ul></li>
+      <li>
+    tsad.evaluating.evaluating
+
+      <ul>
+        <li><a href="tsad.evaluating.html#module-tsad.evaluating.evaluating">module</a>
+</li>
+      </ul></li>
+      <li>
+    tsad.evaluating.multivariate_funcs
+
+      <ul>
+        <li><a href="tsad.evaluating.html#module-tsad.evaluating.multivariate_funcs">module</a>
+</li>
+      </ul></li>
+      <li>
+    tsad.evaluating.src
+
+      <ul>
+        <li><a href="tsad.evaluating.html#module-tsad.evaluating.src">module</a>
+</li>
+      </ul></li>
+      <li>
+    tsad.evaluating.univariate_funcs
+
+      <ul>
+        <li><a href="tsad.evaluating.html#module-tsad.evaluating.univariate_funcs">module</a>
+</li>
+      </ul></li>
+      <li>
     tsad.feature_importance
 
       <ul>
         <li><a href="tsad.html#module-tsad.feature_importance">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     tsad.generate_residuals
 
@@ -371,8 +451,6 @@
         <li><a href="tsad.html#module-tsad.main">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     tsad.models
 

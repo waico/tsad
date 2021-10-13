@@ -28,4 +28,4 @@ for time series anomaly detection problems.
    :hidden:
    :caption: Documentation
 
-   modules
+   tsad

@@ -202,11 +202,11 @@ print(results)
 
 ## Approaches for evaluating of anomaly detection algorithms for time series data
 
-![pic1](./pics/Evaluating/pic1.jpg)
+![pic1](./pics/evaluating/pic1.jpg)
 
 ## Metirc for evaluating of AD algorithms for time series data in tsad
 
-![pic2](./pics/Evaluating/pic2.jpg)
+![pic2](./pics/evaluating/pic2.jpg)
 
 NAB metric: [link](https://ieeexplore.ieee.org/abstract/document/7424283/?casa_token=QrawzPwH7AkAAAAA:vzRggk5TMUviU2JOxxzG76ZlACc3paQhP7KtoUq8jmx7-DkrSWAUp4wZldlTjcqPpap6WPHCeu095g)
 
@@ -228,7 +228,7 @@ Thus we must assign left and right boundaries of a window for any true changepoi
 
 ```prediction``` is always pd.Series for one dataset 
 
-![pic3](./pics/Evaluating/pic3.jpg)
+![pic3](./pics/evaluating/pic3.jpg)
 
 The picture above shows the predicted label values for changepoint problem.The variable ```numenta_time``` is actually with of window.
 
@@ -445,12 +445,12 @@ To meet the business objectives, we make possible to **adjust the following para
 
 #### ```anomaly_window_destenation``` for input variant 1,2 of true variable
 
-![pic4](./pics/Evaluating/pic4.jpg)
+![pic4](./pics/evaluating/pic4.jpg)
 
 #### ```clear_anomalies_mode```
 
-![pic5](./pics/Evaluating/pic5.jpg)
+![pic5](./pics/evaluating/pic5.jpg)
 
 #### ```intersection_mode``` for solving a problem of intersection of detection windows
 
-![pic6](./pics/Evaluating/pic6.jpg)
+![pic6](./pics/evaluating/pic6.jpg)
