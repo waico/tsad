@@ -14,7 +14,14 @@ for time series anomaly detection problems.
    :hidden:
    :caption: Description
 
-   readme_link
+   readme
+   
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Examples
+
+   Evaluating
    
 .. toctree::
    :maxdepth: 2

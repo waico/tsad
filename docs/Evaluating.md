@@ -1,3 +1,6 @@
+# Evaluation of AD algorithms perfomance
+
+
 ```python
 import pandas as pd
 import numpy as np
@@ -14,9 +17,9 @@ import warnings
 warnings.filterwarnings('ignore')
 ```
 
-# Simple example
+## Simple example
 
-## Init true and prediction labelled data
+Init true and prediction labelled data
 
 
 ```python
@@ -182,7 +185,7 @@ pd.concat([true,prediction],1).reset_index()
 
 
 
-## Evaluating by default `NAB` metric
+Evaluating by default `NAB` metric
 
 
 ```python
@@ -197,19 +200,19 @@ print(results)
     {'Standart': -5.5, 'LowFP': -11.0, 'LowFN': -3.67}
     
 
-# Approaches for evaluating of anomaly detection algorithms for time series data
+## Approaches for evaluating of anomaly detection algorithms for time series data
 
-![Kozitsin%20Useful%20%281%29.jpg](attachment:Kozitsin%20Useful%20%281%29.jpg)
+![pic1](./pics/Evaluating/pic1.jpg)
 
-# Metirc for evaluating of AD algorithms for time series data in tsad
+## Metirc for evaluating of AD algorithms for time series data in tsad
 
-![Kozitsin%20Useful%20%283%29.jpg](attachment:Kozitsin%20Useful%20%283%29.jpg)
+![pic2](./pics/Evaluating/pic2.jpg)
 
 NAB metric: [link](https://ieeexplore.ieee.org/abstract/document/7424283/?casa_token=QrawzPwH7AkAAAAA:vzRggk5TMUviU2JOxxzG76ZlACc3paQhP7KtoUq8jmx7-DkrSWAUp4wZldlTjcqPpap6WPHCeu095g)
 
-# Changepoints metrics
+## Changepoints metrics
 
-## Variants of input variables
+### Variants of input variables
 
 A crucial element for the changepoint detection problem is a detection window:
 * The predicted anomalies inside the detection window are perceived as only one true positive
@@ -225,7 +228,7 @@ Thus we must assign left and right boundaries of a window for any true changepoi
 
 ```prediction``` is always pd.Series for one dataset 
 
-![Kozitsin%20Useful%20%284%29.jpg](attachment:Kozitsin%20Useful%20%284%29.jpg)
+![pic3](./pics/Evaluating/pic3.jpg)
 
 The picture above shows the predicted label values for changepoint problem.The variable ```numenta_time``` is actually with of window.
 
@@ -253,7 +256,7 @@ prediction
 
 
  How would the ```true``` input variable look in each variant:
- ### Variant 1. True as pd.Series
+ #### Variant 1. True as pd.Series
 
 
 ```python
@@ -305,7 +308,7 @@ results = evaluating(true=true,prediction=prediction,numenta_time=numenta_time,m
     Average time nan
     
 
- ### Variant 2. True as list of pd.Timestamp
+ #### Variant 2. True as list of pd.Timestamp
 
 
 ```python
@@ -349,7 +352,7 @@ results = evaluating(true=true,prediction=prediction,numenta_time=numenta_time,m
     Average time nan
     
 
- ### Variant 3.True as a list of a list with left and right pd.Timestamp boundary of the window
+ #### Variant 3.True as a list of a list with left and right pd.Timestamp boundary of the window
 
 
 ```python
@@ -393,7 +396,7 @@ results = evaluating(true=true,prediction=prediction,numenta_time=numenta_time,m
     Average time nan
     
 
- ### Variant 4,5,6. Many datasets
+ #### Variant 4,5,6. Many datasets
 
 
 ```python
@@ -430,7 +433,7 @@ results = evaluating(true=true,prediction=prediction,numenta_time=numenta_time,m
     Average time 2 days 00:00:00
     
 
-## Different situations with changepoint detection problem
+### Different situations with changepoint detection problem
 
 Assigning characteristics of a window as well as selecting one point in the window must differ depend on business tasks, and in TSAD we seem to foreseen every case for this. Examples of cases from technical diagnostic:
 * We have clear anomalies that have to lead to failure. From history, we have objective information about the times of arising anomalies (true changepoints), and we understand that any predicted anomaly that is earlier than the true changepoint is a false positive. 
@@ -440,19 +443,14 @@ Assigning characteristics of a window as well as selecting one point in the wind
 
 To meet the business objectives, we make possible to **adjust the following parameters** in ```evaluating```:
 
-### ```anomaly_window_destenation``` for input variant 1,2 of true variable
+#### ```anomaly_window_destenation``` for input variant 1,2 of true variable
 
-![Kozitsin%20Useful%20%286%29.jpg](attachment:Kozitsin%20Useful%20%286%29.jpg)
+![pic4](./pics/Evaluating/pic4.jpg)
 
-### ```clear_anomalies_mode```
+#### ```clear_anomalies_mode```
 
-![Kozitsin%20Useful%20%2811%29.jpg](attachment:Kozitsin%20Useful%20%2811%29.jpg)
+![pic5](./pics/Evaluating/pic5.jpg)
 
-### ```intersection_mode``` for solving a problem of intersection of detection windows
+#### ```intersection_mode``` for solving a problem of intersection of detection windows
 
-![Kozitsin%20Useful%20%289%29.jpg](attachment:Kozitsin%20Useful%20%289%29.jpg)
-
-
-```python
-
-```
+![pic6](./pics/Evaluating/pic6.jpg)

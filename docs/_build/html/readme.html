@@ -1,0 +1,372 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Time Series Anomaly detection. &mdash; Time Series Anomaly Detection 0.15 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/project-template.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/project-template.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery-rendered-html.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Evaluation of AD algorithms perfomance" href="Evaluating.html" />
+    <link rel="prev" title="Welcome to Time Series Anomaly Detection!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Time Series Anomaly Detection
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.15
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Description</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Time Series Anomaly detection.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#thoughts">Thoughts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#repo-structure">Repo structure</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Evaluating.html">Evaluation of AD algorithms perfomance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">tsad</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Time Series Anomaly Detection</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Time Series Anomaly detection.</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/readme.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="tex2jax_ignore mathjax_ignore section" id="time-series-anomaly-detection">
+<h1>Time Series Anomaly detection.<a class="headerlink" href="#time-series-anomaly-detection" title="Permalink to this headline">¶</a></h1>
+<p><strong>The primary purpose</strong> of the TSAD (Python module) is to make life easier for researchers who use deep learning techniques for time series.</p>
+<p><img alt="image2" src="_images/Useful.jpg" /></p>
+<p>In particular, TSAD is created for solving Time Series Anomaly Detection problem by widely known technique:</p>
+<ul class="simple">
+<li><p>Forecast a multivariate Time Series (TS) one point ahead (Also works for univariate TS)</p></li>
+<li><p>Compute residuals between forecast and true values</p></li>
+<li><p>Apply analysis of residuals and thus find anomalies</p></li>
+</ul>
+<hr class="docutils" />
+<p><strong>The functionality</strong> of the TSAD:</p>
+<ul class="simple">
+<li><p>Preprocessing of Time Series (<a class="reference external" href="https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.src">tsad.src</a> module):</p>
+<ul>
+<li><p>Automatic search for gaps or groups of missing values and solving this problem (tsad.src.df2dfs)</p></li>
+<li><p>Conversion to a single sample rate or solving unevenly spaced time series problem n(tsad.src.df2dfs)</p></li>
+<li><p>Splitting the entire history dataset, that is, one large time series, into a train and a test (tsad.src.ts_train_test_split) with a specific length of time series in one sample. Also, you can adjust the step, intersection of samples, and much more.</p></li>
+<li><p>Collecting samples in batches by using a Loader (tsad.src.Loader)</p></li>
+</ul>
+</li>
+<li><p>Forecasting multi-step ahead both multivariate and univariate time series. As forecasting algorithms were implemented or will be implemented <a class="reference external" href="https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.models">tsad.models</a>:</p>
+<ul>
+<li><p>A simple one-layer LSTM network (LSTM)</p></li>
+<li><p>A two-layer LSTM network (DeepLSTM)</p></li>
+<li><p>bi-directional LSTM network (BLSTM)</p></li>
+<li><p>LSTM encoder-decoder (EncDec-AD)</p></li>
+<li><p>LSTM autoencoder (LSTM-AE)</p></li>
+<li><p>Convolutional LSTM network (ConvLSTM)</p></li>
+<li><p>Convolutional Bi-directional LSTM network (CBLSTM)</p></li>
+<li><p>Multi-Scale Convolutional Recurrent Encoder-Decoder (MSCRED)</p></li>
+</ul>
+</li>
+<li><p>Calculation of residuals between forecast and real values. By default, the absolute difference is calculated. Still, you can write your function taking into account the requirements (requirements and other functions for calculating the residuals can be found in <a class="reference external" href="https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.generate_residuals">tsad.generate_residuals</a>) and use it in the pipeline.</p></li>
+<li><p>Residual analysis to find anomalies. There are various techniques for analyzing residuals. By default, <a class="reference external" href="https://en.wikipedia.org/wiki/Hotelling%27s_T-squared_distribution">T2 statistic</a> is implemented , but you can write your function taking into account the requirements (requirements and other functions for analyzing residuals can be found in <a class="reference external" href="https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.stastics">tsad. stastics</a>) and use it in the pipeline.</p></li>
+<li><p>Grouping of repeated time series values. tsad.src.split_by_repeated</p></li>
+<li><p>Convenient loading of hyperparameters.  tsad.useful.iterators.MeshLoader</p></li>
+</ul>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<p>https://tsad.readthedocs.io/</p>
+<p><strong>The main class of the pipeline is</strong> <a class="reference external" href="https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.main">tsad.main.DL_AD</a></p>
+</div>
+<hr class="docutils" />
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p><strong>Installation</strong> through <a class="reference external" href="https://pypi.org/project/tsad">PyPi</a>:</p>
+<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-U</span> <span class="pre">tsad</span></code></p>
+<ol class="simple">
+<li><p>Primitive case</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">tsad</span> <span class="kn">import</span> <span class="n">main</span>
+
+<span class="c1"># Loading ideal time series without any problem</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;example.csv&#39;</span><span class="p">,</span><span class="n">parse_dates</span><span class="o">=</span><span class="s1">&#39;DT&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;DT&#39;</span><span class="p">)</span> 
+
+<span class="n">pipeline</span> <span class="o">=</span> <span class="n">maim</span><span class="o">.</span><span class="n">DL_AD</span><span class="p">()</span> 
+<span class="n">pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">list_anomalies</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">predict_anomaly</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">forecast</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="simple">
+<li><p>Advanced case</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>import pandas as pd
+from tsad import main
+from tsad.src import df2dfs
+import torch
+
+# Loading time series
+df = pd.read_csv(&#39;example.csv&#39;,parse_dates=&#39;DT&#39;).set_index(&#39;DT&#39;) 
+
+class my_preproc_func(...):
+    ...
+    
+
+pipeline = maim.DL_AD(preproc=my_preproc_func) 
+pipeline.fit(df2dfs(df),
+             n_epochs=3,
+             optimiser=(torch.optim.Adam,{‘lr’:0.001}),
+             batch_size=8,
+             len_seq=60*3,
+             test_size=0.4)
+</pre></div>
+</div>
+<p>After that, you can see:</p>
+<p><img alt="image1" src="_images/1.png" /></p>
+<p>And then you can perform:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">list_anomalies</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">predict_anomaly</span><span class="p">(</span><span class="n">df2dfs</span><span class="p">(</span><span class="n">df</span><span class="p">))</span>
+<span class="n">forecast</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">df2dfs</span><span class="p">(</span><span class="n">df</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>More details you can find <a class="reference external" href="https://github.com/waico/tsad/tree/main/examples">here</a></p>
+</div>
+<hr class="docutils" />
+<div class="section" id="thoughts">
+<h2>Thoughts<a class="headerlink" href="#thoughts" title="Permalink to this headline">¶</a></h2>
+<p>We encourage the community also to provide feedback on the desired functionality.</p>
+<p>We plan to implement:</p>
+<ol class="simple">
+<li><p>More complex preprocessing of time series, especially in the area of reduction to a single sampling rate (problem of unevenly spaced time series)</p></li>
+<li><p>Implement other SOTA algorithms</p></li>
+<li><p>The ability to implement any model in our pipeline by just providing a link to GitHub. It seems to be a handy feature as many researchers need to verify their models with others.</p></li>
+<li><p>Integration with most forecasting and anomaly detection benchmarks.</p></li>
+</ol>
+<p>Some interesting links:</p>
+<ol class="simple">
+<li><p>https://github.com/salesforce/Merlion</p></li>
+<li><p>https://github.com/fastforwardlabs/deepad</p></li>
+<li><p>https://github.com/HendrikStrobelt/LSTMVis</p></li>
+<li><p>https://github.com/TezRomacH/python-package-template</p></li>
+<li><p>https://github.com/khundman/telemanom</p></li>
+<li><p>https://github.com/signals-dev/Orion</p></li>
+<li><p>https://github.com/NetManAIOps/OmniAnomaly</p></li>
+<li><p>https://github.com/unit8co/darts</p></li>
+</ol>
+</div>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>python==3.7.6</p></li>
+<li><p>numpy&gt;=1.20.0</p></li>
+<li><p>pandas&gt;=1.0.1</p></li>
+<li><p>matplotlib&gt;=3.1.3</p></li>
+<li><p>scikit-learn&gt;=0.24.1</p></li>
+<li><p>torch==1.5.0</p></li>
+</ul>
+</div>
+<div class="section" id="repo-structure">
+<h2>Repo structure<a class="headerlink" href="#repo-structure" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  └── repo 
+    ├───docs       # documentation
+    ├───examples   # examples
+    ├───tsad       # files of library
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="Evaluating.html" class="btn btn-neutral float-right" title="Evaluation of AD algorithms perfomance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Time Series Anomaly Detection!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, V. Kozitsin.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
