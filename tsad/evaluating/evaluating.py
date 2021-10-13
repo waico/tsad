@@ -32,17 +32,21 @@ def evaluating(true, prediction,
     true: variants:
         or: if one  dataset : pd.Series with binary int labels (1 is 
         anomaly, 0 is not anomaly);
+        
         or: if one  dataset : list of pd.Timestamp of true labels, or [] 
-        if haven't labels 
+        if haven't labels ;
+        
         or: if one  dataset : list of list of t1,t2: left and right 
         detection, boundaries of pd.Timestamp or [[]] if haven't labels
         
         or: if many datasets: list (len of number of datasets) of pd.Series 
         with binary int labels;
+        
         or: if many datasets: list of list of pd.Timestamp of true labels, or
-        true = [ts,[]] if haven't labels for specific dataset
+        true = [ts,[]] if haven't labels for specific dataset;
+        
         or: if many datasets: list of list of list of t1,t2: left and right 
-        detection boundaries of pd.Timestamp;
+        detection boundaries of pd.Timestamp;        
         If we haven't true labels for specific dataset then we must insert 
         empty list of labels: true = [[[]],[[t1,t2],[t1,t2]]]. 
         
@@ -53,6 +57,7 @@ def evaluating(true, prediction,
     prediction: variants:
         or: if one  dataset : pd.Series with binary int labels
         (1 is anomaly, 0 is not anomaly);
+        
         or: if many datasets: list (len of number of datasets) 
         of pd.Series with binary int labels.
         
@@ -66,9 +71,12 @@ def evaluating(true, prediction,
         Changepoint problem: {'nab', 'average_time'}. 
         Standart AD problem: {'binary', 'confusion_matrix'}. 
         'nab' is Numenta Anomaly Benchmark metric
+        
         'average_time' is both average delay or time to failure
         depend on situatuion.
+        
         'binary': FAR, MAR, F1.
+        
         'confusion_matrix' standart confusion_matrix for any point.
         
     numenta_time: 'str' for pd.Tiemdelta
