@@ -93,7 +93,11 @@
               
             
             
-              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Description</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme_link.html">Time Series Anomaly detection.</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">tsad</a></li>
 </ul>
@@ -353,21 +357,22 @@
         <span class="k">return</span> <span class="n">new_result</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">result</span></div>
-        
 
-<div class="viewcode-block" id="evaluating_change_point"><a class="viewcode-back" href="../../tsad.html#tsad.src.evaluating_change_point">[docs]</a><span class="k">def</span> <span class="nf">evaluating_change_point</span><span class="p">(</span><span class="n">true</span><span class="p">,</span> <span class="n">prediction</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;nab&#39;</span><span class="p">,</span> 
-                            <span class="n">numenta_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                            <span class="n">portion</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-                            <span class="n">anomaly_window_destenation</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
-                            <span class="n">intersection_mode</span><span class="o">=</span><span class="s1">&#39;cut left&#39;</span><span class="p">,</span>
-                            <span class="n">table_of_coef</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                            <span class="n">scale_func</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
-                            <span class="n">scale_koef</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                            <span class="n">hidden_anomalies_mode</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                            <span class="n">plot_figure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                            <span class="n">change_point_mode</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                            <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>
-                            <span class="p">):</span>
+
+<div class="viewcode-block" id="evaluating"><a class="viewcode-back" href="../../tsad.html#tsad.src.evaluating">[docs]</a><span class="k">def</span> <span class="nf">evaluating</span><span class="p">(</span><span class="n">true</span><span class="p">,</span> <span class="n">prediction</span><span class="p">,</span>
+               <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;nab&#39;</span><span class="p">,</span>
+               <span class="n">numenta_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">portion</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+               <span class="n">anomaly_window_destenation</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
+               <span class="n">intersection_mode</span><span class="o">=</span><span class="s1">&#39;cut left&#39;</span><span class="p">,</span>
+               <span class="n">table_of_coef</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">scale_func</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+               <span class="n">scale_koef</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+               <span class="n">hidden_anomalies_mode</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+               <span class="n">plot_figure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+               <span class="n">change_point_mode</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+               <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>
+               <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    </span>
 <span class="sd">    true - both:</span>

@@ -189,21 +189,22 @@ def split_by_repeated(series,df=None):
         return new_result
     else:
         return result
-        
 
-def evaluating_change_point(true, prediction, metric='nab', 
-                            numenta_time=None,
-                            portion=0.1,
-                            anomaly_window_destenation='left',
-                            intersection_mode='cut left',
-                            table_of_coef=None,
-                            scale_func = "default",
-                            scale_koef=1,
-                            hidden_anomalies_mode = True,
-                            plot_figure=False,
-                            change_point_mode = True,
-                            verbose=True
-                            ):
+
+def evaluating(true, prediction,
+               metric='nab',
+               numenta_time=None,
+               portion=0.1,
+               anomaly_window_destenation='left',
+               intersection_mode='cut left',
+               table_of_coef=None,
+               scale_func = "default",
+               scale_koef=1,
+               hidden_anomalies_mode = True,
+               plot_figure=False,
+               change_point_mode = True,
+               verbose=True
+               ):
     """
     
     true - both:

@@ -95,7 +95,11 @@
               
             
             
-              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Description</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="readme_link.html">Time Series Anomaly detection.</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">tsad</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">tsad package</a><ul>
@@ -242,7 +246,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="tsad.main.DL_AD">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tsad.main.</span></span><span class="sig-name descname"><span class="pre">DL_AD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preproc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generate_res_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res_analys_alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/main.html#DL_AD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.main.DL_AD" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Пайплайн Time Series Anomaly Detection based on 
 SOTA deep learning forecasting algorithms.</p>
 <p>Данный пайплайн избавит вас от проблем написания кода для:</p>
@@ -337,7 +341,7 @@ the value is automatically set to the complement of the test size. *
 </dd>
 <dt>random_state<span class="classifier">int, RandomState instance or None, default=None</span></dt><dd><p>Controls the shuffling applied to the data before applying the split.
 Pass an int for reproducible output across multiple function calls.
-See <a class="reference external" href="https://scikit-learn.org/stable/glossary.html#term-random_state" title="(in scikit-learn v0.24)"><span class="xref std std-term">Glossary</span></a>.*
+See <a class="reference external" href="https://scikit-learn.org/stable/glossary.html#term-random_state" title="(in scikit-learn v1.0)"><span class="xref std std-term">Glossary</span></a>.*
 <a href="#id5"><span class="problematic" id="id6">*</span></a><a class="reference external" href="https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076">https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076</a></p>
 </dd>
 <dt>shuffle<span class="classifier">bool, default=True</span></dt><dd><p>Whether or not to shuffle the data before splitting. If shuffle=False
@@ -384,6 +388,22 @@ then stratify must be None. *</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="tsad.main.DL_AD.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./pipeline.pcl'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/main.html#DL_AD.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.main.DL_AD.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for loading pipeline.
+It may be required for example after training.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>path</strong><span class="classifier">str</span></dt><dd></dd>
+<dt><strong>Путь до сохраненного файла пайплайна.</strong></dt><dd></dd>
+<dt><strong>Пайлайн должен быть в формате pickle</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="tsad.main.DL_AD.predict_anomaly">
 <span class="sig-name descname"><span class="pre">predict_anomaly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Loader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intersection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stratify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_figures</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/main.html#DL_AD.predict_anomaly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.main.DL_AD.predict_anomaly" title="Permalink to this definition">¶</a></dt>
 <dd><p>Поиск аномалий в новом наборе данных</p>
@@ -396,14 +416,41 @@ then stratify must be None. *</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="tsad.main.DL_AD.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./pipeline.pcl'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/main.html#DL_AD.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.main.DL_AD.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for saving pipeline.
+It may be required for example after training.
+CPU.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>path</strong><span class="classifier">str</span></dt><dd></dd>
+<dt><strong>Путь до файла, для сохранения пайплайна.</strong></dt><dd></dd>
+<dt><strong>Пайлайн сохраняется в формате pickle</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>
 <div class="section" id="module-tsad.models">
 <span id="tsad-models-module"></span><h2>tsad.models module<a class="headerlink" href="#module-tsad.models" title="Permalink to this headline">¶</a></h2>
+<p>Требования: 
+в ините должна содержаться информация о</p>
+<blockquote>
+<div><p>device, 
+random_state</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Также должно быть метод</dt><dd><p>run_epoch</p>
+</dd>
+</dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="tsad.models.SimpleLSTM">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tsad.models.</span></span><span class="sig-name descname"><span class="pre">SimpleLSTM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_hidden</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bidirectional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/models.html#SimpleLSTM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.models.SimpleLSTM" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tsad.models.</span></span><span class="sig-name descname"><span class="pre">SimpleLSTM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_hidden</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bidirectional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/models.html#SimpleLSTM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.models.SimpleLSTM" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="tsad.models.SimpleLSTM.forward">
@@ -421,15 +468,20 @@ registered hooks while the latter silently ignores them.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="tsad.models.SimpleLSTM.initHidden">
-<span class="sig-name descname"><span class="pre">initHidden</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/models.html#SimpleLSTM.initHidden"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.models.SimpleLSTM.initHidden" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">initHidden</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/models.html#SimpleLSTM.initHidden"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.models.SimpleLSTM.initHidden" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="tsad.models.SimpleLSTM.run_epoch">
-<span class="sig-name descname"><span class="pre">run_epoch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">criterion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points_ahead</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encod_decode_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/models.html#SimpleLSTM.run_epoch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.models.SimpleLSTM.run_epoch" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">run_epoch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">criterion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points_ahead</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">device(type='cuda',</span> <span class="pre">index=0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encod_decode_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/models.html#SimpleLSTM.run_epoch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.models.SimpleLSTM.run_epoch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tsad.models.set_determenistic">
+<span class="sig-prename descclassname"><span class="pre">tsad.models.</span></span><span class="sig-name descname"><span class="pre">set_determenistic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/models.html#set_determenistic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.models.set_determenistic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="module-tsad.src">
@@ -438,7 +490,7 @@ registered hooks while the latter silently ignores them.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="tsad.src.Loader">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tsad.src.</span></span><span class="sig-name descname"><span class="pre">Loader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/src.html#Loader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.src.Loader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 </dd></dl>
 
 <dl class="py function">
@@ -485,8 +537,8 @@ If false, then не отрисуется нарезка</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="tsad.src.evaluating_change_point">
-<span class="sig-prename descclassname"><span class="pre">tsad.src.</span></span><span class="sig-name descname"><span class="pre">evaluating_change_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prediction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nab'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numenta_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">portion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anomaly_window_destenation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intersection_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cut</span> <span class="pre">left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_of_coef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_koef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_anomalies_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_point_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/src.html#evaluating_change_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.src.evaluating_change_point" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="tsad.src.evaluating">
+<span class="sig-prename descclassname"><span class="pre">tsad.src.</span></span><span class="sig-name descname"><span class="pre">evaluating</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prediction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nab'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numenta_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">portion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anomaly_window_destenation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intersection_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cut</span> <span class="pre">left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_of_coef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_koef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_anomalies_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_point_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/src.html#evaluating"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.src.evaluating" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>true - both:</dt><dd><p>list of pandas Series with binary int labels
 pandas Series with binary int labels</p>
@@ -616,7 +668,7 @@ than “array_like”, because we assure we’ll return a numpy array.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="tsad.stastics.Hotelling">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tsad.stastics.</span></span><span class="sig-name descname"><span class="pre">Hotelling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">koef_ucl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/stastics.html#Hotelling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.stastics.Hotelling" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="tsad.stastics.Hotelling.feature_importances">
 <span class="sig-name descname"><span class="pre">feature_importances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tsad/stastics.html#Hotelling.feature_importances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tsad.stastics.Hotelling.feature_importances" title="Permalink to this definition">¶</a></dt>

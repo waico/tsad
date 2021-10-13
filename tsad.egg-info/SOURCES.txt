@@ -13,3 +13,10 @@ tsad.egg-info/dependency_links.txt
 tsad.egg-info/not-zip-safe
 tsad.egg-info/requires.txt
 tsad.egg-info/top_level.txt
+tsad/evaluating/__init__.py
+tsad/evaluating/evaluating.py
+tsad/evaluating/multivariate_funcs.py
+tsad/evaluating/src.py
+tsad/evaluating/univariate_funcs.py
+tsad/useful/__init__.py
+tsad/useful/iterators.py

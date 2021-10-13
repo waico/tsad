@@ -127,6 +127,7 @@ Some interesting links:
 5.  https://github.com/khundman/telemanom 
 6.  https://github.com/signals-dev/Orion 
 7.  https://github.com/NetManAIOps/OmniAnomaly 
+8.  https://github.com/unit8co/darts
 
 #### Dependencies
 

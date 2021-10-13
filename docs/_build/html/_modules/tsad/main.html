@@ -93,7 +93,11 @@
               
             
             
-              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Description</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme_link.html">Time Series Anomaly detection.</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">tsad</a></li>
 </ul>
@@ -168,15 +172,14 @@
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda:0&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
-
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">display</span>
 
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">src</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">generate_residuals</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">stastics</span>
-
 
 <div class="viewcode-block" id="DL_AD"><a class="viewcode-back" href="../../tsad.html#tsad.main.DL_AD">[docs]</a><span class="k">class</span> <span class="nc">DL_AD</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;        </span>
@@ -227,7 +230,8 @@
 <span class="sd">    --------</span>
 <span class="sd">    https://github.com/waico/tsad/tree/main/examples </span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">_get_Train_Test_sets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dfs</span><span class="p">,</span><span class="n">len_seq</span><span class="p">,</span>
+
+    <span class="k">def</span> <span class="nf">_get_Train_Test_sets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dfs</span><span class="p">,</span> <span class="n">len_seq</span><span class="p">,</span>
                              <span class="n">points_ahead</span><span class="p">,</span>
                              <span class="n">gap</span><span class="p">,</span>
                              <span class="n">shag</span><span class="p">,</span>
@@ -235,79 +239,78 @@
                              <span class="n">test_size</span><span class="p">,</span>
                              <span class="n">train_size</span><span class="p">,</span>
                              <span class="n">random_state</span><span class="p">,</span>
-                             <span class="n">shuffle</span><span class="p">,</span>  
+                             <span class="n">shuffle</span><span class="p">,</span>
                              <span class="n">stratify</span><span class="p">,</span>
-                            <span class="p">):</span>
+                             <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Вспомогательная функция, избавляющая от дубляжа</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span><span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">dfs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_preproc</span><span class="p">:</span>
-                <span class="n">new_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preproc</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">df</span><span class="p">),</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+                <span class="n">new_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preproc</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_init_preproc</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">new_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preproc</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df</span><span class="p">),</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-            <span class="k">assert</span> <span class="n">len_seq</span> <span class="o">+</span> <span class="n">points_ahead</span> <span class="o">+</span> <span class="n">gap</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>                       
-            <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span><span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">ts_train_test_split</span><span class="p">(</span><span class="n">df</span> <span class="o">=</span> <span class="n">new_df</span><span class="p">,</span>
-                                                                      <span class="n">len_seq</span><span class="o">=</span><span class="n">len_seq</span><span class="p">,</span>
-                                                                      <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">,</span>
-                                                                      <span class="n">gap</span><span class="o">=</span><span class="n">gap</span><span class="p">,</span>
-                                                                      <span class="n">shag</span><span class="o">=</span><span class="n">shag</span><span class="p">,</span>
-                                                                      <span class="n">intersection</span><span class="o">=</span><span class="n">intersection</span><span class="p">,</span>
-                                                                      <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span>
-                                                                      <span class="n">train_size</span><span class="o">=</span><span class="n">train_size</span><span class="p">,</span>
-                                                                      <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-                                                                      <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1"># потому что потом нужно в основном итераторе</span>
-                                                                      <span class="n">stratify</span><span class="o">=</span><span class="n">stratify</span><span class="p">)</span>
+                <span class="n">new_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preproc</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">len_seq</span> <span class="o">+</span> <span class="n">points_ahead</span> <span class="o">+</span> <span class="n">gap</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+            <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">ts_train_test_split</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">new_df</span><span class="p">,</span>
+                                                                       <span class="n">len_seq</span><span class="o">=</span><span class="n">len_seq</span><span class="p">,</span>
+                                                                       <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">,</span>
+                                                                       <span class="n">gap</span><span class="o">=</span><span class="n">gap</span><span class="p">,</span>
+                                                                       <span class="n">shag</span><span class="o">=</span><span class="n">shag</span><span class="p">,</span>
+                                                                       <span class="n">intersection</span><span class="o">=</span><span class="n">intersection</span><span class="p">,</span>
+                                                                       <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span>
+                                                                       <span class="n">train_size</span><span class="o">=</span><span class="n">train_size</span><span class="p">,</span>
+                                                                       <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+                                                                       <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                                       <span class="c1"># потому что потом нужно в основном итераторе</span>
+                                                                       <span class="n">stratify</span><span class="o">=</span><span class="n">stratify</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="nb">list</span><span class="p">()):</span>
             <span class="c1"># уже все pd.DataFrame</span>
-            <span class="n">_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span><span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_preproc</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">preproc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">_df</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_init_preproc</span> <span class="o">=</span> <span class="kc">False</span>            
+                <span class="bp">self</span><span class="o">.</span><span class="n">_init_preproc</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">_df</span><span class="o">.</span><span class="n">columns</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">index</span>  <span class="o">=</span>  <span class="n">_df</span><span class="o">.</span><span class="n">index</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">_df</span><span class="o">.</span><span class="n">index</span>
 
-            <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="p">[],[],[],[]</span>
+            <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
             <span class="n">_k</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">dfs</span><span class="p">:</span>
-                <span class="k">if</span> <span class="p">((</span><span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">))</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s1">&#39;Type of dfs is unsupported&#39;</span><span class="p">)</span> 
+                <span class="k">if</span> <span class="p">((</span><span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">))</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s1">&#39;Type of dfs is unsupported&#39;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">len_seq</span> <span class="o">+</span> <span class="n">points_ahead</span> <span class="o">+</span> <span class="n">gap</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)):</span>
-                     <span class="n">_k</span><span class="o">+=</span><span class="mi">1</span>
-                     <span class="k">continue</span>
-                
-                <span class="n">new_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preproc</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df</span><span class="p">),</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-                <span class="n">_X_train</span><span class="p">,</span> <span class="n">_X_test</span><span class="p">,</span> <span class="n">_y_train</span><span class="p">,</span> <span class="n">_y_test</span><span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">ts_train_test_split</span><span class="p">(</span><span class="n">new_df</span><span class="p">,</span><span class="n">len_seq</span><span class="p">,</span>
-                                                                          <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">,</span>
-                                                                          <span class="n">gap</span><span class="o">=</span><span class="n">gap</span><span class="p">,</span>
-                                                                          <span class="n">shag</span><span class="o">=</span><span class="n">shag</span><span class="p">,</span>
-                                                                          <span class="n">intersection</span><span class="o">=</span><span class="n">intersection</span><span class="p">,</span>
-                                                                          <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span>
-                                                                          <span class="n">train_size</span><span class="o">=</span><span class="n">train_size</span><span class="p">,</span>
-                                                                          <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-                                                                          <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                                                          <span class="n">stratify</span><span class="o">=</span><span class="n">stratify</span><span class="p">)</span>
+                    <span class="n">_k</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">continue</span>
+
+                <span class="n">new_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preproc</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+                <span class="n">_X_train</span><span class="p">,</span> <span class="n">_X_test</span><span class="p">,</span> <span class="n">_y_train</span><span class="p">,</span> <span class="n">_y_test</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">ts_train_test_split</span><span class="p">(</span><span class="n">new_df</span><span class="p">,</span> <span class="n">len_seq</span><span class="p">,</span>
+                                                                               <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">,</span>
+                                                                               <span class="n">gap</span><span class="o">=</span><span class="n">gap</span><span class="p">,</span>
+                                                                               <span class="n">shag</span><span class="o">=</span><span class="n">shag</span><span class="p">,</span>
+                                                                               <span class="n">intersection</span><span class="o">=</span><span class="n">intersection</span><span class="p">,</span>
+                                                                               <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span>
+                                                                               <span class="n">train_size</span><span class="o">=</span><span class="n">train_size</span><span class="p">,</span>
+                                                                               <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+                                                                               <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                                               <span class="n">stratify</span><span class="o">=</span><span class="n">stratify</span><span class="p">)</span>
                 <span class="n">X_train</span> <span class="o">+=</span> <span class="n">_X_train</span>
                 <span class="n">X_test</span> <span class="o">+=</span> <span class="n">_X_test</span>
                 <span class="n">y_train</span> <span class="o">+=</span> <span class="n">_y_train</span>
                 <span class="n">y_test</span> <span class="o">+=</span> <span class="n">_y_test</span>
-            
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Пропущено </span><span class="si">{</span><span class="n">_k</span><span class="si">}</span><span class="s1"> датастов, из-за того что saples слишком малов в датасете. (len_seq + points_ahead + gap -1 &lt;= len(df))&#39;</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Пропущено </span><span class="si">{</span><span class="n">_k</span><span class="si">}</span><span class="s1"> датастов, из-за того что saples слишком малов в датасете. (len_seq + points_ahead + gap -1 &lt;= len(df))&#39;</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s1">&#39;Type of dfs is unsupported&#39;</span><span class="p">)</span>  
-            
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s1">&#39;Type of dfs is unsupported&#39;</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span>
-    
-    
-    
-    
+
     <span class="k">def</span> <span class="nf">_get_anomaly_timestamps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                                 <span class="n">dfs</span><span class="p">,</span>
                                 <span class="n">Loader</span><span class="p">,</span>
@@ -316,68 +319,65 @@
                                 <span class="n">gap</span><span class="p">,</span>
                                 <span class="n">shag</span><span class="p">,</span>
                                 <span class="n">intersection</span><span class="p">,</span>
-                                <span class="n">test_size</span><span class="p">,</span>  
+                                <span class="n">test_size</span><span class="p">,</span>
                                 <span class="n">random_state</span><span class="p">,</span>
                                 <span class="n">shuffle</span><span class="p">,</span>
                                 <span class="n">stratify</span><span class="p">,</span>
+                                <span class="n">device</span><span class="p">,</span>
                                 <span class="n">point_ahead_for_residuals</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Вспомогательная функция для  генерации всего</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">X</span><span class="p">,</span> <span class="n">_</span> <span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">_</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_Train_Test_sets</span><span class="p">(</span><span class="n">dfs</span><span class="o">=</span><span class="n">dfs</span><span class="p">,</span>
-                                                      <span class="n">len_seq</span><span class="o">=</span><span class="n">len_seq</span><span class="p">,</span>
-                                                      <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">,</span> <span class="c1"># 1 это default, так с остатками лучше не шутить до сих пор </span>
-                                                      <span class="n">gap</span><span class="o">=</span><span class="n">gap</span><span class="p">,</span>
-                                                      <span class="n">shag</span><span class="o">=</span><span class="n">shag</span><span class="p">,</span>
-                                                      <span class="n">intersection</span><span class="o">=</span><span class="n">intersection</span><span class="p">,</span>
-                                                      <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span>  
-                                                      <span class="n">train_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                                      <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-                                                      <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
-                                                      <span class="n">stratify</span><span class="o">=</span><span class="n">stratify</span><span class="p">)</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_Train_Test_sets</span><span class="p">(</span><span class="n">dfs</span><span class="o">=</span><span class="n">dfs</span><span class="p">,</span>
+                                                    <span class="n">len_seq</span><span class="o">=</span><span class="n">len_seq</span><span class="p">,</span>
+                                                    <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">,</span>
+                                                    <span class="c1"># 1 это default, так с остатками лучше не шутить до сих пор</span>
+                                                    <span class="n">gap</span><span class="o">=</span><span class="n">gap</span><span class="p">,</span>
+                                                    <span class="n">shag</span><span class="o">=</span><span class="n">shag</span><span class="p">,</span>
+                                                    <span class="n">intersection</span><span class="o">=</span><span class="n">intersection</span><span class="p">,</span>
+                                                    <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span>
+                                                    <span class="n">train_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                                    <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+                                                    <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
+                                                    <span class="n">stratify</span><span class="o">=</span><span class="n">stratify</span><span class="p">)</span>
 
-
-        <span class="n">all_data_iterator</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y_true</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>          
-        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">run_epoch</span><span class="p">(</span><span class="n">all_data_iterator</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;forecast&#39;</span><span class="p">,</span> <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">)</span>     
-        <span class="n">residuals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_res_func</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_true</span><span class="p">))</span>           
-        <span class="n">point_ahead_for_residuals</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># мы иногда прогнозим на 10 точек вперед, ну интересует все равно на одну точку впреред </span>
-        <span class="n">res_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_true</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">point_ahead_for_residuals</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">))]</span>                                                
-        <span class="n">df_residuals</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">residuals</span><span class="p">[:,</span><span class="n">point_ahead_for_residuals</span><span class="p">,:],</span><span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="n">res_indices</span><span class="p">)</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+        <span class="n">all_data_iterator</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">run_epoch</span><span class="p">(</span><span class="n">all_data_iterator</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;forecast&#39;</span><span class="p">,</span> <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">,</span>
+                                      <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">residuals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_res_func</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_true</span><span class="p">))</span>
+        <span class="n">point_ahead_for_residuals</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># мы иногда прогнозим на 10 точек вперед, ну интересует все равно на одну точку впреред</span>
+        <span class="n">res_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_true</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">point_ahead_for_residuals</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">))]</span>
+        <span class="n">df_residuals</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">residuals</span><span class="p">[:,</span> <span class="n">point_ahead_for_residuals</span><span class="p">,</span> <span class="p">:],</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+                                    <span class="n">index</span><span class="o">=</span><span class="n">res_indices</span><span class="p">)</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">df_residuals</span>
-        
-        
 
-        
-<span class="c1"># -----------------------------------------------------------------------------------------</span>
-<span class="c1">#     Формирование сутевой части класса </span>
-<span class="c1"># -----------------------------------------------------------------------------------------    </span>
-    
-    
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>     
+    <span class="c1"># -----------------------------------------------------------------------------------------</span>
+    <span class="c1">#     Формирование сутевой части класса</span>
+    <span class="c1"># -----------------------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">preproc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">generate_res_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">res_analys_alg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 
-                <span class="p">):</span>
-       
-        
+
+                 <span class="p">):</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">preproc</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span> <span class="k">if</span> <span class="n">preproc</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">preproc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">generate_res_func</span> <span class="o">=</span> <span class="n">generate_residuals</span><span class="o">.</span><span class="n">abs</span> <span class="k">if</span> <span class="n">generate_res_func</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">generate_res_func</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">res_analys_alg</span> <span class="o">=</span> <span class="n">stastics</span><span class="o">.</span><span class="n">Hotelling</span><span class="p">()</span> <span class="k">if</span> <span class="n">res_analys_alg</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">res_analys_alg</span>
-        
 
-        
 <div class="viewcode-block" id="DL_AD.fit"><a class="viewcode-back" href="../../tsad.html#tsad.main.DL_AD.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">dfs</span><span class="p">,</span>
             <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">encod_decode_model</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># ужас, нужно это править, особенность encod_decode модели. Попытаться вообще еубрать эту переменную          </span>
+            <span class="n">encod_decode_model</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="c1"># ужас, нужно это править, особенность encod_decode модели. Попытаться вообще еубрать эту переменную</span>
             <span class="n">criterion</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">optimiser</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
-            <span class="n">len_seq</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-            <span class="n">points_ahead</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-            <span class="n">n_epochs</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-            <span class="n">gap</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
+            <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+            <span class="n">len_seq</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">points_ahead</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">n_epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="n">gap</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">shag</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">intersection</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
@@ -386,11 +386,11 @@
             <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">show_figures</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">best_model_file</span> <span class="o">=</span> <span class="s1">&#39;./best_model.pt&#39;</span><span class="p">,</span>
+            <span class="n">best_model_file</span><span class="o">=</span><span class="s1">&#39;./best_model.pt&#39;</span><span class="p">,</span>
             <span class="n">stratify</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">Loader</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            
-           <span class="p">):</span>
+
+            <span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Обучение модели как для задачи прогнозирования так и для задачи anomaly</span>
@@ -495,69 +495,68 @@
 <span class="sd">        ----------</span>
 <span class="sd">        list of pd.datetime anomalies on initial dataset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_init_preproc</span><span class="o">=</span><span class="kc">True</span> <span class="c1"># это кастыль для _get_Train_Test_sets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_preproc</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># это кастыль для _get_Train_Test_sets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">points_ahead</span> <span class="o">=</span> <span class="n">points_ahead</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">len_seq</span> <span class="o">=</span> <span class="n">len_seq</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
         <span class="n">dfs</span> <span class="o">=</span> <span class="n">dfs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">best_model_file</span> <span class="o">=</span> <span class="n">best_model_file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">encod_decode_model</span> <span class="o">=</span> <span class="n">encod_decode_model</span>
-        
-         
+        <span class="k">if</span> <span class="n">show_progress</span><span class="p">:</span>
+            <span class="n">show_progress_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-<span class="c1"># -----------------------------------------------------------------------------------------</span>
-<span class="c1">#     Формирование train_iterator и val_iteraror</span>
-<span class="c1"># -----------------------------------------------------------------------------------------</span>
+        <span class="c1"># -----------------------------------------------------------------------------------------</span>
+        <span class="c1">#     Формирование train_iterator и val_iteraror</span>
+        <span class="c1"># -----------------------------------------------------------------------------------------</span>
         <span class="k">if</span> <span class="n">Loader</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">Loader</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">Loader</span>
-            
-        
+
         <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_Train_Test_sets</span><span class="p">(</span><span class="n">dfs</span><span class="o">=</span><span class="n">dfs</span><span class="p">,</span>
-                                                               <span class="n">len_seq</span><span class="o">=</span><span class="n">len_seq</span><span class="p">,</span>
-                                                               <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">,</span>
-                                                               <span class="n">gap</span><span class="o">=</span><span class="n">gap</span><span class="p">,</span>
-                                                               <span class="n">shag</span><span class="o">=</span><span class="n">shag</span><span class="p">,</span>
-                                                               <span class="n">intersection</span><span class="o">=</span><span class="n">intersection</span><span class="p">,</span>
-                                                               <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span>
-                                                               <span class="n">train_size</span><span class="o">=</span><span class="n">train_size</span><span class="p">,</span>
-                                                               <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-                                                               <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>  
-                                                               <span class="n">stratify</span><span class="o">=</span><span class="n">stratify</span><span class="p">)</span> 
+                                                                     <span class="n">len_seq</span><span class="o">=</span><span class="n">len_seq</span><span class="p">,</span>
+                                                                     <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">,</span>
+                                                                     <span class="n">gap</span><span class="o">=</span><span class="n">gap</span><span class="p">,</span>
+                                                                     <span class="n">shag</span><span class="o">=</span><span class="n">shag</span><span class="p">,</span>
+                                                                     <span class="n">intersection</span><span class="o">=</span><span class="n">intersection</span><span class="p">,</span>
+                                                                     <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span>
+                                                                     <span class="n">train_size</span><span class="o">=</span><span class="n">train_size</span><span class="p">,</span>
+                                                                     <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+                                                                     <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
+                                                                     <span class="n">stratify</span><span class="o">=</span><span class="n">stratify</span><span class="p">)</span>
 
-        <span class="n">train_iterator</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span><span class="n">batch_size</span><span class="p">,</span><span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">)</span>
-        <span class="n">val_iterator</span>   <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span><span class="n">batch_size</span><span class="p">,</span><span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">)</span>
+        <span class="n">train_iterator</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">)</span>
+        <span class="n">val_iterator</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">)</span>
 
-<span class="c1"># -----------------------------------------------------------------------------------------</span>
-<span class="c1">#     Обучение моделей</span>
-<span class="c1"># -----------------------------------------------------------------------------------------</span>
-            
+        <span class="c1"># -----------------------------------------------------------------------------------------</span>
+        <span class="c1">#     Обучение моделей</span>
+        <span class="c1"># -----------------------------------------------------------------------------------------</span>
 
         <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda:0&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
-    
-        
+
         <span class="k">if</span> <span class="n">criterion</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
-            
+
         <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">SimpleLSTM</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-            
-            
+            <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">SimpleLSTM</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="n">random_state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+
         <span class="k">if</span> <span class="n">optimiser</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">optimiser</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span>
             <span class="n">optimiser</span> <span class="o">=</span> <span class="n">optimiser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">=</span> <span class="n">optimiser</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">args</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">()</span>
+            <span class="n">args</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">()</span>
             <span class="n">optimiser</span> <span class="o">=</span> <span class="n">optimiser</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
-            
-            
+
         <span class="n">history_train</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">history_val</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">best_val_loss</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;+inf&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">):</span>    
-            <span class="n">train_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">run_epoch</span><span class="p">(</span><span class="n">train_iterator</span><span class="p">,</span> <span class="n">optimiser</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">,</span><span class="n">encod_decode_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encod_decode_model</span><span class="p">)</span><span class="c1">#, writer=writer)</span>
-            <span class="n">val_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">run_epoch</span><span class="p">(</span><span class="n">val_iterator</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">,</span> <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">,</span><span class="n">encod_decode_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encod_decode_model</span><span class="p">)</span><span class="c1">#, writer=writer)</span>
+        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">):</span>
+            <span class="n">train_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">run_epoch</span><span class="p">(</span><span class="n">train_iterator</span><span class="p">,</span> <span class="n">optimiser</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span>
+                                              <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">,</span> <span class="n">encod_decode_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encod_decode_model</span><span class="p">,</span>
+                                              <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>  <span class="c1"># , writer=writer)</span>
+            <span class="n">val_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">run_epoch</span><span class="p">(</span><span class="n">val_iterator</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">,</span> <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">,</span>
+                                            <span class="n">encod_decode_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encod_decode_model</span><span class="p">,</span>
+                                            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>  <span class="c1"># , writer=writer)</span>
 
             <span class="n">history_train</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_loss</span><span class="p">)</span>
             <span class="n">history_val</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val_loss</span><span class="p">)</span>
@@ -565,41 +564,49 @@
             <span class="k">if</span> <span class="n">val_loss</span> <span class="o">&lt;</span> <span class="n">best_val_loss</span><span class="p">:</span>
                 <span class="n">best_val_loss</span> <span class="o">=</span> <span class="n">val_loss</span>
                 <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_model_file</span><span class="p">)</span>
-            
-            <span class="k">if</span> <span class="n">show_progress</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Epoch: </span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="si">:</span><span class="s1">02</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Train Loss: </span><span class="si">{</span><span class="n">train_loss</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1"> Val. Loss: </span><span class="si">{</span><span class="n">val_loss</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> &#39;</span><span class="p">)</span> 
 
-                
+            <span class="k">if</span> <span class="n">show_figures</span><span class="p">:</span>
+                <span class="n">display</span><span class="o">.</span><span class="n">clear_output</span><span class="p">(</span><span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history_train</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Train&#39;</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history_val</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Val&#39;</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Epoch&#39;</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;MSE&#39;</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">show_progress</span><span class="p">:</span>
+                <span class="n">show_progress_text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;Epoch: </span><span class="si">{</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="si">:</span><span class="s1">02</span><span class="si">}</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="n">show_progress_text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Train Loss: </span><span class="si">{</span><span class="n">train_loss</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="n">show_progress_text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1"> Val. Loss: </span><span class="si">{</span><span class="n">val_loss</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> </span><span class="se">\n\n</span><span class="s1">&#39;</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">show_progress_text</span><span class="p">)</span>
+
+
+
+
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">best_model_file</span><span class="p">))</span>
-        
+
         <span class="k">if</span> <span class="n">show_progress</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;After choosing the best model:&quot;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">test_iterator</span>  <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_test</span><span class="p">),</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-                <span class="n">test_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">run_epoch</span><span class="p">(</span><span class="n">test_iterator</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">,</span><span class="n">encod_decode_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encod_decode_model</span><span class="p">)</span>
+                <span class="n">test_iterator</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_test</span><span class="p">),</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">test_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">run_epoch</span><span class="p">(</span><span class="n">test_iterator</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">,</span>
+                                                 <span class="n">encod_decode_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encod_decode_model</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Test Loss: </span><span class="si">{</span><span class="n">test_loss</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Весь X_test не помещается в память, тестим усреднением по батчам&#39;</span><span class="p">)</span>
-                <span class="n">test_iterator</span>  <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span><span class="n">batch_size</span><span class="p">,</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">test_iterator</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                 <span class="n">test_loss</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">):</span>  
-                    <span class="n">test_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">run_epoch</span><span class="p">(</span><span class="n">test_iterator</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">,</span><span class="n">encod_decode_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encod_decode_model</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">):</span>
+                    <span class="n">test_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">run_epoch</span><span class="p">(</span><span class="n">test_iterator</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;val&#39;</span><span class="p">,</span>
+                                                          <span class="n">encod_decode_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encod_decode_model</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">))</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Test Loss: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">test_loss</span><span class="p">)</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-            
-        <span class="k">if</span> <span class="n">show_figures</span><span class="p">:</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history_train</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Train&#39;</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history_val</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Val&#39;</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Epoch&#39;</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;MSE&#39;</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="c1"># -----------------------------------------------------------------------------------------</span>
-<span class="c1">#     Генерация остатков</span>
-<span class="c1"># -----------------------------------------------------------------------------------------            </span>
-        <span class="n">df_residuals</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_get_anomaly_timestamps</span><span class="p">(</span><span class="n">dfs</span><span class="o">=</span><span class="n">dfs</span><span class="p">,</span>
+
+        <span class="c1"># -----------------------------------------------------------------------------------------</span>
+        <span class="c1">#     Генерация остатков</span>
+        <span class="c1"># -----------------------------------------------------------------------------------------</span>
+        <span class="n">df_residuals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_anomaly_timestamps</span><span class="p">(</span><span class="n">dfs</span><span class="o">=</span><span class="n">dfs</span><span class="p">,</span>
                                                     <span class="n">Loader</span><span class="o">=</span><span class="n">Loader</span><span class="p">,</span>
                                                     <span class="n">len_seq</span><span class="o">=</span><span class="n">len_seq</span><span class="p">,</span>
                                                     <span class="n">points_ahead</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -608,26 +615,25 @@
                                                     <span class="n">intersection</span><span class="o">=</span><span class="n">intersection</span><span class="p">,</span>
                                                     <span class="n">test_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                                                     <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                                    <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  
+                                                    <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                                     <span class="n">stratify</span><span class="o">=</span><span class="n">stratify</span><span class="p">,</span>
-                                                    <span class="n">point_ahead_for_residuals</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>        
-        <span class="bp">self</span><span class="o">.</span><span class="n">anomaly_timestamps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">res_analys_alg</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">df_residuals</span><span class="p">,</span><span class="n">show_figure</span><span class="o">=</span><span class="n">show_figures</span><span class="p">)</span>
+                                                    <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                                    <span class="n">point_ahead_for_residuals</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anomaly_timestamps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">res_analys_alg</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">df_residuals</span><span class="p">,</span> <span class="n">show_figure</span><span class="o">=</span><span class="n">show_figures</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">statistic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">res_analys_alg</span><span class="o">.</span><span class="n">statistic</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ucl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">res_analys_alg</span><span class="o">.</span><span class="n">ucl</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lcl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">res_analys_alg</span><span class="o">.</span><span class="n">lcl</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">anomaly_timestamps</span></div>
-        
-       
-    
-<span class="c1"># ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  </span>
-<span class="c1"># xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
-<span class="c1"># ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++   </span>
 
-   <span class="c1"># накосячил тут с прогнозом на одну точку вперед. Могут быть проблемы если ahead !=1</span>
+    <span class="c1"># ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span>
+    <span class="c1"># xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+    <span class="c1"># ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span>
+
+    <span class="c1"># накосячил тут с прогнозом на одну точку вперед. Могут быть проблемы если ahead !=1</span>
 <div class="viewcode-block" id="DL_AD.predict_anomaly"><a class="viewcode-back" href="../../tsad.html#tsad.main.DL_AD.predict_anomaly">[docs]</a>    <span class="k">def</span> <span class="nf">predict_anomaly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                         <span class="n">dfs</span><span class="p">,</span>
                         <span class="n">Loader</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">gap</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
+                        <span class="n">gap</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                         <span class="n">shag</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                         <span class="n">intersection</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                         <span class="n">train_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -636,9 +642,8 @@
                         <span class="n">stratify</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                         <span class="n">show_figures</span><span class="o">=</span><span class="kc">True</span>
-           <span class="p">):</span>
-        
-        
+                        <span class="p">):</span>
+
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Поиск аномалий в новом наборе данных</span>
 <span class="sd">        </span>
@@ -657,16 +662,16 @@
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">len_seq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_seq</span>
-        
 
         <span class="k">if</span> <span class="n">Loader</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">Loader</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">Loader</span>
 
+        <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda:0&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
 
-<span class="c1"># -----------------------------------------------------------------------------------------</span>
-<span class="c1">#     Генерация остатков</span>
-<span class="c1"># -----------------------------------------------------------------------------------------            </span>
-        <span class="n">df_residuals</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_get_anomaly_timestamps</span><span class="p">(</span><span class="n">dfs</span><span class="o">=</span><span class="n">dfs</span><span class="p">,</span>
+        <span class="c1"># -----------------------------------------------------------------------------------------</span>
+        <span class="c1">#     Генерация остатков</span>
+        <span class="c1"># -----------------------------------------------------------------------------------------</span>
+        <span class="n">df_residuals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_anomaly_timestamps</span><span class="p">(</span><span class="n">dfs</span><span class="o">=</span><span class="n">dfs</span><span class="p">,</span>
                                                     <span class="n">Loader</span><span class="o">=</span><span class="n">Loader</span><span class="p">,</span>
                                                     <span class="n">len_seq</span><span class="o">=</span><span class="n">len_seq</span><span class="p">,</span>
                                                     <span class="n">points_ahead</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -675,16 +680,15 @@
                                                     <span class="n">intersection</span><span class="o">=</span><span class="n">intersection</span><span class="p">,</span>
                                                     <span class="n">test_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                                                     <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                                    <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  
+                                                    <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                                     <span class="n">stratify</span><span class="o">=</span><span class="n">stratify</span><span class="p">,</span>
-                                                    <span class="n">point_ahead_for_residuals</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>                                                                   
-        <span class="bp">self</span><span class="o">.</span><span class="n">anomaly_timestamps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">res_analys_alg</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">df_residuals</span><span class="p">,</span><span class="n">show_figure</span><span class="o">=</span><span class="n">show_figures</span><span class="p">)</span>
+                                                    <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                                    <span class="n">point_ahead_for_residuals</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anomaly_timestamps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">res_analys_alg</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">df_residuals</span><span class="p">,</span> <span class="n">show_figure</span><span class="o">=</span><span class="n">show_figures</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">statistic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">res_analys_alg</span><span class="o">.</span><span class="n">statistic</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">anomaly_timestamps</span></div>
 
-
-    
-<div class="viewcode-block" id="DL_AD.forecast"><a class="viewcode-back" href="../../tsad.html#tsad.main.DL_AD.forecast">[docs]</a>    <span class="k">def</span> <span class="nf">forecast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">df</span><span class="p">,</span><span class="n">points_ahead</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">Loader</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_figures</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="DL_AD.forecast"><a class="viewcode-back" href="../../tsad.html#tsad.main.DL_AD.forecast">[docs]</a>    <span class="k">def</span> <span class="nf">forecast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">points_ahead</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_figures</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Прогнозирование временного ряда, в том числе векторного.</span>
 <span class="sd">        </span>
@@ -714,44 +718,79 @@
 <span class="sd">        ----------</span>
 <span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda:0&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">Loader</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">Loader</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">Loader</span>
-        
-        <span class="n">df</span>  <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>   
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">points_ahead</span> <span class="o">=</span> <span class="n">points_ahead</span> <span class="k">if</span> <span class="n">points_ahead</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">points_ahead</span>
         <span class="n">len_seq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_seq</span>
-        <span class="n">batch_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>         
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>
 
-        <span class="k">assert</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">-</span><span class="n">len_seq</span><span class="p">:]</span>
         <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_preproc</span>
         <span class="n">preproc_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preproc</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-        
-        
-        <span class="n">iterator</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">preproc_values</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">preproc_values</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="c1">#ничего страшного, &#39;y&#39; все равно не используется</span>
-                          <span class="n">batch_size</span><span class="p">,</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">run_epoch</span><span class="p">(</span><span class="n">iterator</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;forecast&#39;</span><span class="p">,</span> <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">iterator</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">preproc_values</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">preproc_values</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                          <span class="c1"># ничего страшного, &#39;y&#39; все равно не используется</span>
+                          <span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">run_epoch</span><span class="p">(</span><span class="n">iterator</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;forecast&#39;</span><span class="p">,</span> <span class="n">points_ahead</span><span class="o">=</span><span class="n">points_ahead</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)[</span>
+            <span class="mi">0</span><span class="p">]</span>
         <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preproc</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span>
-        
+
         <span class="n">t_last</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">delta_dime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> 
-        <span class="n">new_index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">t_last</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">points_ahead</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">delta_dime</span><span class="p">)</span>
-        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="n">new_index</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-        
+        <span class="n">delta_dime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">new_index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">t_last</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">points_ahead</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">delta_dime</span><span class="p">)</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">new_index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">show_figures</span><span class="p">:</span>
-            <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df</span><span class="p">,</span><span class="n">y_pred</span><span class="p">])[</span><span class="o">-</span><span class="mi">3</span><span class="o">*</span><span class="n">points_ahead</span><span class="p">:]</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">t_last</span><span class="p">,</span><span class="n">y_pred</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;forecast&#39;</span><span class="p">)</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">])[</span><span class="o">-</span><span class="mi">3</span> <span class="o">*</span> <span class="n">points_ahead</span><span class="p">:]</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">t_last</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;forecast&#39;</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Datetime&#39;</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Value&#39;</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-        
-        <span class="k">return</span> <span class="n">y_pred</span></div></div>
 
-    
- 
+        <span class="k">return</span> <span class="n">y_pred</span></div>
+
+<div class="viewcode-block" id="DL_AD.save"><a class="viewcode-back" href="../../tsad.html#tsad.main.DL_AD.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;./pipeline.pcl&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method for saving pipeline.</span>
+<span class="sd">        It may be required for example after training.</span>
+<span class="sd">        CPU.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">            path : str</span>
+<span class="sd">        Путь до файла, для сохранения пайплайна. </span>
+<span class="sd">        Пайлайн сохраняется в формате pickle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">run_epoch</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">Loader</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_seq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">in_features</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
+                                        <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_seq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">in_features</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
+                                        <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                             <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;forecast&#39;</span><span class="p">,</span> <span class="n">points_ahead</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">))</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DL_AD.load"><a class="viewcode-back" href="../../tsad.html#tsad.main.DL_AD.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;./pipeline.pcl&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method for loading pipeline.</span>
+<span class="sd">        It may be required for example after training.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">            path : str</span>
+<span class="sd">        Путь до сохраненного файла пайплайна. </span>
+<span class="sd">        Пайлайн должен быть в формате pickle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pipeline</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pipeline</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

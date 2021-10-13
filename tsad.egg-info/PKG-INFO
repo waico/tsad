@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: tsad
-Version: 0.17.9
+Version: 0.18.3
 Summary: Time Series Deep Learning Anomaly Detection
 Home-page: https://github.com/waico/tsad
 Author: Vyacheslav Kozitsin, Iurii Katser
