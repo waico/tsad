@@ -1,4 +1,4 @@
-[![Downloads](https://pepy.tech/badge/tsad)](https://pepy.tech/project/arimafd) [![Downloads](https://pepy.tech/badge/tsad/month)](https://pepy.tech/project/arimafd) 
+[![Downloads](https://pepy.tech/badge/tsad)](https://pepy.tech/project/tsad) [![Downloads](https://pepy.tech/badge/tsad/month)](https://pepy.tech/project/tsad) [![License](https://img.shields.io/badge/License-BSD_3--Clause-green.svg)](https://github.com/waico/tsad/blob/main/LICENSE)
 
 # Time Series Anomaly detection. 
 
