@@ -8,12 +8,12 @@ import pickle
 from IPython import display
 
 
-from . import src
-from . import models
+from .src import useful as src
+import .models.lstm as models
 from . import generate_residuals
 from . import stastics
 
-class DL_AD():
+class AnomalyDetection():
     """        
     Pipeline Time Series Anomaly Detection based on 
     SOTA deep learning forecasting algorithms.
@@ -200,6 +200,7 @@ class DL_AD():
 
     def fit(self,
             dfs,
+            targets=None, # for RUL task. 
             model=None,
             encod_decode_model=False,
             # ужас, нужно это править, особенность encod_decode модели. Попытаться вообще еубрать эту переменную
@@ -341,7 +342,7 @@ class DL_AD():
         #     Формирование train_iterator и val_iteraror
         # -----------------------------------------------------------------------------------------
         if Loader is None:
-            Loader = src.Loader
+            Loader = src.useful
 
         X_train, X_test, y_train, y_test = self._get_Train_Test_sets(dfs=dfs,
                                                                      len_seq=len_seq,

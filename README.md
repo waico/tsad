@@ -1,3 +1,5 @@
+[![Downloads](https://pepy.tech/badge/tsad)](https://pepy.tech/project/arimafd) [![Downloads](https://pepy.tech/badge/tsad/month)](https://pepy.tech/project/arimafd) 
+
 # Time Series Anomaly detection. 
 
 **The primary purpose** of the TSAD (Python module) is to make life easier for researchers who use deep learning techniques for time series. 
@@ -128,6 +130,9 @@ Some interesting links:
 6.  https://github.com/signals-dev/Orion 
 7.  https://github.com/NetManAIOps/OmniAnomaly 
 8.  https://github.com/unit8co/darts
+9.  https://github.com/tinkoff-ai/etna-ts
+9.  https://github.com/yzhao062/pyod
+10.  https://www.radiativetransfer.org/misc/typhon/doc/modules.html#datasets How include dataset
 
 #### Dependencies
 
