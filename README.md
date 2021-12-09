@@ -136,14 +136,14 @@ Some interesting links:
 
 |  | [Merlion](https://github.com/salesforce/Merlion) | [Alibi Detect](https://github.com/SeldonIO/alibi-detect) | [Kats](https://github.com/facebookresearch/Kats) | [pyod](https://github.com/yzhao062/pyod) | [GluonTS](https://github.com/awslabs/gluon-ts) | RRCF | STUMPY | Greykite | [Prophet](https://github.com/facebook/prophet) | [pmdarima](https://pypi.org/project/pmdarima/) | [deepad](https://github.com/fastforwardlabs/deepad) | TSAD
 :--- | :---: | :---:|  :---:  | :---: | :---: | :---: | :---: | :---: | :----: | :---: | :---: | :---:
-| Forecasting | ✅ | | ✅ |  | ✅ | | | ✅ | ✅ | ✅ | ✅ | ✅ 
-| Anomaly Detection | ✅ | ✅ | ✅ | ✅ | | ✅ | ✅ | ✅ | ✅ | | ✅  ✅ 
-| Metrics | ✅ | | | ✅ | ✅ | | | | | | ✅  ✅
-| Ensembles | ✅ | | | ✅ | | ✅  | | | | | | ✅ 
-| Benchmarking | ✅ | | | ✅ | ✅ | | | | | | | ✅ 
-| Visualization | ✅ | | ✅ | ✅ | | | | ✅ | ✅ | | | ✅ | ✅ 
-| Data preprocessing | | | ✅ | | | | | | | | | ✅ 
-| Automatic EDA | | | | | | | | | | | | ✅ 
+| Forecasting (Прогнозирование) | ✅ | | ✅ |  | ✅ | | | ✅ | ✅ | ✅ | ✅ | ✅ 
+| Anomaly Detection (Поиск аномалий) | ✅ | ✅ | ✅ | ✅ | | ✅ | ✅ | ✅ | ✅ | | ✅ | ✅ 
+| Metrics (Алгоритмы оценки) | ✅ | | | ✅ | ✅ | | | | | | ✅ | ✅
+| Ensembles (Ансамбли) | ✅ | | | ✅ | | ✅  | | | | | | ✅ 
+| Benchmarking (Бенчмарки и датасеты) | ✅ | | | ✅ | ✅ | | | | | | | ✅ 
+| Visualization (Визуализация результатов) | ✅ | | ✅ | ✅ | | | | ✅ | ✅ | | | ✅ | ✅ 
+| Data preprocessing (Предварительная обработка данных) | | | ✅ | | | | | | | | | ✅ 
+| Automated EDA (Автоматизированный разведочный анализ данных) | | | | | | | | | | | | ✅ 
 
 #### Dependencies
 
