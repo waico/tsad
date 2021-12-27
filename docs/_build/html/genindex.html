@@ -103,15 +103,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tsad.html">Subpackages</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tsad.html#submodules">Submodules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.feature_importance">tsad.feature_importance module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.generate_residuals">tsad.generate_residuals module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.main">tsad.main module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.models">tsad.models module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.src">tsad.src module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad.stastics">tsad.stastics module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tsad.html#module-tsad">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tsad.html">tsad package</a></li>
 </ul>
 
             
@@ -188,6 +180,7 @@
  | <a href="#F"><strong>F</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#P"><strong>P</strong></a>
@@ -200,6 +193,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="tsad.html#tsad.generate_residuals.abs">abs() (in module tsad.generate_residuals)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="tsad.html#tsad.main.AnomalyDetection">AnomalyDetection (class in tsad.main)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -219,7 +216,7 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tsad.html#tsad.main.DL_AD">DL_AD (class in tsad.main)</a>
+      <li><a href="tsad.useful.html#tsad.useful.ts.df2dfs">df2dfs() (in module tsad.useful.ts)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -245,9 +242,13 @@
 </li>
       <li><a href="tsad.evaluating.html#tsad.evaluating.src.filter_detecting_boundaries">filter_detecting_boundaries() (in module tsad.evaluating.src)</a>
 </li>
-      <li><a href="tsad.html#tsad.main.DL_AD.fit">fit() (tsad.main.DL_AD method)</a>
+      <li><a href="tsad.models.html#tsad.models.fit.fit">fit() (in module tsad.models.fit)</a>
 
       <ul>
+        <li><a href="tsad.html#tsad.main.AnomalyDetection.fit">(tsad.main.AnomalyDetection method)</a>
+</li>
+        <li><a href="tsad.spike.html#tsad.spike.src.R_to_I.fit">(tsad.spike.src.R_to_I method)</a>
+</li>
         <li><a href="tsad.html#tsad.stastics.Hotelling.fit">(tsad.stastics.Hotelling method)</a>
 </li>
       </ul></li>
@@ -255,10 +256,18 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="tsad.html#tsad.stastics.Hotelling.fit_predict">fit_predict() (tsad.stastics.Hotelling method)</a>
 </li>
-      <li><a href="tsad.html#tsad.main.DL_AD.forecast">forecast() (tsad.main.DL_AD method)</a>
+      <li><a href="tsad.spike.html#tsad.spike.src.R_to_I.fit_trasform">fit_trasform() (tsad.spike.src.R_to_I method)</a>
 </li>
-      <li><a href="tsad.html#tsad.models.SimpleLSTM.forward">forward() (tsad.models.SimpleLSTM method)</a>
+      <li><a href="tsad.html#tsad.main.AnomalyDetection.forecast">forecast() (tsad.main.AnomalyDetection method)</a>
 </li>
+      <li><a href="tsad.models.html#tsad.models.ae.lstm.forward">forward() (tsad.models.ae.lstm method)</a>
+
+      <ul>
+        <li><a href="tsad.models.html#tsad.models.ae.mlp.forward">(tsad.models.ae.mlp method)</a>
+</li>
+        <li><a href="tsad.models.html#tsad.models.lstm.SimpleLSTM.forward">(tsad.models.lstm.SimpleLSTM method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -273,7 +282,25 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tsad.html#tsad.models.SimpleLSTM.initHidden">initHidden() (tsad.models.SimpleLSTM method)</a>
+      <li><a href="tsad.useful.html#tsad.useful.imports.import_module_from_GitHub">import_module_from_GitHub() (in module tsad.useful.imports)</a>
+</li>
+      <li><a href="tsad.models.html#tsad.models.ae.lstm.initHidden">initHidden() (tsad.models.ae.lstm method)</a>
+
+      <ul>
+        <li><a href="tsad.models.html#tsad.models.lstm.SimpleLSTM.initHidden">(tsad.models.lstm.SimpleLSTM method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="tsad.spike.html#tsad.spike.src.R_to_I.inverse_tranform">inverse_tranform() (tsad.spike.src.R_to_I method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="tsad.spike.html#tsad.spike.src.R_to_I.koefI_to_koefSeqI">koefI_to_koefSeqI() (tsad.spike.src.R_to_I method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -281,16 +308,14 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tsad.html#tsad.main.DL_AD.load">load() (tsad.main.DL_AD method)</a>
+      <li><a href="tsad.html#tsad.main.AnomalyDetection.load">load() (tsad.main.AnomalyDetection method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tsad.html#tsad.src.Loader">Loader (class in tsad.src)</a>
-
-      <ul>
-        <li><a href="tsad.useful.html#tsad.useful.iterators.Loader">(class in tsad.useful.iterators)</a>
+      <li><a href="tsad.useful.html#tsad.useful.iterators.Loader">Loader (class in tsad.useful.iterators)</a>
 </li>
-      </ul></li>
+      <li><a href="tsad.models.html#tsad.models.ae.lstm">lstm (class in tsad.models.ae)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -299,17 +324,19 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="tsad.useful.html#tsad.useful.iterators.MeshLoader">MeshLoader (class in tsad.useful.iterators)</a>
 </li>
+      <li><a href="tsad.models.html#tsad.models.ae.mlp">mlp (class in tsad.models.ae)</a>
+</li>
       <li>
     module
 
       <ul>
         <li><a href="tsad.html#module-tsad">tsad</a>
 </li>
+        <li><a href="tsad.eda.html#module-tsad.eda">tsad.eda</a>
+</li>
         <li><a href="tsad.evaluating.html#module-tsad.evaluating">tsad.evaluating</a>
 </li>
         <li><a href="tsad.evaluating.html#module-tsad.evaluating.evaluating">tsad.evaluating.evaluating</a>
-</li>
-        <li><a href="tsad.evaluating.html#module-tsad.evaluating.multivariate_funcs">tsad.evaluating.multivariate_funcs</a>
 </li>
         <li><a href="tsad.evaluating.html#module-tsad.evaluating.src">tsad.evaluating.src</a>
 </li>
@@ -321,15 +348,27 @@
 </li>
         <li><a href="tsad.html#module-tsad.main">tsad.main</a>
 </li>
-        <li><a href="tsad.html#module-tsad.models">tsad.models</a>
+        <li><a href="tsad.models.html#module-tsad.models">tsad.models</a>
 </li>
-        <li><a href="tsad.html#module-tsad.src">tsad.src</a>
+        <li><a href="tsad.models.html#module-tsad.models.ae">tsad.models.ae</a>
+</li>
+        <li><a href="tsad.models.html#module-tsad.models.fit">tsad.models.fit</a>
+</li>
+        <li><a href="tsad.models.html#module-tsad.models.lstm">tsad.models.lstm</a>
+</li>
+        <li><a href="tsad.spike.html#module-tsad.spike">tsad.spike</a>
+</li>
+        <li><a href="tsad.spike.html#module-tsad.spike.src">tsad.spike.src</a>
 </li>
         <li><a href="tsad.html#module-tsad.stastics">tsad.stastics</a>
 </li>
         <li><a href="tsad.useful.html#module-tsad.useful">tsad.useful</a>
 </li>
+        <li><a href="tsad.useful.html#module-tsad.useful.imports">tsad.useful.imports</a>
+</li>
         <li><a href="tsad.useful.html#module-tsad.useful.iterators">tsad.useful.iterators</a>
+</li>
+        <li><a href="tsad.useful.html#module-tsad.useful.ts">tsad.useful.ts</a>
 </li>
       </ul></li>
   </ul></td>
@@ -346,7 +385,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tsad.html#tsad.main.DL_AD.predict_anomaly">predict_anomaly() (tsad.main.DL_AD method)</a>
+      <li><a href="tsad.html#tsad.main.AnomalyDetection.predict_anomaly">predict_anomaly() (tsad.main.AnomalyDetection method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -354,19 +393,27 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tsad.html#tsad.models.SimpleLSTM.run_epoch">run_epoch() (tsad.models.SimpleLSTM method)</a>
+      <li><a href="tsad.spike.html#tsad.spike.src.R_to_I">R_to_I (class in tsad.spike.src)</a>
 </li>
+      <li><a href="tsad.models.html#tsad.models.ae.lstm.run_epoch">run_epoch() (tsad.models.ae.lstm method)</a>
+
+      <ul>
+        <li><a href="tsad.models.html#tsad.models.ae.mlp.run_epoch">(tsad.models.ae.mlp method)</a>
+</li>
+        <li><a href="tsad.models.html#tsad.models.lstm.SimpleLSTM.run_epoch">(tsad.models.lstm.SimpleLSTM method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tsad.html#tsad.main.DL_AD.save">save() (tsad.main.DL_AD method)</a>
+      <li><a href="tsad.html#tsad.main.AnomalyDetection.save">save() (tsad.main.AnomalyDetection method)</a>
 </li>
-      <li><a href="tsad.html#tsad.models.set_determenistic">set_determenistic() (in module tsad.models)</a>
+      <li><a href="tsad.models.html#tsad.models.fit.set_determenistic">set_determenistic() (in module tsad.models.fit)</a>
 </li>
-      <li><a href="tsad.html#tsad.models.SimpleLSTM">SimpleLSTM (class in tsad.models)</a>
+      <li><a href="tsad.models.html#tsad.models.lstm.SimpleLSTM">SimpleLSTM (class in tsad.models.lstm)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -376,7 +423,7 @@
 </li>
       <li><a href="tsad.evaluating.html#tsad.evaluating.univariate_funcs.single_evaluate_nab">single_evaluate_nab() (in module tsad.evaluating.univariate_funcs)</a>
 </li>
-      <li><a href="tsad.html#tsad.src.split_by_repeated">split_by_repeated() (in module tsad.src)</a>
+      <li><a href="tsad.useful.html#tsad.useful.ts.split_by_repeated">split_by_repeated() (in module tsad.useful.ts)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -384,13 +431,30 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tsad.html#tsad.src.ts_train_test_split">ts_train_test_split() (in module tsad.src)</a>
+      <li><a href="tsad.models.html#tsad.models.ae.lstm.training">training (tsad.models.ae.lstm attribute)</a>
+
+      <ul>
+        <li><a href="tsad.models.html#tsad.models.ae.mlp.training">(tsad.models.ae.mlp attribute)</a>
+</li>
+        <li><a href="tsad.models.html#tsad.models.lstm.SimpleLSTM.training">(tsad.models.lstm.SimpleLSTM attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="tsad.spike.html#tsad.spike.src.R_to_I.transform">transform() (tsad.spike.src.R_to_I method)</a>
+</li>
+      <li><a href="tsad.useful.html#tsad.useful.ts.ts_train_test_split">ts_train_test_split() (in module tsad.useful.ts)</a>
 </li>
       <li>
     tsad
 
       <ul>
         <li><a href="tsad.html#module-tsad">module</a>
+</li>
+      </ul></li>
+      <li>
+    tsad.eda
+
+      <ul>
+        <li><a href="tsad.eda.html#module-tsad.eda">module</a>
 </li>
       </ul></li>
       <li>
@@ -405,13 +469,6 @@
 
       <ul>
         <li><a href="tsad.evaluating.html#module-tsad.evaluating.evaluating">module</a>
-</li>
-      </ul></li>
-      <li>
-    tsad.evaluating.multivariate_funcs
-
-      <ul>
-        <li><a href="tsad.evaluating.html#module-tsad.evaluating.multivariate_funcs">module</a>
 </li>
       </ul></li>
       <li>
@@ -435,8 +492,6 @@
         <li><a href="tsad.html#module-tsad.feature_importance">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     tsad.generate_residuals
 
@@ -451,18 +506,48 @@
         <li><a href="tsad.html#module-tsad.main">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     tsad.models
 
       <ul>
-        <li><a href="tsad.html#module-tsad.models">module</a>
+        <li><a href="tsad.models.html#module-tsad.models">module</a>
 </li>
       </ul></li>
       <li>
-    tsad.src
+    tsad.models.ae
 
       <ul>
-        <li><a href="tsad.html#module-tsad.src">module</a>
+        <li><a href="tsad.models.html#module-tsad.models.ae">module</a>
+</li>
+      </ul></li>
+      <li>
+    tsad.models.fit
+
+      <ul>
+        <li><a href="tsad.models.html#module-tsad.models.fit">module</a>
+</li>
+      </ul></li>
+      <li>
+    tsad.models.lstm
+
+      <ul>
+        <li><a href="tsad.models.html#module-tsad.models.lstm">module</a>
+</li>
+      </ul></li>
+      <li>
+    tsad.spike
+
+      <ul>
+        <li><a href="tsad.spike.html#module-tsad.spike">module</a>
+</li>
+      </ul></li>
+      <li>
+    tsad.spike.src
+
+      <ul>
+        <li><a href="tsad.spike.html#module-tsad.spike.src">module</a>
 </li>
       </ul></li>
       <li>
@@ -480,10 +565,24 @@
 </li>
       </ul></li>
       <li>
+    tsad.useful.imports
+
+      <ul>
+        <li><a href="tsad.useful.html#module-tsad.useful.imports">module</a>
+</li>
+      </ul></li>
+      <li>
     tsad.useful.iterators
 
       <ul>
         <li><a href="tsad.useful.html#module-tsad.useful.iterators">module</a>
+</li>
+      </ul></li>
+      <li>
+    tsad.useful.ts
+
+      <ul>
+        <li><a href="tsad.useful.html#module-tsad.useful.ts">module</a>
 </li>
       </ul></li>
   </ul></td>

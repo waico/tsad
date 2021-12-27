@@ -1,10 +1,16 @@
+tsad package
+============
+
 Subpackages
 -----------
 
 .. toctree::
    :maxdepth: 4
 
+   tsad.eda
    tsad.evaluating
+   tsad.models
+   tsad.spike
    tsad.useful
 
 Submodules
@@ -30,22 +36,6 @@ tsad.main module
 ----------------
 
 .. automodule:: tsad.main
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tsad.models module
-------------------
-
-.. automodule:: tsad.models
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tsad.src module
----------------
-
-.. automodule:: tsad.src
    :members:
    :undoc-members:
    :show-inheritance:

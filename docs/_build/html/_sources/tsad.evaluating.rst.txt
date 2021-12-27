@@ -12,14 +12,6 @@ tsad.evaluating.evaluating module
    :undoc-members:
    :show-inheritance:
 
-tsad.evaluating.multivariate\_funcs module
-------------------------------------------
-
-.. automodule:: tsad.evaluating.multivariate_funcs
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 tsad.evaluating.src module
 --------------------------
 
