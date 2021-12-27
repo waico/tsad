@@ -13,7 +13,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def ts_train_test_split(df, len_seq, 
                      points_ahead=1, gap=0, shag=1, intersection=True,
-                     test_size=None,train_size=None, random_state=None, shuffle=True,stratify=None):
+                     test_size=None,train_size=None, random_state=None, shuffle=True, shuffle_target='only_train'):
     """
     Функция которая разбивает временной ряд на трейн и тест выборки 
     
@@ -24,26 +24,75 @@ def ts_train_test_split(df, len_seq,
     ----------
     df : pd.DataFrame
         Array of shape (n_samples, n_features) with timestamp index.
-    len_seq : int 
-        Длина 
-    flag : bool (optional, default=True)
-        If true, then do one thing.
-        If false, then do another thing.
-    f : callable (optional, default=None)
-        Call-back function.  If not specified, then some other function
-        will be used
-    **kwargs :
-        Additional keyword arguments will be passed to name_of_function
     
+    points_ahead : int, default=0
+        Сколько точек вперед прогнозируем, отражается в y
+         
+    gap :  int, default=0
+        Сколько точек между трейном и тестом. Условно говоря,
+        если крайняя точка train а это t, то первая точка теста t + gap +1.
+        Параметр создан, чтобы можно было прогнозировать одну точку через большой 
+        дополнительный интервал времени. 
+    
+    shag :  int, default=1.
+        Шаг генерации выборки. Если первая точка была t у 1-ого сэмпла трейна,
+        то у 2-ого сэмла трейна она будет t + shag, если intersection=True, иначе 
+        тоже самое но без пересечений значений ряда. 
+
+    intersection :  bool, default=True
+        Наличие значений ряда (одного момента времени) в различных сэмплах выборки. 
+    
+    test_size : float or int or timestamp for df, or list of timestamps, default=0.25. 
+        Может быть 0, тогда вернет значения X,y
+        If float, should be between 0.0 and 1.0 and represent the proportion
+        of the dataset to include in the test split. 
+        If int, represents the
+        absolute number of test samples. If None, the value is set to the
+        complement of the train size. If ``train_size`` is also None, it will
+        be set to 0.25. *
+        *https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076 
+        If timestamp for df, for X_test we will use set from df[t:] **
+        If list of timestamps [t1,t2], for X_test we will use set from df[t1:t2] **
+        !!! Важно, если timestamp мы всегда захватываем и слева и српава.
+        
+    
+    train_size : float or int, default=None
+        If float, should be between 0.0 and 1.0 and represent the
+        proportion of the dataset to include in the train split. If
+        int, represents the absolute number of train samples. If None,
+        the value is automatically set to the complement of the test size. *
+        *https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076
+        If timestamp for df, for X_train we will use set for train from df[:t] **
+        If list of timestamps [t1,t2], for X_train we will use set for train from df[t1:t2] **
+    
+    random_state : int, RandomState instance or None, default=None
+        Controls the shuffling applied to the data before applying the split.
+        Pass an int for reproducible output across multiple function calls.
+        See :term:`Glossary <random_state>`.*
+        *https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076
+        
+    
+    shuffle : bool, default=True
+        Whether or not to shuffle the data before splitting. If shuffle=False
+        then stratify must be None. *
+        
+    shuffle_target: {'only_train', 'all'}, str. Default = only_train. 
+        In the case of 'only_train' we random shuffle only X_train, and y_train. 
+            Test samples are unused for the shuffle. Any sample from X_test is later 
+            than any sample from X_train. This is also true for respectively
+        In case of 'all' in analogy with sklearn.model_selection.train_test_split
+
     Returns
     -------
-    z : ndarray
-        result of shape (n_samples,).  Note that here we use "ndarray" rather
-        than "array_like", because we assure we'll return a numpy array.
+    (X_train, X_test, y_train, y_test) : tuple 
+        Tuple containing train-test split of inputs
     
     TODO
     --------
     t-test of timestamp
+    ** todo реализовать
+    ошибка прогнозирует через одну.
+    туда же через точки пробывать модели. 
     
     Examples
     --------
@@ -75,7 +124,7 @@ def ts_train_test_split(df, len_seq,
 
 # -------------------------------------------------------  
 #             
-# -------------------------------------------------------  
+# -------------------------------------------------------     
 
 
     x_start=0
@@ -89,7 +138,7 @@ def ts_train_test_split(df, len_seq,
             return x_start + shag
     else:
         def compute_new_x_start(x_start,y_end,shag):
-            return y_end + shag
+            return y_end + shag -1
     
     X = []
     y = []
@@ -105,7 +154,7 @@ def ts_train_test_split(df, len_seq,
     
     if (test_size==0) | (len(X)==1):
         indices = np.array(range(len(X)))
-        #             np.random.seed(random_state)
+        np.random.seed(random_state)
         if shuffle:
             print(indices)
             np.random.shuffle(indices)
@@ -119,39 +168,7 @@ def ts_train_test_split(df, len_seq,
                                 train_size=train_size, 
                                 random_state=random_state, 
                                 shuffle=shuffle, 
-                                stratify=stratify
                                )
-						   
-						   
-						   
-class Loader:
-    def __init__(self, X,y, batch_size,shuffle=True):
-        if shuffle==True:
-            indices = np.array(range(len(X)))
-            np.random.shuffle(indices)
-            self.X = X[indices]
-            self.y = y[indices]
-        else:
-            self.X = X
-            self.y = y
-        self.batch_size = batch_size
-
-    def __iter__(self):
-        self.i = - self.batch_size
-        return self
-
-    def __next__(self):
-        if self.i+self.batch_size < len(self.X):
-            self.i+=self.batch_size
-            return self.X[self.i:self.i+self.batch_size], self.y[self.i:self.i+self.batch_size]
-        elif self.i+2*self.batch_size < len(self.X):        
-            return self.X[self.i:], self.y[self.i:]
-        else:
-            raise StopIteration
-            
-    def __len__(self):
-        return len(np.arange(0,len(self.X),self.batch_size))
-		        
         
 def split_by_repeated(series,df=None):
     """

@@ -29,12 +29,16 @@ class MeshLoader:
             raise StopIteration
 
 class Loader:
-    def __init__(self, X,y, batch_size,shuffle=True):
+    def __init__(self, X,y, batch_size,shuffle=True, random_state = None):
+        """
+        X, y  are lists
+        """
         if shuffle==True:
+            np.random.seed(random_state)
             indices = np.array(range(len(X)))
             np.random.shuffle(indices)
-            self.X = X[indices]
-            self.y = y[indices]
+            self.X = [X[ind] for ind in indices]
+            self.y = [y[ind] for ind in indices]
         else:
             self.X = X
             self.y = y
@@ -54,10 +58,5 @@ class Loader:
             raise StopIteration
             
     def __len__(self):
-        whole = len(self.X) // self.batch_size
-        fractional = len(self.X) % self.batch_size\
-
-        if fractional==0:
-            return whole
-        else:
-            return whole + 1
+        return len(np.arange(0,len(self.X),self.batch_size))
+		        

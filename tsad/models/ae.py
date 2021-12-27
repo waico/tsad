@@ -129,7 +129,7 @@ class lstm(nn.Module):
         y_pred = self.linear(last_time_step)
         return y_pred
 
-    def run_epoch(self, iterator, optimizer, criterion, phase='train', device=torch.device('cuda:0'), encod_decode_model=False):
+    def run_epoch(self, iterator, optimizer, criterion, phase='train', device=torch.device('cuda:0'), encod_decode_model=False, points_ahead=None):
         self.to(device)
         is_train = (phase == 'train')
         if is_train:

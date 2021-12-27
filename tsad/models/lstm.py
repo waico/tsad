@@ -12,6 +12,7 @@
 from torch import nn, optim
 import torch
 from .fit import set_determenistic
+import numpy as np
 
 
 class SimpleLSTM(nn.Module):

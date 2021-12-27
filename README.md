@@ -43,7 +43,7 @@ In particular, TSAD is created for solving Time Series Anomaly Detection problem
 
 https://tsad.readthedocs.io/
 
-**The main class of the pipeline is** [tsad.main.DL_AD](https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.main)
+**The main class of the pipeline is** [tsad.main.AnomalyDetection](https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.main)
 
 ---
 
@@ -62,7 +62,7 @@ from tsad import main
 # Loading ideal time series without any problem
 df = pd.read_csv('example.csv',parse_dates='DT').set_index('DT') 
 
-pipeline = maim.DL_AD() 
+pipeline = maim.AnomalyDetection() 
 pipeline.fit(df)
 list_anomalies = pipeline.predict_anomaly(df)
 forecast = pipeline.forecast(df)
@@ -83,7 +83,7 @@ class my_preproc_func(...):
     ...
     
 
-pipeline = maim.DL_AD(preproc=my_preproc_func) 
+pipeline = maim.AnomalyDetection(preproc=my_preproc_func) 
 pipeline.fit(df2dfs(df),
              n_epochs=3,
              optimiser=(torch.optim.Adam,{‘lr’:0.001}),

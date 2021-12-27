@@ -1,6 +1,6 @@
 from IPython import display
 import torch
-from ..src.useful import Loader
+from ..useful.iterators import Loader
 from matplotlib import pyplot as plt
 import numpy as np
 import random
@@ -15,7 +15,7 @@ def set_determenistic(seed=None,precision=10):
     #torch.backends.cudnn.benchmark = False
     #torch.backends.cudnn.deterministic = True
     torch.manual_seed(seed)
-    torch.set_printoptions(precision=precision)
+    #torch.set_printoptions(precision=precision)
 
 
 def fit(
@@ -26,12 +26,15 @@ def fit(
     n_epochs = 10,
     batch_size = 2056,
     best_model_file =  './best_ae.pth',
+    points_ahead = 1,
+    random_state = None,
+    
        ):
     
     X_train, X_test, y_train, y_test = res_train_test_split[0],\
     res_train_test_split[1], res_train_test_split[2],res_train_test_split[3] 
     #     all_loader = Loader(scaled_research_df, scaled_research_df, batch_size, shuffle=False)
-    train_iterator = Loader(X_train, y_train, batch_size, shuffle=False)
+    train_iterator = Loader(X_train, y_train, batch_size, shuffle=True, random_state=random_state) # !!! кастыль
     val_iterator = Loader(X_test, y_test, batch_size, shuffle=False)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         
@@ -41,9 +44,9 @@ def fit(
     show_progress_text =""
     for epoch in range(n_epochs):
         train_loss = model.run_epoch(train_iterator, optimiser, criterion, phase='train',
-                                          device=device)  # , writer=writer)
+                                        points_ahead = points_ahead, device=device)  # , writer=writer)
         val_loss = model.run_epoch(val_iterator, None, criterion, phase='val',
-                                        device=device)  # , writer=writer)
+                                        points_ahead = points_ahead, device=device)  # , writer=writer)
 
         history_train.append(train_loss)
         history_val.append(val_loss)
@@ -61,9 +64,10 @@ def fit(
         plt.legend()
         plt.show()
 
-        show_progress_text += f'Epoch: {epoch + 1:02} \n'
-        show_progress_text += f'\tTrain Loss: {train_loss:.3f} \n'
-        show_progress_text += f'\t Val. Loss: {val_loss:.3f} \n\n'
+        show_progress_text = f'Epoch: {epoch + 1:02} \n' + \
+                             f'\tTrain Loss: {train_loss:.3f} \n' + \
+                             f'\t Val. Loss: {val_loss:.3f} \n\n' +  \
+                             show_progress_text
         print(show_progress_text)
 
 

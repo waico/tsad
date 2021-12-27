@@ -8,8 +8,10 @@ import pickle
 from IPython import display
 
 
-from .src import useful as src
-import .models.lstm as models
+from .useful import ts as src
+from .useful import iterators
+
+from .models import lstm as models
 from . import generate_residuals
 from . import stastics
 
@@ -317,7 +319,7 @@ class AnomalyDetection():
             best_model_file : string, './best_model.pt'
                 Путь до файла, где будет хранится лучшие веса модели
             
-            Loader : class, default=src.Loader.
+            Loader : class, default=ufesul.iterators.Loader.
                 Тип загрузчика, которую будет использовать как итератор в будущем, 
                 благодаря которому, есть возможность бить на бачи.
         
@@ -342,7 +344,7 @@ class AnomalyDetection():
         #     Формирование train_iterator и val_iteraror
         # -----------------------------------------------------------------------------------------
         if Loader is None:
-            Loader = src.useful
+            Loader = iterators.Loader
 
         X_train, X_test, y_train, y_test = self._get_Train_Test_sets(dfs=dfs,
                                                                      len_seq=len_seq,
@@ -409,9 +411,10 @@ class AnomalyDetection():
                 plt.show()
 
             if show_progress:
-                show_progress_text += f'Epoch: {epoch + 1:02} \n'
-                show_progress_text += f'\tTrain Loss: {train_loss:.3f} \n'
-                show_progress_text += f'\t Val. Loss: {val_loss:.3f} \n\n'
+                show_progress_text = f'Epoch: {epoch + 1:02} \n' + \
+                                     f'\tTrain Loss: {train_loss:.3f} \n' + \
+                                     f'\t Val. Loss: {val_loss:.3f} \n\n' +  \
+                                     show_progress_text
                 print(show_progress_text)
 
 
@@ -497,7 +500,7 @@ class AnomalyDetection():
         len_seq = self.len_seq
 
         if Loader is None:
-            Loader = src.Loader
+            Loader = iterators.Loader
 
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -539,7 +542,7 @@ class AnomalyDetection():
             и кривую трейна и валидации по эпохам. 
         
         
-        Loader : class, default=src.Loader.
+        Loader : class, default=iterators.Loader.
             Тип загрузчика, которую будет использовать как итератор в будущем, 
             благодаря которому, есть возможность бить на бачи.
         
@@ -554,7 +557,7 @@ class AnomalyDetection():
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         if Loader is None:
-            Loader = src.Loader
+            Loader = iterators.Loader
 
         df = df.copy()
         points_ahead = points_ahead if points_ahead is not None else self.points_ahead
@@ -603,7 +606,7 @@ class AnomalyDetection():
         Пайлайн сохраняется в формате pickle
         """
 
-        self.model.run_epoch(src.Loader(torch.zeros((1, self.len_seq, self.model.in_features), dtype=float),
+        self.model.run_epoch(iterators.Loader(torch.zeros((1, self.len_seq, self.model.in_features), dtype=float),
                                         torch.zeros((1, self.len_seq, self.model.in_features), dtype=float),
                                         batch_size=1),
                              None, None, phase='forecast', points_ahead=1, device=torch.device("cpu"))
