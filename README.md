@@ -1,6 +1,6 @@
 [![Downloads](https://pepy.tech/badge/tsad)](https://pepy.tech/project/tsad) [![Downloads](https://pepy.tech/badge/tsad/month)](https://pepy.tech/project/tsad) [![License](https://img.shields.io/badge/License-BSD_3--Clause-green.svg)](https://github.com/waico/tsad/blob/main/LICENSE)
 
-# Time Series Anomaly detection. 
+# Time Series Analysis for Diagnostics 
 
 **The primary purpose** of the TSAD (Python module) is to make life easier for researchers who use deep learning techniques for time series. 
 
@@ -133,6 +133,15 @@ Some interesting links:
 9.  https://github.com/tinkoff-ai/etna-ts
 9.  https://github.com/yzhao062/pyod
 10.  https://www.radiativetransfer.org/misc/typhon/doc/modules.html#datasets How include dataset
+10.  https://github.com/AutoViML/Auto_TS
+10.  https://nuancesprog.ru/p/15161/
+10.  https://www.sktime.org/en/stable/
+10.  https://github.com/zalandoresearch/pytorch-ts
+10.  https://github.com/qdata/spacetimeformer
+
+Про архитектуру: 
+
+https://pypi.org/project/catalyst/ 
 
 |  | [Merlion](https://github.com/salesforce/Merlion) | [Alibi Detect](https://github.com/SeldonIO/alibi-detect) | [Kats](https://github.com/facebookresearch/Kats) | [pyod](https://github.com/yzhao062/pyod) | [GluonTS](https://github.com/awslabs/gluon-ts) | RRCF | STUMPY | Greykite | [Prophet](https://github.com/facebook/prophet) | [pmdarima](https://pypi.org/project/pmdarima/) | [deepad](https://github.com/fastforwardlabs/deepad) | TSAD
 :--- | :---: | :---:|  :---:  | :---: | :---: | :---: | :---: | :---: | :----: | :---: | :---: | :---:

@@ -5,7 +5,9 @@ from matplotlib import pyplot as plt
 import numpy as np
 import random
 
-
+#     criterion = weighted_mse_loss
+#     optimizer = optim.Adam(net.parameters(), lr=lr)
+#     model = model()
 
 def set_determenistic(seed=None,precision=10):
     if seed is None:
