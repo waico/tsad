@@ -27,9 +27,11 @@ def fit(
     res_train_test_split,
     n_epochs = 10,
     batch_size = 2056,
-    best_model_file =  './best_ae.pth',
+    best_model_file =  './best_ae.pth', #None
     points_ahead = 1,
     random_state = None,
+    show_progress = True,
+    title=None,
     
        ):
     
@@ -55,23 +57,27 @@ def fit(
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            torch.save(model.state_dict(), best_model_file)
+            if best_model_file is not None:
+                torch.save(model.state_dict(), best_model_file)
 
         display.clear_output(wait=True)
         plt.figure()
-        plt.plot(history_train, label='Train')
-        plt.plot(history_val, label='Val')
+        plt.plot(history_train, label=f'Train  {round(train_loss,3)}')
+        plt.plot(history_val, label=f'Val  {round(val_loss,3)}')
         plt.xlabel('Epoch')
         plt.ylabel('MSE')
         plt.legend()
+        if title is not None:
+            plt.title(title)
+        plt.grid()
         plt.show()
+        if show_progress:
+            show_progress_text = f'Epoch: {epoch + 1:02} \n' + \
+                                 f'\tTrain Loss: {train_loss:.3f} \n' + \
+                                 f'\t Val. Loss: {val_loss:.3f} \n\n' +  \
+                                 show_progress_text
+            print(show_progress_text)
 
-        show_progress_text = f'Epoch: {epoch + 1:02} \n' + \
-                             f'\tTrain Loss: {train_loss:.3f} \n' + \
-                             f'\t Val. Loss: {val_loss:.3f} \n\n' +  \
-                             show_progress_text
-        print(show_progress_text)
-
-
-    model.load_state_dict(torch.load(best_model_file))
+    if best_model_file is not None:
+        model.load_state_dict(torch.load(best_model_file))
     return model.run_epoch(val_iterator, None, criterion, phase='val', device=device) 
