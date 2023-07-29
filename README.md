@@ -1,10 +1,14 @@
 [![Downloads](https://pepy.tech/badge/tsad)](https://pepy.tech/project/tsad) [![Downloads](https://pepy.tech/badge/tsad/month)](https://pepy.tech/project/tsad) [![License](https://img.shields.io/badge/License-BSD_3--Clause-green.svg)](https://github.com/waico/tsad/blob/main/LICENSE)
 
-# Time Series Analysis for Diagnostics 
+# TSAD
+
+**Time Series Analysis for Simulation of Technological Processes**
+
+Python 3.10
 
 **The primary purpose** of the TSAD (Python module) is to make life easier for researchers who use deep learning techniques for time series. 
 
-![image-2](./examples/pics/readme/Useful.jpg)
+![image-2](./docs/pics/readme/Useful.jpg)
 
 In particular, TSAD is created for solving Time Series Anomaly Detection problem by widely known technique:
 
@@ -94,7 +98,7 @@ pipeline.fit(df2dfs(df),
 
 After that, you can see:
 
-![image-1](./examples/pics/readme/1.png)
+![image-1](./docs/pics/readme/1.png)
 
 And then you can perform:
 
@@ -169,7 +173,7 @@ https://pypi.org/project/catalyst/
 ```
   └── repo 
     ├───docs       # documentation
-    ├───examples   # examples
+    ├───tutorials   # examples
     ├───tsad       # files of library
 ```
 
