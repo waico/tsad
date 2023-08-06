@@ -58,7 +58,6 @@ pyparsing==3.1.0
 python-dateutil==2.8.2
 pytz==2023.3
 PyWavelets==1.4.1
-pywin32==306
 PyYAML==6.0.1
 pyzmq==25.1.0
 requests==2.31.0
@@ -84,9 +83,6 @@ sphinxcontrib-serializinghtml==1.1.5
 stack-data==0.6.2
 threadpoolctl==3.1.0
 tifffile==2023.7.18
-torch==1.11.0+cu113
-torchaudio==0.11.0+cu113
-torchvision==0.12.0+cu113
 tornado==6.3.2
 traitlets==5.9.0
 typing_extensions==4.7.1
