@@ -7,43 +7,24 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   tsad.eda
-   tsad.evaluating
-   tsad.models
-   tsad.spike
-   tsad.useful
+   tsad.tasks
+   tsad.utils
 
 Submodules
 ----------
 
-tsad.feature\_importance module
--------------------------------
-
-.. automodule:: tsad.feature_importance
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tsad.generate\_residuals module
--------------------------------
-
-.. automodule:: tsad.generate_residuals
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tsad.main module
-----------------
-
-.. automodule:: tsad.main
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tsad.stastics module
+tsad.datasets module
 --------------------
 
-.. automodule:: tsad.stastics
+.. automodule:: tsad.datasets
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tsad.pipelines module
+---------------------
+
+.. automodule:: tsad.pipelines
    :members:
    :undoc-members:
    :show-inheritance:

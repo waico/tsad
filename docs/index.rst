@@ -1,31 +1,21 @@
-.. project-template documentation master file, created by
-   sphinx-quickstart on Mon Jan 18 14:44:12 2016.
+.. tsad documentation master file, created by
+   sphinx-quickstart on Sun Aug  6 11:17:03 2023.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Time Series Anomaly Detection!
-============================================
-
-This project is about the application of deep learning 
-for time series anomaly detection problems.
+Welcome to tsad's documentation!
+================================
 
 .. toctree::
    :maxdepth: 2
-   :hidden:
-   :caption: Description
-
-   readme
+   :caption: Contents:
    
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-   :caption: Examples
+.. include:: modules.rst
 
-   Evaluating
-   
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-   :caption: Documentation
 
-   tsad
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
