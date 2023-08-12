@@ -13,7 +13,7 @@ Welcome to tsad's documentation!
    :hidden:
    :caption: Description
 
-   waico_md/waico_readme_link
+   waico_md/README
    
 .. toctree::
    :maxdepth: 2
@@ -25,7 +25,7 @@ Welcome to tsad's documentation!
 .. toctree::
    :maxdepth: 2
    :hidden:
-   :caption: new
+   :caption: TSAD
 
    tsad
 

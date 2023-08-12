@@ -11,7 +11,6 @@ import os
 sys.path.insert(0, os.path.abspath('../'))
 
 
-
 project = 'tsad'
 copyright = '2023, Kozitsin V.'
 author = 'Kozitsin V.'
