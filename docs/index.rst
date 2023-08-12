@@ -6,12 +6,28 @@
 Welcome to tsad's documentation!
 ================================
 
-.. toctree::
-   :maxdepth: 10
-   :caption: Contents:
-   
-.. include:: modules.rst
 
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Description
+
+   waico_md/waico_readme_link
+   
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Examples
+
+   waico_md/Evaluating
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: new
+
+   tsad
 
 Indices and tables
 ==================

@@ -8,7 +8,7 @@ Python 3.10
 
 **The primary purpose** of the TSAD (Python module) is to make life easier for researchers who use deep learning techniques for time series. 
 
-![image-2](./docs/pics/readme/Useful.jpg)
+![image-2](./docs/waico_pics/readme/Useful.jpg)
 
 In particular, TSAD is created for solving Time Series Anomaly Detection problem by widely known technique:
 
@@ -98,7 +98,7 @@ pipeline.fit(df2dfs(df),
 
 After that, you can see:
 
-![image-1](./docs/pics/readme/1.png)
+![image-1](./docs/waico_pics/readme/1.png)
 
 And then you can perform:
 
