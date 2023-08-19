@@ -27,6 +27,20 @@ def load_combines() -> Dataset:
     
     return Dataset(name=name, description=description, task=task, frame=frame, feature_names=list(frame.columns), target_names=None)
 
+def load_tsad_example() -> Dataset:
+    '''
+    Loads and slightly preprocesses example df for TSAD example
+    '''
+    url = 'https://www.dropbox.com/scl/fi/0mw3k1sa5p1bc8qhsdqj0/tsad_example.csv?rlkey=486ytrds74t70m6w5w5dgke68&dl=1'
+    frame = pd.read_csv(url,index_col='DT',parse_dates=['DT'])
+    
+    name = 'TSAD example for Tutorial'
+    description = ''
+    task = ''
+    
+    return Dataset(name=name, description=description, task=task, frame=frame, feature_names=list(frame.columns), target_names=None)
+
+
 def load_skab_teaser() -> Dataset:
     '''
     Loads and slightly preprocesses raw data of SKAB (skoltech anomaly benchmark) teaser.

@@ -1,4 +1,4 @@
-from .base import Task, TaskResult
+from ..base.task import Task, TaskResult
 
 
 import numpy as np
@@ -94,30 +94,20 @@ class ResidualAnomalyDetectionTask(Task):
 
     def __init__(self,
                  name: str | None = None,
-                 preproc=None,
-                 generate_res_func=None,
-                 res_analys_alg=None,
-                 Loader = None
-                 ):
+                ):
+        """
+        Данные класс реализуем алгоритм обработки аномйлий
+        """
+        
         super().__init__(name) 
 
-        if preproc is None:
-            from sklearn.preprocessing import MinMaxScaler
-            self.preproc = MinMaxScaler()
+  
+        
 
-        if generate_res_func is None:
-            from ..utils.ResidualAnomalyDetectionUtils.generateResidual import absoluteResidual
-            self.generate_res_func = absoluteResidual
 
-        if res_analys_alg is None:
-            from ..utils.ResidualAnomalyDetectionUtils.stastics import Hotelling
-            self.res_analys_alg = Hotelling()
 
-        if Loader is None:
-            from ..utils.iterators import Loader
-        self.Loader = Loader
 
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 
 
 
@@ -150,27 +140,23 @@ class ResidualAnomalyDetectionTask(Task):
             dfs,
             result_base_eda: HighLevelDatasetAnalysisResult,
             model=None,
-            encod_decode_model=False,
-            # ужас, нужно это править, особенность encod_decode модели. Попытаться вообще еубрать эту переменную
-            criterion=None,
-            optimiser=None,
-            batch_size=64,
-            len_seq=10,
-            points_ahead=5,
-            n_epochs=100,
-            gap=0,
-            shag=1,
-            intersection=True,
-            test_size=0.2,
-            train_size=None,
+            optimiser = None,
+            criterion = None,
+            preproc=None,
+            generate_res_func=None,
+            res_analys_alg=None,
+            Loader = None,
+            points_ahead = 1,
+            n_epochs = 5, 
+            len_seq = 10, 
+            batch_size = 128, 
+            encod_decode_model = False, 
             random_state=None,
             shuffle=False,
             show_progress=True,
             show_figures=True,
             best_model_file='./best_model.pt',
-            stratify=None,
             ):
-
         """
         Обучение модели как для задачи прогнозирования так и для задачи anomaly
         detection на имеющихся данных. fit = fit_predict_anmaloy 
@@ -207,66 +193,27 @@ class ResidualAnomalyDetectionTask(Task):
         
         n_epochs :  int, default=100 
             Количество эпох.
+         
+            
+        shuffle : bool, default=True
+            Whether or not to shuffle the data before splitting. If shuffle=False
         
-        >>> train_test_split vars
-        
-            gap :  int, default=0
-                Сколько точек между трейном и тестом. Условно говоря,
-                если крайняя точка train а это t, то первая точка теста t + gap +1.
-                Параметр создан, чтобы можно было прогнозировать одну точку через большой 
-                дополнительный интервал времени. 
-            
-            shag :  int, default=1.
-                Шаг генерации выборки. Если первая точка была t у 1-ого сэмпла трейна,
-                то у 2-ого сэмла трейна она будет t + shag, если intersection=True, иначе 
-                тоже самое но без пересечений значений ряда. 
-        
-            intersection :  bool, default=True
-                Наличие значений ряда (одного момента времени) в различных сэмплах выборки. 
-            
-            test_size : float or int, default=None
-                If float, should be between 0.0 and 1.0 and represent the proportion
-                of the dataset to include in the test split. If int, represents the
-                absolute number of test samples. If None, the value is set to the
-                complement of the train size. If ``train_size`` is also None, it will
-                be set to 0.25. *
-                *https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076 
-                Может быть 0, тогда вернет значения X,y
-            
-            train_size : float or int, default=None
-                If float, should be between 0.0 and 1.0 and represent the
-                proportion of the dataset to include in the train split. If
-                int, represents the absolute number of train samples. If None,
-                the value is automatically set to the complement of the test size. *
-                *https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076
-            
-            random_state : int, RandomState instance or None, default=None
-                Controls the shuffling applied to the data before applying the split.
-                Pass an int for reproducible output across multiple function calls.
-                See :term:`Glossary <random_state>`.*
-                *https://github.com/scikit-learn/scikit-learn/blob/95119c13a/sklearn/model_selection/_split.py#L2076
-                
-            
-            shuffle : bool, default=True
-                Whether or not to shuffle the data before splitting. If shuffle=False
-                then stratify must be None. *
-            
-            show_progress : bool, default=True
-                Показывать или нет прогресс обучения с детализацией по эпохам. 
+        show_progress : bool, default=True
+            Показывать или нет прогресс обучения с детализацией по эпохам. 
 
-            
-            show_figures : bool, default=True
-                Показывать или нет результаты решения задачии anomaly detection 
-                и кривую трейна и валидации по эпохам. 
-            
-            
-            best_model_file : string, './best_model.pt'
-                Путь до файла, где будет хранится лучшие веса модели
-            
-            Loader : class, default=ufesul.iterators.Loader.
-                Тип загрузчика, которую будет использовать как итератор в будущем, 
-                благодаря которому, есть возможность бить на бачи.
         
+        show_figures : bool, default=True
+            Показывать или нет результаты решения задачии anomaly detection 
+            и кривую трейна и валидации по эпохам. 
+        
+        
+        best_model_file : string, './best_model.pt'
+            Путь до файла, где будет хранится лучшие веса модели
+        
+        Loader : class, default=ufesul.iterators.Loader.
+            Тип загрузчика, которую будет использовать как итератор в будущем, 
+            благодаря которому, есть возможность бить на бачи.
+    
         Attributes
         ----------
 
@@ -274,12 +221,57 @@ class ResidualAnomalyDetectionTask(Task):
         ----------
         list of pd.datetime anomalies on initial dataset
         """
+
+        
+        self.columns = result_base_eda.columns 
+
+        if model is None:
+            from ..utils.MLmodels.DeepLearningRegressors import SimpleLSTM
+            model = SimpleLSTM(len(self.columns), len(self.columns), seed=random_state)
+        self.model = model
+        
+        if optimiser is None:
+            optimiser = torch.optim.Adam
+            optimiser = optimiser(self.model.parameters())
+        else:
+            args = optimiser[1]
+            args['params'] = self.model.parameters()
+            optimiser = optimiser[0](**args)
+        
+
+        if preproc is None:
+            from sklearn.preprocessing import MinMaxScaler
+            self.preproc = MinMaxScaler()
+
+        if generate_res_func is None:
+            from ..utils.ResidualAnomalyDetectionUtils.generateResidual import absoluteResidual
+            self.generate_res_func = absoluteResidual
+
+        if res_analys_alg is None:
+            from ..utils.ResidualAnomalyDetectionUtils.stastics import Hotelling
+            self.res_analys_alg = Hotelling()
+
+        if Loader is None:
+            from ..utils.iterators import Loader
+        self.Loader = Loader
+
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+        if criterion is None:
+            criterion = nn.MSELoss()
+
         self.points_ahead = points_ahead
+        self.n_epochs = n_epochs
         self.len_seq = len_seq
         self.batch_size = batch_size
-        self.best_model_file = best_model_file
         self.encod_decode_model = encod_decode_model
-        self.columns = result_base_eda.columns
+        self.random_state = random_state
+        self.shuffle = shuffle
+        self.show_progress = show_progress
+        self.show_figures = show_figures
+        self.best_model_file = best_model_file
+        
+
         if show_progress:
             show_progress_text = ""
 
@@ -298,21 +290,7 @@ class ResidualAnomalyDetectionTask(Task):
 
         
 
-        if criterion is None:
-            criterion = nn.MSELoss()
 
-        if model is None:
-            from ..utils.MLmodels.DeepLearningRegressors import SimpleLSTM
-            model = SimpleLSTM(len(self.columns), len(self.columns), seed=random_state)
-        self.model = model
-
-        if optimiser is None:
-            optimiser = torch.optim.Adam
-            optimiser = optimiser(self.model.parameters())
-        else:
-            args = optimiser[1]
-            args['params'] = self.model.parameters()
-            optimiser = optimiser[0](**args)
 
         history_train = []
         history_val = []
@@ -392,18 +370,18 @@ class ResidualAnomalyDetectionTask(Task):
 
     # накосячил тут с прогнозом на одну точку вперед. Могут быть проблемы если ahead !=1
     def predict(self,
-                        dfs,
-                        result:ResidualAnomalyDetectionResult,
-                        gap=0,
-                        shag=1,
-                        intersection=True,
-                        train_size=None,
-                        random_state=None,
-                        shuffle=False,
-                        stratify=None,
-                        show_progress=True,
-                        show_figures=True
-                        ):
+                dfs,
+                result:ResidualAnomalyDetectionResult,
+                points_ahead = None, 
+                n_epochs = None, 
+                len_seq = None, 
+                batch_size = None, 
+                encod_decode_model = None, 
+                random_state = None, 
+                shuffle = None, 
+                show_progress = None, 
+                show_figures = None, 
+                best_model_file = None):
 
         """
         Поиск аномалий в новом наборе данных
@@ -422,6 +400,19 @@ class ResidualAnomalyDetectionTask(Task):
         ----------
         
         """
+        self.points_ahead = points_ahead if points_ahead is not None else self.points_ahead
+        self.n_epochs = n_epochs if n_epochs is not None else self.n_epochs
+        self.len_seq = len_seq if len_seq is not None else self.len_seq
+        self.batch_size = batch_size if batch_size is not None else self.batch_size
+        self.encod_decode_model = encod_decode_model if encod_decode_model is not None else self.encod_decode_model
+        self.random_state = random_state if random_state is not None else self.random_state
+        self.shuffle = shuffle if shuffle is not None else self.shuffle
+        self.show_progress = show_progress if show_progress is not None else self.show_progress
+        self.show_figures = show_figures if show_figures is not None else self.show_figures
+        self.best_model_file = best_model_file if best_model_file is not None else self.best_model_file
+
+
+
         len_seq = self.len_seq
         # -----------------------------------------------------------------------------------------
         #     Генерация остатков

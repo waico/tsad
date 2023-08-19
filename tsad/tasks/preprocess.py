@@ -1,6 +1,6 @@
 import pandas as pd
 
-from .base import Task, TaskResult
+from ..base.task import Task, TaskResult
 from .eda import TimeDiscretizationResult, FindNaNResult, EquipmentDowntimeResult
 
 

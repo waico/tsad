@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from .base import Task, TaskResult
+from ..base.task import Task, TaskResult
 
 
 class HighLevelDatasetAnalysisResult(TaskResult):

@@ -6,48 +6,29 @@
 
 Python 3.10
 
-**The primary purpose** of the TSAD (Python module) is to make life easier for researchers who use deep learning techniques for time series. 
+**The primary purpose** of the TSAD (Python module) is to make life easier for researchers who use ML techniques to solve the following problems: 
 
-![image-2](./docs/waico_pics/readme/Useful.jpg)
+* Fault Detection of industrial equipment
+* Improvement of technological processes of industrial equipment
+  * Performance boost
+  * Cost reduction
+  * Quality control and management
 
-In particular, TSAD is created for solving Time Series Anomaly Detection problem by widely known technique:
+
+
+### Solving Fault Detection problem
+
+In TSAD, the problem of fault detection is reduced to the problem of detecting time series anomalies using a well-known technique:
 
 - Forecast a multivariate Time Series (TS) one point ahead (Also works for univariate TS)
 - Compute residuals between forecast and true values
 - Apply analysis of residuals and thus find anomalies
 
----
-
-**The functionality** of the TSAD:
-
-- Preprocessing of Time Series ([tsad.src](https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.src) module):
-
-  - Automatic search for gaps or groups of missing values and solving this problem (tsad.src.df2dfs)
-
-  - Conversion to a single sample rate or solving unevenly spaced time series problem n(tsad.src.df2dfs)
-
-  - Splitting the entire history dataset, that is, one large time series, into a train and a test (tsad.src.ts_train_test_split) with a specific length of time series in one sample. Also, you can adjust the step, intersection of samples, and much more.
-  - Collecting samples in batches by using a Loader (tsad.src.Loader)
-- Forecasting multi-step ahead both multivariate and univariate time series. As forecasting algorithms were implemented or will be implemented [tsad.models](https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.models):
-
-  - A simple one-layer LSTM network (LSTM) 
-  -   A two-layer LSTM network (DeepLSTM)
-  - bi-directional LSTM network (BLSTM)
-  - LSTM encoder-decoder (EncDec-AD) 
-  - LSTM autoencoder (LSTM-AE) 
-  - Convolutional LSTM network (ConvLSTM) 
-  - Convolutional Bi-directional LSTM network (CBLSTM) 
-  - Multi-Scale Convolutional Recurrent Encoder-Decoder (MSCRED)
-- Calculation of residuals between forecast and real values. By default, the absolute difference is calculated. Still, you can write your function taking into account the requirements (requirements and other functions for calculating the residuals can be found in [tsad.generate_residuals](https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.generate_residuals)) and use it in the pipeline.
-- Residual analysis to find anomalies. There are various techniques for analyzing residuals. By default, [T2 statistic](https://en.wikipedia.org/wiki/Hotelling's_T-squared_distribution) is implemented , but you can write your function taking into account the requirements (requirements and other functions for analyzing residuals can be found in [tsad. stastics](https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.stastics)) and use it in the pipeline.
-- Grouping of repeated time series values. tsad.src.split_by_repeated
-- Convenient loading of hyperparameters.  tsad.useful.iterators.MeshLoader
+![image-2](./docs/waico_pics/readme/Useful.jpg)
 
 #### Documentation
 
 https://tsad.readthedocs.io/
-
-**The main class of the pipeline is** [tsad.main.AnomalyDetection](https://tsad.readthedocs.io/en/latest/tsad.html#module-tsad.main)
 
 ---
 
@@ -57,57 +38,40 @@ https://tsad.readthedocs.io/
 
 `pip install -U tsad`
 
-1. Primitive case 
-
 ```python
 import pandas as pd
-from tsad import main
+from tsad.base.pipeline import Pipeline
+from tsad.tasks.eda import HighLevelDatasetAnalysisTask, TimeDiscretizationTask
+from tsad.tasks.eda import FindNaNTask, EquipmentDowntimeTask
+from tsad.tasks.preprocess import ScalingTask, ValueRangeProcessingTask, ResampleProcessingTask 
+from tsad.tasks.preprocess import FeatureProcessingTask, SplitByNaNTask, TrainTestSplitTask
+from tsad.tasks.anomalyDetection import ResidualAnomalyDetectionTask
+from tsad.base.datasets import load_tsad_example
 
-# Loading ideal time series without any problem
-df = pd.read_csv('example.csv',parse_dates='DT').set_index('DT') 
 
-pipeline = maim.AnomalyDetection() 
-pipeline.fit(df)
-list_anomalies = pipeline.predict_anomaly(df)
-forecast = pipeline.forecast(df)
-```
+data = load_tsad_example().frame
 
-2. Advanced case
-
-```python
-import pandas as pd
-from tsad import main
-from tsad.src import df2dfs
-import torch
-
-# Loading time series
-df = pd.read_csv('example.csv',parse_dates='DT').set_index('DT') 
-
-class my_preproc_func(...):
-    ...
-    
-
-pipeline = maim.AnomalyDetection(preproc=my_preproc_func) 
-pipeline.fit(df2dfs(df),
-             n_epochs=3,
-             optimiser=(torch.optim.Adam,{‘lr’:0.001}),
-             batch_size=8,
-             len_seq=60*3,
-             test_size=0.4)
+inference_pipeline = Pipeline([
+    HighLevelDatasetAnalysisTask(),
+    TimeDiscretizationTask(),
+    FindNaNTask(),
+    EquipmentDowntimeTask(),
+    ResampleProcessingTask(),
+    FeatureProcessingTask(),
+    SplitByNaNTask(),
+    TrainTestSplitTask(len_seq=10),
+    ResidualAnomalyDetectionTask(),
+], show=False)
+df = inference_pipeline.fit(data)
 ```
 
 After that, you can see:
 
 ![image-1](./docs/waico_pics/readme/1.png)
 
-And then you can perform:
 
-```python
-list_anomalies = pipeline.predict_anomaly(df2dfs(df))
-forecast = pipeline.forecast(df2dfs(df))
-```
 
-More details you can find [here](https://github.com/waico/tsad/tree/main/examples)
+More details you can find [here](https://github.com/waico/tsad/tree/main/Tutorials)
 
 ---
 
@@ -161,12 +125,7 @@ https://pypi.org/project/catalyst/
 
 #### Dependencies
 
-* python==3.7.6
-* numpy>=1.20.0
-* pandas>=1.0.1
-* matplotlib>=3.1.3
-* scikit-learn>=0.24.1
-* torch==1.5.0
+* TODO
 
 #### Repo structure
 
