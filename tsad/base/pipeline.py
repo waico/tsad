@@ -4,6 +4,7 @@ import pandas as pd
 from enum import Enum
 
 from .task import Task, TaskResult
+from .exceptions import ArgumentNotFoundException
 
 
 class PipelineMode(Enum):
@@ -68,7 +69,7 @@ class Pipeline():
                 parameters[annotation_name] = self.run_arguments[annotation_name]
             
             else:
-                raise Exception(f'Unable to inject named argument {annotation_name}. Add it to fit/predict Pipeline method.')
+                raise ArgumentNotFoundException(f'Unable to inject named argument {annotation_name}. Add it to fit/predict Pipeline method.')
         
         return parameters
 

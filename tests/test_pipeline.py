@@ -5,6 +5,7 @@ import pandas as pd
 
 from tsad.base.pipeline import Pipeline
 from tsad.base.task import Task, TaskResult
+from tsad.base.exceptions import ArgumentNotFoundException
 
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -41,11 +42,11 @@ class TestParamsTask(Task):
 
 
     def fit(self, df: pd.DataFrame, multiply: int) -> tuple[pd.DataFrame, TaskResult]:
-        return df, None
+        return df * multiply, None
 
 
     def predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
-        return pd.DataFrame([1, 2, 3]), None
+        return df, None
 
 
 def test_pipeline():
@@ -67,7 +68,7 @@ def test_params():
     df = pd.DataFrame([1, 2, 3, 4])
     pipeline = Pipeline([TestParamsTask()])
 
-    with pytest.raises(Exception):
+    with pytest.raises(ArgumentNotFoundException):
         pipeline.fit(df)
 
     pipeline.fit(df, multiply=7)
