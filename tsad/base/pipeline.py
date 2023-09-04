@@ -16,6 +16,8 @@ class Pipeline():
 
     mode: PipelineMode
 
+    run_arguments: dict[str, any]
+
 
     def __init__(self, tasks: list[Task], results: list[TaskResult] = None, show: bool = False) -> None:
         self.tasks = tasks
@@ -61,12 +63,19 @@ class Pipeline():
             if issubclass(annotation_type, TaskResult):
                 parameters[annotation_name] = self._get_result_by_type(annotation_type)
                 logging.debug(f'Adding parameter {annotation_name} with type {annotation_type.__name__} from Pipeline results.')
+            
+            elif annotation_name in self.run_arguments:
+                parameters[annotation_name] = self.run_arguments[annotation_name]
+            
+            else:
+                raise Exception(f'Unable to inject named argument {annotation_name}. Add it to fit/predict Pipeline method.')
         
         return parameters
 
 
-    def _run(self, df: pd.DataFrame) -> pd.DataFrame:
-
+    def _run(self, df: pd.DataFrame, **params) -> pd.DataFrame:
+        
+        self.run_arguments = params
         task_df = df.copy()
 
         for task in self.tasks:
@@ -98,13 +107,13 @@ class Pipeline():
         return task_df
 
 
-    def fit(self, df: pd.DataFrame) -> pd.DataFrame:
+    def fit(self, df: pd.DataFrame, **params) -> pd.DataFrame:
         
         self.mode = PipelineMode.FIT
-        return self._run(df)
+        return self._run(df, **params)
     
 
-    def predict(self, df: pd.DataFrame) -> pd.DataFrame:
+    def predict(self, df: pd.DataFrame, **params) -> pd.DataFrame:
         
         self.mode = PipelineMode.PREDICT
-        return self._run(df)
+        return self._run(df, **params)

@@ -1,5 +1,6 @@
 import os
 import sys
+import pytest
 import pandas as pd
 
 from tsad.base.pipeline import Pipeline
@@ -20,7 +21,7 @@ class FirstTestTaskResult(TaskResult):
 
 
 class FistTestTask(Task):
-    
+
 
     def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
         result = FirstTestTaskResult()
@@ -30,6 +31,20 @@ class FistTestTask(Task):
 
     def predict(self, df: pd.DataFrame, fit_result: FirstTestTaskResult) -> tuple[pd.DataFrame, TaskResult]:
         assert len(df) == fit_result.length
+        return pd.DataFrame([1, 2, 3]), None
+
+
+class TestParamsTask(Task):
+
+
+    __test__ = False
+
+
+    def fit(self, df: pd.DataFrame, multiply: int) -> tuple[pd.DataFrame, TaskResult]:
+        return df, None
+
+
+    def predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
         return pd.DataFrame([1, 2, 3]), None
 
 
@@ -45,3 +60,14 @@ def test_pipeline():
     predict_df = pipeline.predict(df)
 
     assert len(predict_df) == 3
+
+
+def test_params():
+
+    df = pd.DataFrame([1, 2, 3, 4])
+    pipeline = Pipeline([TestParamsTask()])
+
+    with pytest.raises(Exception):
+        pipeline.fit(df)
+
+    pipeline.fit(df, multiply=7)
