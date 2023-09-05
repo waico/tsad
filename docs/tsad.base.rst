@@ -12,6 +12,14 @@ tsad.base.datasets module
    :undoc-members:
    :show-inheritance:
 
+tsad.base.exceptions module
+---------------------------
+
+.. automodule:: tsad.base.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 tsad.base.pipeline module
 -------------------------
 
