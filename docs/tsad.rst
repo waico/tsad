@@ -7,19 +7,12 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   tsad.base
    tsad.tasks
    tsad.utils
 
 Submodules
 ----------
-
-tsad.datasets module
---------------------
-
-.. automodule:: tsad.datasets
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 tsad.pipelines module
 ---------------------

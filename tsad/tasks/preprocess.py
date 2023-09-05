@@ -5,6 +5,9 @@ from .eda import TimeDiscretizationResult, FindNaNResult, EquipmentDowntimeResul
 
 
 class ScalingTaskResult(TaskResult):
+    """
+    Это не реальная таска, а Олега изобретение чтобы тестить пайплайн
+    """
 
     def show(self) -> None:
         pass
@@ -124,24 +127,93 @@ class ResampleProcessingResult(TaskResult):
 
 
 class ResampleProcessingTask(Task):
-
+    """
+    Класс задачи предварительной обработки данных в области преобразования частоты диксретизации. 
+    """
     def __init__(self, 
                  name: str | None = None, 
                  FREQ_TOBE: str | None = None,
                  ):
+        """ Это задача, представляющая из себя класс, для преобразования
+        частоты дискритизации временного индекса с сохранением некоторой 
+        метаинформации в ResampleProcessingResult. 
+
+        Parameters
+        ----------
+        FREQ_TOBE : pd.Timedelta | str, default None
+            Задаваемая пользователем частота дискретизации. Если None, 
+            то частота берется из результатов задачи TimeDiscretizationResult.
+        """
         super().__init__(name)
         self.FREQ_TOBE = FREQ_TOBE
         
         
     def fit(self, df: pd.DataFrame, time_result:TimeDiscretizationResult) -> tuple[pd.DataFrame, ResampleProcessingResult]:
+        """
+        Fit the ResampleProcessingTask.
+        Происходит преобразование частоты дискретизации подаваемого на вход df 
+        в соответствии либо с FREQ_TOBE при инициализаии (приоритет), либо в соответствии 
+        с найденной в задаче  TimeDiscretizationTask
+
+        Parameters
+        ----------
+
+        df : pd.DataFrame 
+            Входной датасет
+
+        time_result : TimeDiscretizationResult 
+            Результаты работы задачи TimeDiscretizationTask
+
+        Returns
+        -------
+        new_df : pd.DataFrame 
+            Выходной датасет
+        
+        result : TimeDiscretizationResult
+            Объект сохраненных результатов задачи ResampleProcessingResult
+            
+        Notes
+        -----
+        При вызове метода fit происходит сохранение следующей информации в 
+        TimeDiscretizationResult:  
+            FREQ_TOBE : назначенная частота дискретизации 
+        """        
         result = ResampleProcessingResult()
         print(self.FREQ_TOBE )
-        result.FREQ_TOBE = self.FREQ_TOBE  if self.FREQ_TOBE is not None else time_result.FREQ_TOBE
+        result.FREQ_TOBE = self.FREQ_TOBE if self.FREQ_TOBE is not None else time_result.FREQ_TOBE
         print(result.FREQ_TOBE)
         df = df.resample(result.FREQ_TOBE).mean()
         return df, result
 
     def predict(self, df: pd.DataFrame, result: ResampleProcessingResult) -> tuple[pd.DataFrame, ResampleProcessingResult]:
+        """
+        Predict by ResampleProcessingTask.
+        Происходит преобразование частоты дискретизации подаваемого на вход df 
+        в соответствии с заданной на этапе fit.   
+
+        Parameters
+        ----------
+
+        df : pd.DataFrame 
+            Входной датасет
+
+        time_result : TimeDiscretizationResult 
+            Результаты работы задачи TimeDiscretizationTask
+
+        Returns
+        -------
+        new_df : pd.DataFrame 
+            Выходной датасет
+        
+        result : ResampleProcessingResult
+            Объект сохраненных результатов задачи ResampleProcessingResult
+            
+        Notes
+        -----
+        При вызове метода fit происходит сохранение следующей информации в 
+        TimeDiscretizationResult:  
+            FREQ_TOBE : назначенная частота дискретизации 
+        """    
         df = df.resample(result.FREQ_TOBE).mean()
         return df, result
 
@@ -172,9 +244,11 @@ class FeatureProcessingTask(Task):
 
 
 
-### TODO
 class SplitByNaNResult(TaskResult):
-
+    """Это результаты работы задачи SplitByNaNTask:
+    Ничего не сохраняется и не отображается в результате 
+    выполнения этой задачи. 
+    """  
     
 
     def show(self) -> None:
@@ -183,27 +257,86 @@ class SplitByNaNResult(TaskResult):
 
 
 class SplitByNaNTask(Task):
-
+    """
+    Класс задачи предварительной обработки данных в части разбиения исходной выборки 
+    на отдельные выборки по принципу неразрывности данных.
+    """
     def __init__(self, 
                  name: str | None = None, 
                  ):
+            """
+            Класс задачи предварительной обработки данных в части разбиения исходной выборки 
+            на отдельные выборки по принципу неразрывности данных. То есть исходный df разбивается 
+            на выборки максимальной длины, а пропуски из-за которых датасет разбивается вообще удаляются, 
+            то есть непрерывная часть слева и справа от пропуска есть 2 выборки, которые получились из-за
+            этого пропуска. Нужен для работы с последовательностями из-за требования: по отсутствию 
+            пропусков и по одинаковой частоте дискретизации. 
+            """
         super().__init__(name)        
         
     def fit(self, df: pd.DataFrame,time_result:ResampleProcessingResult) -> tuple[pd.DataFrame, SplitByNaNResult]:
+        """
+        Fit the SplitByNaNTask. 
+
+        Parameters
+        ----------
+
+        df : pd.DataFrame 
+            Входной датасет
+
+        time_result: ResampleProcessingResult
+            Результат работы ResampleProcessingTask, главным образом из-за
+            агрумента FREQ_TOBE, который нужен для разбиения
+
+        Returns
+        -------
+        dfs : list[pd.DataFrame]
+            Выходной датасеты удовлетворяющие условию неразрывности
+        
+        result : SplitByNaNResult
+            Объект сохраненных результатов задачи SplitByNaNTask
+            
+        """
+
         result = SplitByNaNResult()
         from ..utils.preproc import df2dfs
         dfs = df2dfs(df,resample_freq = time_result.FREQ_TOBE)
         return dfs, result
 
     def predict(self, df: pd.DataFrame, result: SplitByNaNResult,time_result:ResampleProcessingResult) -> tuple[pd.DataFrame, SplitByNaNResult]:
+        """
+        Predict by SplitByNaNTask. 
+
+        Parameters
+        ----------
+
+        df : pd.DataFrame 
+            Входной датасет
+
+        time_result: ResampleProcessingResult
+            Результат работы ResampleProcessingTask, главным образом из-за
+            агрумента FREQ_TOBE, который нужен для разбиения
+
+        Returns
+        -------
+        dfs : list[pd.DataFrame]
+            Выходной датасеты удовлетворяющие условию неразрывности
+        
+        result : SplitByNaNResult
+            Объект сохраненных результатов задачи SplitByNaNTask
+            
+        """       
         from ..utils.preproc import df2dfs
         dfs = df2dfs(df,resample_freq = time_result.FREQ_TOBE)
         return dfs, result 
 
 
 
-class TrainTestSplitResult(TaskResult):
-
+class PrepareSeqSamplesResult(TaskResult):
+    """Это результаты работы задачи PrepareSeqSamplesTask:
+    Ничего не сохраняется и не отображается в результате 
+    выполнения этой задачи. 
+    """  
     
 
     def show(self) -> None:
@@ -211,22 +344,68 @@ class TrainTestSplitResult(TaskResult):
         pass
 
 
-class TrainTestSplitTask(Task):
+class PrepareSeqSamplesTask(Task):
+    """Класс задачи предварительной обработки данных в части подготовки сэмлов 
+    в виде последовательности для специализированных алгоритмов. 
+    """
 
     def __init__(self, 
                  name: str | None = None, 
                  **kwargs,
                  ):
+        """Класс задачи предварительной обработки данных в части подготовки сэмлов 
+        в виде последовательности для специализированных алгоритмов. 
+        """
+
         super().__init__(name)   
         self.kwargs=kwargs    
         
-    def fit(self, dfs: pd.DataFrame) -> tuple[pd.DataFrame, TrainTestSplitResult]:
-        result = TrainTestSplitResult()
+    def fit(self, dfs: pd.DataFrame | list[pd.DataFrame]) -> tuple[pd.DataFrame | list[pd.DataFrame], PrepareSeqSamplesResult]:
+        """
+        Fit the PrepareSeqSamplesTask. 
+
+        Parameters
+        ----------
+
+        dfs : pd.DataFrame | list[pd.DataFrame]
+            Входной датасет/входные датасеты
+
+        Returns
+        -------
+        dfs : lpd.DataFrame | list[pd.DataFrame] | list[list[pd.DataFrame]]
+            Выходной датасеты последовательностей
+        
+        result : PrepareSeqSamplesResult
+            Объект сохраненных результатов задачи PrepareSeqSamplesTask
+            
+        """
+        result = PrepareSeqSamplesResult()
         from ..utils.trainTestSplitting import ts_train_test_split_dfs 
         dfs = ts_train_test_split_dfs(dfs,**self.kwargs)
         return dfs, result
 
-    def predict(self, df: pd.DataFrame, result: TrainTestSplitResult) -> tuple[pd.DataFrame, TrainTestSplitResult]:
+    def predict(self, df: pd.DataFrame, result: PrepareSeqSamplesResult) -> tuple[pd.DataFrame, PrepareSeqSamplesResult]:
+        """
+        Predict by PrepareSeqSamplesTask. 
+
+        Parameters
+        ----------
+
+        dfs : pd.DataFrame | list[pd.DataFrame]
+            Входной датасет/входные датасеты
+
+        result : PrepareSeqSamplesResult
+            Объект сохраненных результатов задачи PrepareSeqSamplesTask
+
+        Returns
+        -------
+        dfs : lpd.DataFrame | list[pd.DataFrame] | list[list[pd.DataFrame]]
+            Выходной датасеты последовательностей
+        
+        result : PrepareSeqSamplesResult
+            Объект сохраненных результатов задачи PrepareSeqSamplesTask
+            
+        """
         from ..utils.trainTestSplitting import ts_train_test_split_dfs 
         dfs = ts_train_test_split_dfs(dfs,**self.kwargs)
         return dfs, result

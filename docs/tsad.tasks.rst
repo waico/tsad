@@ -12,14 +12,6 @@ tsad.tasks.anomalyDetection module
    :undoc-members:
    :show-inheritance:
 
-tsad.tasks.base module
-----------------------
-
-.. automodule:: tsad.tasks.base
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 tsad.tasks.eda module
 ---------------------
 

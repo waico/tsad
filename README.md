@@ -1,4 +1,5 @@
-[![Downloads](https://pepy.tech/badge/tsad)](https://pepy.tech/project/tsad) [![Downloads](https://pepy.tech/badge/tsad/month)](https://pepy.tech/project/tsad) [![License](https://img.shields.io/badge/License-BSD_3--Clause-green.svg)](https://github.com/waico/tsad/blob/main/LICENSE)
+
+![Downloads](https://static.pepy.tech/badge/tsad)![Downloads](https://static.pepy.tech/badge/tsad/month)
 
 # TSAD
 
@@ -51,7 +52,7 @@ from tsad.base.datasets import load_tsad_example
 
 data = load_tsad_example().frame
 
-inference_pipeline = Pipeline([
+pipeline = Pipeline([
     HighLevelDatasetAnalysisTask(),
     TimeDiscretizationTask(),
     FindNaNTask(),
@@ -59,10 +60,10 @@ inference_pipeline = Pipeline([
     ResampleProcessingTask(),
     FeatureProcessingTask(),
     SplitByNaNTask(),
-    TrainTestSplitTask(len_seq=10),
+    PrepareSeqSamplesTask(len_seq=10),
     ResidualAnomalyDetectionTask(),
 ], show=False)
-df = inference_pipeline.fit(data)
+df = pipeline.fit(data)
 ```
 
 After that, you can see:

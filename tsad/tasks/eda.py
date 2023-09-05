@@ -5,6 +5,33 @@ from ..base.task import Task, TaskResult
 
 
 class HighLevelDatasetAnalysisResult(TaskResult):
+    """Это результаты работы задачи HighLevelDatasetAnalysisTask:  
+    
+    Attributes
+    ----------
+    start_time : pd.DatetimeIndex
+        Первый временной индекс в исходном датасете
+
+    end_time : pd.DatetimeIndex
+        Последний временной индекс в исходном датасете. 
+
+    duration : pd.Timedelta
+        Временной охват в исходном датасете.
+    
+    length : int
+        Количество сэмплов в исходном датасете.
+
+    columns_num : int
+        Количесто колонок в исходном датасете.
+
+    columns : list[str]
+        Список колонок в исходном датасете.
+
+    types : pd.Series
+        Таблица типов данных колонок
+
+    """
+
 
     start_time: pd.DatetimeIndex
     end_time: pd.DatetimeIndex
@@ -26,8 +53,51 @@ class HighLevelDatasetAnalysisResult(TaskResult):
 
 
 class HighLevelDatasetAnalysisTask(Task):
+    """
+    Класс задачи разведочного анализа данных в области оценки общей информации о датасете. 
+    """
+    
+    def __init__(self, name: str | None = None):
+        """ Класс задачи разведочного анализа данных в области оценки общей информации о датасете. 
+        Осуществляет анализ, вывод и сохранение верхнеуровневой информации о датасете.
+        Сохранение осуществляется через HighLevelDatasetAnalysisResult для 
+        использование полученной информации в последующих задачах, востребованных в рамках 
+        верхнеуровневого пайплайна.
+        
+        Notes
+        -----
+        При вызове метода fit происходит сохранение следующей информации в 
+        HighLevelDatasetAnalysisResult:  
+            start_time : Первый временной индекс в исходном датасете
+            end_time : Последний временной индекс в исходном датасете. 
+            duration : Временной охват в исходном датасете.
+            length : Количество сэмплов в исходном датасете.
+            columns_num : Количесто колонок в исходном датасете.
+            columns : Список колонок в исходном датасете.
+            types : Таблица типов данных колонок
+        """
+        
+        super().__init__(name)
+
+ 
 
     def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, HighLevelDatasetAnalysisResult]:
+        """
+        Fit the HighLevelDatasetAnalysisTask. 
+
+        Notes
+        -----        
+        В данном случае метод производит 
+        сохранение информации в HighLevelDatasetAnalysisResult следующей информации: 
+            start_time : Первый временной индекс в исходном датасете
+            end_time : Последний временной индекс в исходном датасете. 
+            duration : Временной охват в исходном датасете.
+            length : Количество сэмплов в исходном датасете.
+            columns_num : Количесто колонок в исходном датасете.
+            columns : Список колонок в исходном датасете.
+            types : Таблица типов данных колонок
+
+        """
 
         from pandas.api.types import is_datetime64_any_dtype
 
@@ -47,10 +117,54 @@ class HighLevelDatasetAnalysisTask(Task):
         return df, result
     
     def predict(self, df: pd.DataFrame, result: HighLevelDatasetAnalysisResult) -> tuple[pd.DataFrame, HighLevelDatasetAnalysisResult]:
+        """
+        Predict the HighLevelDatasetAnalysisTask. 
+        В данном методе ничего не происходит. Нужен для реализации верхнеуровневых пайплайнов. 
+        """
         return df, result
 
 
 class TimeDiscretizationResult(TaskResult):
+    """Это результаты работы задачи TimeDiscretizationTask:  
+    
+    Attributes
+    ----------
+    FREQ_TOBE : pd.Timedelta | str
+        Вычисленная частота дискретизации,
+        которая оптимальна для данного датасета. Способ 
+        получения см. подробнее в TimeDiscretizationTask. 
+
+    frequence_of_diff_interval: pd.Series
+        Таблица, где индекс - это диапазон возможных периодов
+        между сэмплами, а колонка - это количество случаев в
+        датасете с таким диапазоном периодов. 
+
+    index_freq_climed: pd.Timedelta | str | None
+        Единый обозначенный период исходного датасета, 
+        если такой имеется. 
+
+    min_diff : pd.Timedelta | str
+        Минимальный период между сэмплами в датасете
+        
+    max_diff : pd.Timedelta | str
+        Максимальный период между сэмплами в датасете
+    
+    most_frequent_diff_value : pd.Timedelta | str
+        Наиболее часто встречающйся период
+
+    most_frequent_diff_amount_cases : int
+        Количество случаев с наиболее часто встречающимся периодом
+               
+    most_frequent_diff_amount_cases_percent : float
+        Доля случаев с наиболее часто встречающимся периодом
+
+    amount_unique_diff : int
+        Количество уникальных периодов
+    
+    amount_unique_diff_percent : float
+        Доля уникальных периодов среди общего количества сэмплов
+
+    """
 
     index_freq_climed = None
     most_frequent_diff_value = None
@@ -86,15 +200,99 @@ class TimeDiscretizationResult(TaskResult):
 
 
 class TimeDiscretizationTask(Task):
+    """
+    Класс задачи разведочного анализа данных в области оценки частоты дискретизации 
+    и поиска оптимальной частоты. 
+    """
 
 
-    def __init__(self, name: str | None = None, freq_tobe_approach: str = 'auto'):
+    def __init__(self, name: str | None = None, FREQ_TOBE=None, freq_tobe_approach: str = 'auto'):
+        """ Это задача, представляющая из себя класс, для анализа и вывода иннформации 
+        о частоте дискритизации временного индекса и сохранения этой информации
+        в TimeDiscretizationResult. 
+
+        Parameters
+        ----------
+        FREQ_TOBE : pd.Timedelta | str, default None
+            Задаваемая пользователем частота дискретизации. Если не None, 
+            то поиск оптимальной частоты не производится, а параметр 
+            freq_tobe_approach становится равным "custom".
+
+        freq_tobe_approach : str, default 'auto'
+            Способ формирования оптимальной частоты дискретизации, которая 
+            может быть востребована при дальнейших обработках. 
+            Варианты: 'custom', 'min_period', 'most_frequent', 'auto'
+                * Если 'custom' для оптимальной частоты берется частота из параметра FREQ_TOBE
+                * Если 'min_period' для оптимальной частоты берется частота,
+                соответствующая минимальному периоду между сэмплами
+                * Если 'min_period' для оптимальной частоты берется частота,
+                соответствующая наиболее часто встречающемуся периоду между сэмплами
+                * Если 'auto' для оптимальной частоты берется частота,
+                которая находится сложным образом на основе округления большего числа периодов.
+                Подробнее смотри код.
+            
+        Notes
+        -----
+        При вызове метода fit происходит сохранение следующей информации в 
+        TimeDiscretizationResult:  
+            FREQ_TOBE : вычисленная частота дискретизации 
+            frequence_of_diff_interval: распределение периодов между сэмлами 
+            index_freq_climed: Единый обозначенный период исходного датасета
+            min_diff : Минимальный период между сэмплами в датасете                
+            max_diff : Максимальный период между сэмплами в датасете          
+            most_frequent_diff_value : Наиболее часто встречающйся период
+            most_frequent_diff_amount_cases : Количество случаев с наиболее часто 
+            встречающимся периодом                    
+            most_frequent_diff_amount_cases_percent : Доля случаев с наиболее 
+            часто встречающимся периодом
+            amount_unique_diff : Количество уникальных периодов
+            amount_unique_diff_percent : Доля уникальных периодов среди общего количества сэмплов
+            """
+
+
         super().__init__(name)
-        self.FREQ_TOBE = freq_tobe_approach
+        self.freq_tobe_approach = freq_tobe_approach
 
 
 
     def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TimeDiscretizationResult]:
+
+        """
+        Fit the TimeDiscretizationTask. 
+
+        Parameters
+        ----------
+
+        df : pd.DataFrame 
+            Входной датасет
+
+        Returns
+        -------
+        new_df : pd.DataFrame 
+            Выходной датасет
+        
+        result : TimeDiscretizationResult
+            Объект сохраненных результатов задачи TimeDiscretizationTask
+            
+        Notes
+        -----
+        При вызове метода fit происходит сохранение следующей информации в 
+        TimeDiscretizationResult:  
+            FREQ_TOBE : вычисленная частота дискретизации 
+            frequence_of_diff_interval: распределение периодов между сэмлами 
+            index_freq_climed: Единый обозначенный период исходного датасета
+            min_diff : Минимальный период между сэмплами в датасете                
+            max_diff : Максимальный период между сэмплами в датасете          
+            most_frequent_diff_value : Наиболее часто встречающйся период
+            most_frequent_diff_amount_cases : Количество случаев с наиболее часто 
+            встречающимся периодом                    
+            most_frequent_diff_amount_cases_percent : Доля случаев с наиболее 
+            часто встречающимся периодом
+            amount_unique_diff : Количество уникальных периодов
+            amount_unique_diff_percent : Доля уникальных периодов среди общего количества сэмплов
+
+        """
+
 
         from ..utils.preproc import value_counts_interval
         result = TimeDiscretizationResult()
@@ -130,7 +328,7 @@ class TimeDiscretizationTask(Task):
         ]
         result.frequence_of_diff_interval = value_counts_interval(diff,intervals)
 
-        if self.FREQ_TOBE=='auto':
+        if self.freq_tobe_approach=='auto':
             if len(frequence_of_diff)>2:
                 v1 = diff.quantile(0.05)
                 v2 = diff.quantile(0.5)
@@ -147,21 +345,88 @@ class TimeDiscretizationTask(Task):
             else:
                 result.FREQ_TOBE = result.most_frequent_diff_value
             
-        elif self.FREQ_TOBE=='most_frequent':
+        elif self.freq_tobe_approach=='most_frequent':
             result.FREQ_TOBE = result.most_frequent_diff_value
 
-        elif self.FREQ_TOBE=='min_period':
-            result.FREQ_TOBE = result.min_diff
-        else:
+        elif self.freq_tobe_approach=='min_period':
+            result.FREQ_TOBE = result.min_diff 
+
+        elif self.freq_tobe_approach=='custom':
             result.FREQ_TOBE = self.FREQ_TOBE
+        else:
+            raise Exception("Неправильный аргумент для параметра freq_tobe_approach ")
 
         return df, result
     
     def predict(self, df: pd.DataFrame, result: TimeDiscretizationResult ) -> tuple[pd.DataFrame, TimeDiscretizationResult]:
+        """
+        Predict by TimeDiscretizationTask. 
+        В данном методе ничего не происходит. Нужен для реализации верхнеуровневых пайплайнов. 
+
+        Parameters
+        ----------
+
+        df : pd.DataFrame 
+            Входной датасет
+
+        result : TimeDiscretizationResult
+            Объект сохраненных результатов задачи TimeDiscretizationTask
+
+        Returns
+        -------
+        new_df : pd.DataFrame 
+            Выходной датасет
+        
+        result : TimeDiscretizationResult
+            Объект сохраненных результатов задачи TimeDiscretizationTask
+
+        """
+
         return df, result
 
 
 class FindNaNResult(TaskResult):
+    """Это результаты работы задачи FindNaNTask
+    
+    Attributes
+    ----------
+
+    mask_nan : pd.DataFrame
+        Маска пропусков на исходный датасет
+
+    full_nan_col_names : list[str]
+        Список колонок, в которых только пропуски
+
+    full_nan_col_numbers : int
+        Количество колонок, в которых только пропуски
+
+    full_nan_col_percent : float
+        Доля колонок, в которых только пропуски
+
+    full_nan_row_names : list
+        Список строк, в которых только пропуски
+
+    full_nan_row_numbers : int
+        Количество строк, в которых только пропуски
+
+    full_nan_row_percent : float
+        Доля строк, в которых только пропуски
+
+    total_nan_number : int
+        Общее количество пропущенных ячеек таблицы
+
+    total_nan_percent : float
+        Доля пропущенных ячеек таблицы
+
+    matrix_nan : None
+        Матрица суммы попарных пересечений нанов между колонкам
+
+    sum_nan_by_col : pd.Series
+        Общее количество пропусков по колонкам
+
+    nan_by_col : pd.DataFrame
+        Таблица распределение пропусков по колонкам
+    """
 
     mask_nan: pd.DataFrame
     full_nan_col_names: list
@@ -175,7 +440,6 @@ class FindNaNResult(TaskResult):
     matrix_nan = None
     sum_nan_by_col: pd.Series
     nan_by_col: pd.DataFrame
-    ffill_limits: pd.Series
 
     dataset_analysis_result: HighLevelDatasetAnalysisResult
 
@@ -216,8 +480,74 @@ class FindNaNResult(TaskResult):
 
 
 class FindNaNTask(Task):
+    """
+    Класс задачи разведочного анализа данных в области оценки пропусков. 
+    Рекомендуюется выполнять после очистки дубликатов и приведения к единой
+    частоте дискретизации. 
+    """
+
+    def __init__(self, name: str | None = None):
+        """ Класс задачи разведочного анализа данных в области оценки пропусков в датасете. 
+        Осуществляет анализ, вывод и сохранение информации о пропусках в датасете.
+        Сохранение осуществляется через FindNaNResult для 
+        использование полученной информации в последующих задачах, востребованных в рамках 
+        верхнеуровневого пайплайна.
+        
+        Notes
+        -----
+        При вызове метода fit происходит сохранение следующей информации в 
+        FindNaNResult:  
+            mask_nan : Маска пропусков на исходный датасет
+            full_nan_col_names : Список колонок, в которых только пропуски
+            full_nan_col_numbers : Количество колонок, в которых только пропуски
+            full_nan_col_percent : Доля колонок, в которых только пропуски
+            full_nan_row_names : Список строк, в которых только пропуски
+            full_nan_row_numbers : Количество строк, в которых только пропуски
+            full_nan_row_percent : Доля строк, в которых только пропуски
+            total_nan_number : Общее количество пропущенных ячеек таблицы
+            total_nan_percent : Доля пропущенных ячеек таблицы
+            matrix_nan : Матрица суммы попарных пересечений нанов между колонкам
+            sum_nan_by_col : Общее количество пропусков по колонкам
+            nan_by_col : Таблица распределение пропусков по колонкам 
+        """
+        super().__init__(name)
 
     def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, FindNaNResult]:
+        """
+        Fit the FindNaNTask. 
+
+        Parameters
+        ----------
+
+        df : pd.DataFrame 
+            Входной датасет
+
+        Returns
+        -------
+        new_df : pd.DataFrame 
+            Выходной датасет
+        
+        result : FindNaNResult
+            Объект сохраненных результатов задачи FindNaNResult
+            
+        Notes
+        -----
+        При вызове метода fit происходит сохранение следующей информации в 
+        FindNaNResult:  
+            mask_nan : Маска пропусков на исходный датасет
+            full_nan_col_names : Список колонок, в которых только пропуски
+            full_nan_col_numbers : Количество колонок, в которых только пропуски
+            full_nan_col_percent : Доля колонок, в которых только пропуски
+            full_nan_row_names : Список строк, в которых только пропуски
+            full_nan_row_numbers : Количество строк, в которых только пропуски
+            full_nan_row_percent : Доля строк, в которых только пропуски
+            total_nan_number : Общее количество пропущенных ячеек таблицы
+            total_nan_percent : Доля пропущенных ячеек таблицы
+            matrix_nan : Матрица суммы попарных пересечений нанов между колонкам
+            sum_nan_by_col : Общее количество пропусков по колонкам
+            nan_by_col : Таблица распределение пропусков по колонкам
+        """
+
 
         mask_nan = df.isin([np.inf, -np.inf, np.nan])
 
@@ -261,11 +591,29 @@ class FindNaNTask(Task):
         result.sum_nan_by_col = sum_nan_by_col
         result.nan_by_col = nan_by_col
 
-        result.ffill_limits = pd.Series(15,index=df.columns)
-
         return df, result
     
     def predict(self, df: pd.DataFrame,result: FindNaNResult) -> tuple[pd.DataFrame, FindNaNResult]:
+        """
+        Predict by FindNaNTask. 
+        В данном методе ничего не происходит. Нужен для реализации верхнеуровневых пайплайнов. 
+
+        Parameters
+        ----------
+        df : pd.DataFrame 
+            Входной датасет
+
+        result : FindNaNTask
+            Объект сохраненных результатов задачи TimeDiscretizationTask
+
+        Returns
+        -------
+        new_df : pd.DataFrame 
+            Выходной датасет
+        
+        result : FindNaNTask
+            Объект сохраненных результатов задачи TimeDiscretizationTask
+        """
         return df, result
 
 
