@@ -25,7 +25,8 @@ def list_of_datasets():
                         'SKAB (skoltech anomaly benchmark)':'load_skab()',
                         'NASA Turbofan Jet Engine Data Set':'load_turbofan_jet_engine()',
                         'TEP (Tennessee Eastman process)':'load_tep()',
-                        'Pressurized Water Reactor (PWR) Dataset for Fault Detection':'load_pwr_anomalies()'}
+                        'Pressurized Water Reactor (PWR) Dataset for Fault Detection':'load_pwr_anomalies()',
+                        'NPP Power Transformer RUL':'load_transformer_rul()'}
     return list_of_datasets
 
 def load_combines() -> Dataset:
@@ -242,3 +243,58 @@ def load_pwr_anomalies() -> Dataset:
     target_names=None
     
     return Dataset(name=name, description=description, task=task, frame=frame, feature_names=list(frame.columns), target_names=target_names)
+
+def load_transformer_rul() -> Dataset:
+    '''
+    Loads and slightly preprocesses raw data of NPP Power Transformer.
+    
+    Returns
+    -------
+    Dataset
+        A dataset object with the folowing structure:
+            name : str
+            description : str
+            task : str
+            frame: list[pd.DataFrame]
+            feature_names : list
+            target_names : list
+    
+    References
+    ----------
+    Machine Learning Methods for Anomaly Detection in Nuclear Power Plant Power Transformers.
+        Katser, Iurii, et al. arXiv preprint arXiv:2211.11013 (2022).
+    '''
+    url='https://drive.google.com/file/d/1_aeGB3M3CNSEqYPxHPuGK0ju6hMuJUoK/view?usp=share_link'
+    url='https://drive.google.com/uc?id=' + url.split('/')[-2]
+    frame = pd.read_csv(url, sep=',', parse_dates=['datetime'])
+    frame.set_index(['experiment', 'datetime'], inplace=True)
+    
+    # X_train
+    url='https://drive.google.com/file/d/1NSbmnIGE5foofxOCd-tQIlbnhAjSjvZX/view?usp=share_link'
+    url='https://drive.google.com/uc?id=' + url.split('/')[-2]
+    X_train = pd.read_csv(url, sep=',').rename(columns={'Unnamed: 0':'id', 'Unnamed: 1':'time point'})
+    X_train.set_index(['id', 'time point'], inplace=True)
+    
+    # X_test
+    url='https://drive.google.com/file/d/1cb7uxJ3wmAZsGyzK1ZhW_S_sUU_JGqjJ/view?usp=share_link'
+    url='https://drive.google.com/uc?id=' + url.split('/')[-2]
+    X_test = pd.read_csv(url, sep=',').rename(columns={'Unnamed: 0':'id', 'Unnamed: 1':'time point'})
+    X_test.set_index(['id', 'time point'], inplace=True)
+    
+    # y_train
+    url='https://drive.google.com/file/d/17akYhUR6R2qhc2PU8OCm9Alrp4sKxitC/view?usp=share_link'
+    url='https://drive.google.com/uc?id=' + url.split('/')[-2]
+    y_train = pd.read_csv(url, sep=',', index_col='id')
+    
+    # y_test
+    url='https://drive.google.com/file/d/1-NUEm1yiAEdr42JXBbIwXx0tauWyGVvA/view?usp=share_link'
+    url='https://drive.google.com/uc?id=' + url.split('/')[-2]
+    y_test = pd.read_csv(url, sep=',', index_col='id')
+    
+    name = 'NPP Power Transformer RUL'
+    description = '''Dataset for Determining the Remaining Useful Life of Transformers. It is necessary to create a mathematical model that will determine RUL by the final 420 points. The period between time points is 12 hours.'''
+    task = 'Remaining useful life prediction'
+    feature_names = ['H2', 'CO', 'C2H4', 'C2H2']
+    target_names = ['predicted']
+    
+    return Dataset(name=name, description=description, task=task, frame=[X_train, X_test, y_train, y_test], feature_names=feature_names, target_names=target_names)
