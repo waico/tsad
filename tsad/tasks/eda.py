@@ -252,6 +252,7 @@ class TimeDiscretizationTask(Task):
 
         super().__init__(name)
         self.freq_tobe_approach = freq_tobe_approach
+        self.FREQ_TOBE = FREQ_TOBE
 
 
 
