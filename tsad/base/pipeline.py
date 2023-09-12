@@ -4,7 +4,7 @@ import pandas as pd
 from enum import Enum
 
 from .task import Task, TaskResult
-from .exceptions import ArgumentNotFoundException
+from .exceptions import ArgumentNotFoundException, UnsupportedTaskResultException
 
 
 class PipelineMode(Enum):
@@ -53,7 +53,7 @@ class Pipeline():
         parameters = dict()
 
         (df_name, df_type), *annotations = method.__annotations__.items()
-        if not issubclass(df_type, pd.DataFrame):
+        if not issubclass(df_type, pd.DataFrame | list):
             raise Exception('First argument type is not pd.DataFrame type!')
 
         parameters[df_name] = df
@@ -77,7 +77,7 @@ class Pipeline():
     def _run(self, df: pd.DataFrame, **params) -> pd.DataFrame:
         
         self.run_arguments = params
-        task_df = df.copy()
+        task_df = df
 
         for task in self.tasks:
 
@@ -92,16 +92,20 @@ class Pipeline():
                 task_result = task.predict(**parameters)
             else:
                 raise Exception("Not supported pipeline mode.")
-            
-            if task_result is None or not isinstance(task_result, tuple):
-                continue
 
-            (result_df, result) = task_result
+            if isinstance(task_result, pd.DataFrame | list):
+                (result_df, result) = (task_result, None)
+            elif isinstance(task_result, tuple):
+                (result_df, result) = task_result
+            else:
+                raise UnsupportedTaskResultException(type(task_result))
+
             if self.show:
                 self._annotate_task_results(result)
                 result.show()
 
-            self.results.append(result)
+            if result:
+                self.results.append(result)
 
             task_df = result_df.copy()
         
