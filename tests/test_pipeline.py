@@ -51,7 +51,7 @@ class UnsupportedResultsTask(Task):
     def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
         return df
 
-    def predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
+    def predict(self, df: pd.DataFrame | list[pd.DataFrame]) -> tuple[pd.DataFrame, TaskResult]:
         return df, None
 
 

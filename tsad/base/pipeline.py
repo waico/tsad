@@ -53,7 +53,7 @@ class Pipeline():
         parameters = dict()
 
         (df_name, df_type), *annotations = method.__annotations__.items()
-        if not issubclass(df_type, pd.DataFrame | list):
+        if type(df_type) is type and not issubclass(df_type, pd.DataFrame | list):
             raise Exception('First argument type is not pd.DataFrame type!')
 
         parameters[df_name] = df
