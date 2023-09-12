@@ -50,7 +50,17 @@ class FeatureGenerationTask(Task):
         self.features = features
         self.config = config
         super().__init__()
-    
+
+    def validate_input(self):
+        """
+        Validate the input parameters, raising exceptions for invalid inputs.
+        """
+        if self.features is not None and not isinstance(self.features, list):
+            raise ValueError("The 'features' parameter must be a list.")
+        if self.config is not None and not isinstance(self.config, list):
+            raise ValueError("The 'config' parameter must be a list of dictionaries.")
+
+
     def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, FeatureGenerationResult]:
         """
         Fit the feature generation task to the input data.
@@ -62,12 +72,9 @@ class FeatureGenerationTask(Task):
             tuple[pd.DataFrame, FeatureGenerationResult]: A tuple containing the DataFrame with
             generated features and the FeatureGenerationResult.
         """
-        # Check if the DataFrame has a DatetimeIndex with a frequency
-        if df.index.freq is None:
-            raise Exception('Use a dataframe with a DatetimeIndex with a frequency')
-        
-        
-        
+        # Check if the DataFrame has a DatetimeIndex with a specified frequency
+        self.validate_input()
+
         # Prepare the feature collection based on the provided config or default config
         if self.config is not None:
             feature_collection = self._prepare_feature_collection(self.config, df)
@@ -92,15 +99,9 @@ class FeatureGenerationTask(Task):
         result.renamed_columns = renamed_columns
         result.inversed_renamed_columns = inverse_renamed_columns_to_fc
 
-        # print(len(result.inversed_renamed_columns.keys()))
-        # result.raw_columns = df.columns.tolist()
         result.selected_features = df_prep.columns
 
-        
-        
-        
         return pd.concat([df, df_prep], axis=1), result
-        # return df_prep, result
 
     def predict(self, df: pd.DataFrame, result: FeatureGenerationResult) -> tuple[pd.DataFrame, FeatureGenerationResult]:
         """
@@ -122,7 +123,6 @@ class FeatureGenerationTask(Task):
             selected_features = result.selected_features
 
         # Reduce the feature collection to selected features
-        # fc_reduced = result.feature_collection.reduce(selected_features)
         fc_reduced = result.feature_collection.reduce([result.inversed_renamed_columns[col] for col in selected_features])
 
         # Calculate predictions using the reduced feature collection
@@ -157,7 +157,10 @@ class FeatureGenerationTask(Task):
         Returns:
             List[Dict]: List of dictionaries containing feature extraction configuration.
         """
-        series_names = self.features
+        if self.features is None:
+            series_names = df.columns
+        else:
+            series_names = self.features
         windows, strides = self.get_params_from_df(df)
 
         # List of slow feature functions to be excluded
@@ -212,12 +215,8 @@ class FeatureGenerationTask(Task):
                     functions=funcs,
                     series_names=item["series_names"],
                     windows=item["windows"],
-                    # windows=[4,10],
                     strides=item["strides"],
-                    # strides=[1],
                 )
             )
         feature_collection = FeatureCollection(feature_descriptors=feature_descriptors)
         return feature_collection
-    
-
