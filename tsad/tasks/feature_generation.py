@@ -1,5 +1,6 @@
 from ..base.task import Task, TaskResult
 
+import re
 import pandas as pd
 from tsflex.features import FeatureCollection, MultipleFeatureDescriptors
 from tsflex.features.utils import make_robust
@@ -22,6 +23,9 @@ class FeatureGenerationResult(TaskResult):
         self.selected_features = None
         self.generated_features = None
         self.feature_collection = None
+        self.raw_columns = None
+        self.renamed_columns = {}
+        self.inversed_renamed_columns = {}
 
     def show(self) -> None:
         """
@@ -29,7 +33,7 @@ class FeatureGenerationResult(TaskResult):
 
         This method displays the total number of generated features.
         """
-        display(f"Total features generated: {len(self.generated_features)}")
+        display(f"Total generated features: {len(self.generated_features)}")
 
 
 class FeatureGenerationTask(Task):
@@ -42,9 +46,10 @@ class FeatureGenerationTask(Task):
     """
 
     def __init__(self, config: List[Dict] | None = None, features: List[str] | None = None):
-        super().__init__()
+        
         self.features = features
         self.config = config
+        super().__init__()
     
     def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, FeatureGenerationResult]:
         """
@@ -61,6 +66,8 @@ class FeatureGenerationTask(Task):
         if df.index.freq is None:
             raise Exception('Use a dataframe with a DatetimeIndex with a frequency')
         
+        
+        
         # Prepare the feature collection based on the provided config or default config
         if self.config is not None:
             feature_collection = self._prepare_feature_collection(self.config, df)
@@ -69,13 +76,31 @@ class FeatureGenerationTask(Task):
 
         # Calculate features and drop columns with all NaN values
         df_prep = feature_collection.calculate(df, return_df=True, show_progress=False)
-        # df_prep = df_prep.dropna(axis=1, how='all')
+        df_prep = df_prep.dropna(axis=1, how='all')
+
+        # Rename columns to remove special characters
+        renamed_columns = {col:re.sub("[{']|[}']|[:]", '', col) for col in df_prep.columns}
+        inverse_renamed_columns_to_fc = {v:k for k,v in renamed_columns.items()}
+        
+        df_prep = df_prep.rename(columns=renamed_columns)
+
 
         result = FeatureGenerationResult()
         result.generated_features = df_prep.columns.tolist()
+        result.raw_columns = df.columns.tolist()
         result.feature_collection = feature_collection
+        result.renamed_columns = renamed_columns
+        result.inversed_renamed_columns = inverse_renamed_columns_to_fc
 
+        # print(len(result.inversed_renamed_columns.keys()))
+        # result.raw_columns = df.columns.tolist()
+        result.selected_features = df_prep.columns
+
+        
+        
+        
         return pd.concat([df, df_prep], axis=1), result
+        # return df_prep, result
 
     def predict(self, df: pd.DataFrame, result: FeatureGenerationResult) -> tuple[pd.DataFrame, FeatureGenerationResult]:
         """
@@ -89,6 +114,7 @@ class FeatureGenerationTask(Task):
             tuple[pd.DataFrame, FeatureGenerationResult]: A tuple containing the DataFrame with
             generated features and the FeatureGenerationResult.
         """
+        
         # Use selected or generated features for prediction
         if result.selected_features is None:
             selected_features = result.generated_features
@@ -96,11 +122,14 @@ class FeatureGenerationTask(Task):
             selected_features = result.selected_features
 
         # Reduce the feature collection to selected features
-        fc_reduced = result.feature_collection.reduce(selected_features)
+        # fc_reduced = result.feature_collection.reduce(selected_features)
+        fc_reduced = result.feature_collection.reduce([result.inversed_renamed_columns[col] for col in selected_features])
 
         # Calculate predictions using the reduced feature collection
         out_df = fc_reduced.calculate(df, return_df=True, show_progress=False)
-        return out_df, result
+        out_df = out_df.rename(columns=result.renamed_columns)
+        return pd.concat([df, out_df[selected_features]], axis=1), None
+
 
     def get_params_from_df(self, df: pd.DataFrame):
         """
@@ -142,6 +171,7 @@ class FeatureGenerationTask(Task):
             "ar_coefficient",
             "permutation_entropy",
             "friedrich_coefficients",
+            "max_langevin_fixed_point"
         ]
 
         # Initialize feature extraction parameters
@@ -182,7 +212,9 @@ class FeatureGenerationTask(Task):
                     functions=funcs,
                     series_names=item["series_names"],
                     windows=item["windows"],
+                    # windows=[4,10],
                     strides=item["strides"],
+                    # strides=[1],
                 )
             )
         feature_collection = FeatureCollection(feature_descriptors=feature_descriptors)
