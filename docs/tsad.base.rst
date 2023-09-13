@@ -36,6 +36,14 @@ tsad.base.task module
    :undoc-members:
    :show-inheritance:
 
+tsad.base.wrappers module
+-------------------------
+
+.. automodule:: tsad.base.wrappers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

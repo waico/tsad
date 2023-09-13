@@ -20,6 +20,14 @@ tsad.utils.MLmodels.fitUtils module
    :undoc-members:
    :show-inheritance:
 
+tsad.utils.MLmodels.nn\_for\_anomaly\_detection module
+------------------------------------------------------
+
+.. automodule:: tsad.utils.MLmodels.nn_for_anomaly_detection
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

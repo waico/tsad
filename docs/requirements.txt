@@ -70,3 +70,21 @@ traitlets==5.9.0
 tzdata==2023.3
 urllib3==2.0.4
 wcwidth==0.2.6
+attrs==23.1.0 
+bleach==6.0.0 
+defusedxml==0.7.1 
+fastjsonschema==2.18.0 
+jsonschema==4.19.0 
+jsonschema-specifications==2023.7.1 
+jupyterlab-pygments==0.2.2
+ mistune==3.0.1 
+nbclient==0.8.0 
+nbconvert==7.8.0 
+nbformat==5.9.2 
+nbsphinx==0.9.3 
+pandocfilters==1.5.0 
+pywin32==306 
+referencing==0.30.2 
+rpds-py==0.10.2 
+tinycss2==1.2.1 
+webencodings==0.5.1
