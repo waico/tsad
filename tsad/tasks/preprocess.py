@@ -358,7 +358,7 @@ class PrepareSeqSamplesTask(Task):
         super().__init__(name)   
         self.kwargs=kwargs    
         
-    def fit(self, dfs: pd.DataFrame | list[pd.DataFrame]) -> tuple[pd.DataFrame | list[pd.DataFrame], PrepareSeqSamplesResult]:
+    def fit(self, df: pd.DataFrame | list[pd.DataFrame]) -> tuple[pd.DataFrame | list[pd.DataFrame], PrepareSeqSamplesResult]:
         """
         Fit the PrepareSeqSamplesTask. 
 
@@ -379,8 +379,8 @@ class PrepareSeqSamplesTask(Task):
         """
         result = PrepareSeqSamplesResult()
         from ..utils.trainTestSplitting import ts_train_test_split_dfs 
-        dfs = ts_train_test_split_dfs(dfs,**self.kwargs)
-        return dfs, result
+        df = ts_train_test_split_dfs(df,**self.kwargs)
+        return df, result
 
     def predict(self, df: pd.DataFrame, result: PrepareSeqSamplesResult) -> tuple[pd.DataFrame, PrepareSeqSamplesResult]:
         """
@@ -389,7 +389,7 @@ class PrepareSeqSamplesTask(Task):
         Parameters
         ----------
 
-        dfs : pd.DataFrame | list[pd.DataFrame]
+        df : pd.DataFrame | list[pd.DataFrame]
             Входной датасет/входные датасеты
 
         result : PrepareSeqSamplesResult
@@ -397,13 +397,13 @@ class PrepareSeqSamplesTask(Task):
 
         Returns
         -------
-        dfs : lpd.DataFrame | list[pd.DataFrame] | list[list[pd.DataFrame]]
-            Выходной датасеты последовательностей
+        df : lpd.DataFrame | list[pd.DataFrame] | list[list[pd.DataFrame]]
+            Выходные датасеты последовательностей
         
         result : PrepareSeqSamplesResult
             Объект сохраненных результатов задачи PrepareSeqSamplesTask
             
         """
         from ..utils.trainTestSplitting import ts_train_test_split_dfs 
-        dfs = ts_train_test_split_dfs(dfs,**self.kwargs)
-        return dfs, result
+        df = ts_train_test_split_dfs(df,**self.kwargs)
+        return df, result

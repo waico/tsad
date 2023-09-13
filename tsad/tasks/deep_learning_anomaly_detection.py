@@ -137,7 +137,7 @@ class ResidualAnomalyDetectionTask(Task):
 
 
     def fit(self,
-            dfs,
+            df:pd.DataFrame,
             result_base_eda: HighLevelDatasetAnalysisResult,
             model=None,
             optimiser = None,
@@ -162,7 +162,7 @@ class ResidualAnomalyDetectionTask(Task):
         
         Parameters
         ----------
-        dfs : {{df*,ts*}, list of {df*,ts*}}
+        df : {{df*,ts*}, list of {df*,ts*}}
             df*,ts* are pd.core.series.Seriesor or pd.core.frame.DataFrame data type.
             Исходные данные. Данные не долнжны содержать np.nan вовсе, иметь постоянную 
             и одинковую частоту of df.index и при этом не иметь пропусков. Проблему с 
@@ -273,7 +273,7 @@ class ResidualAnomalyDetectionTask(Task):
         # -----------------------------------------------------------------------------------------
         #     Формирование train_iterator и val_iteraror
         # -----------------------------------------------------------------------------------------
-
+        dfs = df
         X_train, X_test, y_train, y_test = dfs
 
         train_iterator = self.Loader(X_train, y_train, batch_size, shuffle=shuffle)
@@ -365,7 +365,7 @@ class ResidualAnomalyDetectionTask(Task):
 
     # накосячил тут с прогнозом на одну точку вперед. Могут быть проблемы если ahead !=1
     def predict(self,
-                dfs,
+                df,
                 result:ResidualAnomalyDetectionResult,
                 points_ahead = None, 
                 n_epochs = None, 
@@ -412,6 +412,7 @@ class ResidualAnomalyDetectionTask(Task):
         # -----------------------------------------------------------------------------------------
         #     Генерация остатков
         # -----------------------------------------------------------------------------------------
+        dfs = df
         df_residuals = self._get_anomaly_timestamps(dfs=dfs)
         self.anomaly_timestamps = self.res_analys_alg.predict(df_residuals, show_figure=show_figures)
         self.statistic = self.res_analys_alg.statistic
