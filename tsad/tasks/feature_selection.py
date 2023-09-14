@@ -49,7 +49,7 @@ class FeatureSelectionTask(Task):
 
     def __init__(self, target: str, 
                  n_features_to_select: float | int | None = 0.2,
-                 feature_selection_method: str | None = 'frommodel',
+                 feature_selection_method: str | None = 'tsfresh',
                  feature_selection_estimator: str | None = 'regressor',
                  remove_constant_features: bool = True,
                  ):
@@ -130,6 +130,7 @@ class FeatureSelectionTask(Task):
                 if self.feature_selection_estimator == 'regressor':
                     estimator = RandomForestRegressor(verbose=0, random_state=42)
                 elif self.feature_selection_estimator == 'classifier':
+                    df_copy[self.target] = df_copy[self.target].astype('int64')
                     estimator = RandomForestClassifier(verbose=0, random_state=42)
                 else:
                     estimator = clone(self.feature_selection_estimator)
@@ -142,11 +143,13 @@ class FeatureSelectionTask(Task):
                 if self.feature_selection_estimator == 'regressor':
                     estimator = RandomForestRegressor(verbose=0, random_state=42)
                 elif self.feature_selection_estimator == 'classifier':
+                    df_copy[self.target] = df_copy[self.target].astype('int64')
                     estimator = RandomForestClassifier(verbose=0, random_state=42)
                 else:
                     estimator = clone(self.feature_selection_estimator)
                 selector = SelectFromModel(estimator, max_features=num_features_to_select)
                 # Fit the feature selector to the data.
+                
                 selector.fit(df_copy.drop(columns=[self.target]), df_copy[self.target])
                 selected_feature_names = selector.get_feature_names_out()
             
