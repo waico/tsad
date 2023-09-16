@@ -1,3 +1,4 @@
+import inspect
 import logging
 import pandas as pd
 
@@ -50,28 +51,27 @@ class Pipeline():
     
     def _create_method_parameters(self, method, df: pd.DataFrame) -> dict:
 
-        parameters = dict()
+        arguments = dict()
 
-        (df_name, df_type), *annotations = method.__annotations__.items()
-        if type(df_type) is type and not issubclass(df_type, pd.DataFrame | list):
-            raise Exception('First argument type is not pd.DataFrame type!')
+        signature = inspect.signature(method)
 
-        parameters[df_name] = df
+        (first_name, first_parameter), *parameters = signature.parameters.items()
+        # TODO: Check first argument is DataFrame
 
-        for annotation_name, annotation_type in annotations:
-            if annotation_name == 'return':
-                continue
-            if issubclass(annotation_type, TaskResult):
-                parameters[annotation_name] = self._get_result_by_type(annotation_type)
-                logging.debug(f'Adding parameter {annotation_name} with type {annotation_type.__name__} from Pipeline results.')
+        arguments[first_name] = df
+
+        for name, parameter in parameters:
+
+            if issubclass(parameter.annotation, TaskResult):
+                arguments[name] = self._get_result_by_type(parameter.annotation)
             
-            elif annotation_name in self.run_arguments:
-                parameters[annotation_name] = self.run_arguments[annotation_name]
+            elif name in self.run_arguments:
+                arguments[name] = self.run_arguments[name]
             
-            else:
-                raise ArgumentNotFoundException(f'Unable to inject named argument {annotation_name}. Add it to fit/predict Pipeline method.')
-        
-        return parameters
+            elif not parameter.kind == inspect.Parameter.VAR_KEYWORD and parameter.default == signature.empty:
+                raise ArgumentNotFoundException(f'Unable to inject named argument {name}. Add it to fit/predict Pipeline method or set default value.')
+
+        return arguments
 
 
     def _run(self, df: pd.DataFrame, **params) -> pd.DataFrame:
@@ -99,15 +99,17 @@ class Pipeline():
                 (result_df, result) = task_result
             else:
                 raise UnsupportedTaskResultException(type(task_result))
+            
+            task_df = result_df.copy()
+
+            if not result:
+                continue
+
+            self.results.append(result)
 
             if self.show:
                 self._annotate_task_results(result)
                 result.show()
-
-            if result:
-                self.results.append(result)
-
-            task_df = result_df.copy()
         
         return task_df
 
