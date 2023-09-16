@@ -18,19 +18,13 @@ Welcome to tsad's documentation!
 .. toctree::
    :maxdepth: 2
    :hidden:
-   :caption: Examples
-
    waico_md/Evaluating
 
 .. toctree::
-   :maxdepth: 2
    :hidden:
    :caption: Tutorials
 
-   waico_jups/datasets-importing
-   waico_jups/tests
-   waico_jups/example_feature_engineering
-   waico_jups/forecasting-time-series
+   Tutorials
 
 .. toctree::
    :maxdepth: 2

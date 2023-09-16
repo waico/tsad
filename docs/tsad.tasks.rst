@@ -52,6 +52,14 @@ tsad.tasks.preprocess module
    :undoc-members:
    :show-inheritance:
 
+tsad.tasks.visualization module
+-------------------------------
+
+.. automodule:: tsad.tasks.visualization
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
