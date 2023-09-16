@@ -10,6 +10,7 @@ data/
 #Files
 typical_script.bat
 __src__kozitsin/
+my
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
