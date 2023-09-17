@@ -405,5 +405,9 @@ class PrepareSeqSamplesTask(Task):
             
         """
         from ..utils.trainTestSplitting import ts_train_test_split_dfs 
+        if not 'test_size' in self.kwargs:
+            self.kwargs['test_size'] = 0 
+        if not 'what_to_shuffle' in self.kwargs:
+            self.kwargs['what_to_shuffle'] = 'nothing'
         df = ts_train_test_split_dfs(df,**self.kwargs)
         return df, result

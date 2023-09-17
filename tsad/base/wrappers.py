@@ -3,10 +3,19 @@ import pandas as pd
 
 
 def SklearnWrapper(sklearnClass):
+
+    """
+    На данный момент с этим классом есть проблемы, так как sklearn_kwargs аргумент 
+    может использоваться фактически двумя разными задачами этого врапера, потнециальное
+    решение - фильтровать аргементы kwargs по принципу использования
+    https://stackoverflow.com/questions/26515595/how-does-one-ignore-unexpected-keyword-arguments-passed-to-a-function 
+    """
     
     class SklearnWrappedTask(Task):
         def __init__(self,sklearnClass=sklearnClass,**kwargs):
             self.sklearnClass = sklearnClass(**kwargs)
+
+            
             
         def _sklearn_predict(self,df):
             if 'predict' in dir(self.sklearnClass):
@@ -19,9 +28,8 @@ def SklearnWrapper(sklearnClass):
             return new_df
             
             
-        def fit(self,df:pd.DataFrame,**kwargs):
-            
-            self.sklearnClass.fit(df,**kwargs)
+        def fit(self,df:pd.DataFrame,sklearn_kwargs):
+            self.sklearnClass.fit(df,**sklearn_kwargs)
             new_df = self._sklearn_predict(df)
             return new_df
         
