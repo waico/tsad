@@ -347,9 +347,8 @@ class DeepLeaningTimeSeriesForecastingTask(Task):
         # -----------------------------------------------------------------------------------------
         #     Генерация остатков
         # -----------------------------------------------------------------------------------------
-        X_train, X_test, y_train, y_test = dfs
-        all_data_iterator = self.Loader(X_test, y_test, self.batch_size, shuffle=False) ######
-        ##### !!!!!!!!!!!!!!!  c X_test, y_test точно ошибка
+        X_train, X_test, y_train, y_test = dfs # тут нужен только X_train
+        all_data_iterator = self.Loader(X_train, X_train, self.batch_size, shuffle=False) 
         
         y_pred = self.model.run_epoch( all_data_iterator,     
                                 None, None, phase='forecast', points_ahead=self.points_ahead,
