@@ -6,8 +6,6 @@ def SklearnWrapper(sklearnClass):
     
     class SklearnWrappedTask(Task):
         def __init__(self,sklearnClass=sklearnClass,**kwargs):
-            if '__sklearn_clone__' not in dir(sklearnClass):
-                raise Exception('It is not sklearn class') 
             self.sklearnClass = sklearnClass(**kwargs)
             
         def _sklearn_predict(self,df):
