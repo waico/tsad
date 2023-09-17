@@ -93,19 +93,22 @@ class Pipeline():
             else:
                 raise Exception("Not supported pipeline mode.")
 
-            if isinstance(task_result, pd.DataFrame | list):
+            if task_result is None:
+                continue
+            elif isinstance(task_result, pd.DataFrame | list):
                 (result_df, result) = (task_result, None)
             elif isinstance(task_result, tuple):
                 (result_df, result) = task_result
             else:
-                raise UnsupportedTaskResultException(type(task_result))
+                raise UnsupportedTaskResultException(f'{type(task_result)} in {type(task)}')
             
             task_df = result_df.copy()
 
             if not result:
                 continue
 
-            self.results.append(result)
+            if not any(result == r for r in self.results):
+                self.results.append(result)
 
             if self.show:
                 self._annotate_task_results(result)
