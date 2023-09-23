@@ -15,6 +15,104 @@ class PipelineMode(Enum):
 
 class Pipeline():
 
+    """
+    
+    ## Pipeline
+
+    The `Pipeline` class represents a data processing pipeline that consists of multiple tasks. It allows for fitting the pipeline on a training dataset and making predictions on a test dataset.
+
+    ### Parameters
+
+    - `tasks` (list[Task]): List of tasks to be executed in the pipeline.
+    - `results` (list[TaskResult], optional): List of task results that should be stored and accessible for annotation in later tasks. Default is `None`.
+    - `show` (bool, optional): Specifies whether to show the annotated task results during pipeline execution. Default is `False`.
+
+    ### Attributes
+
+    - `mode` (PipelineMode): The current mode of the pipeline. Can be "FIT" or "PREDICT".
+    - `run_arguments` (dict[str, any]): The arguments passed to the `fit` or `predict` method.
+
+    ### Methods
+
+    #### \_\_init\_\_(tasks: List[Task], results: List[TaskResult] = None, show: bool = False) -> None
+
+    Initializes a new instance of the `Pipeline` class.
+
+    Parameters:
+    - `tasks` (list[Task]): List of tasks to be executed in the pipeline.
+    - `results` (list[TaskResult], optional): List of task results that should be stored and accessible for annotation in later tasks. Default is `None`.
+    - `show` (bool, optional): Specifies whether to show the annotated task results during pipeline execution. Default is `False`.
+
+    #### \_get_result_by_type(result_type) -> TaskResult
+
+    Returns the task result of a specified type from the `results` list.
+
+    Parameters:
+    - `result_type` (TaskResult): The type of the task result to retrieve.
+
+    Returns:
+    - `TaskResult`: The task result of the specified type.
+
+    Raises:
+    - `Exception`: If the required task result of the specified type cannot be found in the `results` list.
+    - `Exception`: If multiple task results of the specified type are found in the `results` list.
+
+    #### \_annotate_task_results(object_to_annotate) -> None
+
+    Annotates the specified object with the task results.
+
+    Parameters:
+    - `object_to_annotate`: The object to annotate with the task results.
+
+    #### \_create_method_parameters(method, df: pd.DataFrame) -> dict
+
+    Creates a dictionary of method parameters for a task.
+
+    Parameters:
+    - `method`: The method for which to create the parameters.
+    - `df` (pd.DataFrame): The input DataFrame for the task.
+
+    Returns:
+    - `dict`: The dictionary of method parameters.
+
+    #### \_run(df: pd.DataFrame, \*\*params) -> pd.DataFrame
+
+    Runs the pipeline on the specified DataFrame.
+
+    Parameters:
+    - `df` (pd.DataFrame): The input DataFrame for the pipeline.
+    - `params` (keyword arguments): Additional parameters to be passed to the pipeline.
+
+    Returns:
+    - `pd.DataFrame`: The resulting DataFrame after applying all tasks in the pipeline.
+
+    Raises:
+    - `Exception`: If the pipeline mode is not supported.
+
+    #### fit(df: pd.DataFrame, \*\*params) -> pd.DataFrame
+
+    Fits the pipeline on the specified training DataFrame.
+
+    Parameters:
+    - `df` (pd.DataFrame): The training DataFrame for fitting the pipeline.
+    - `params` (keyword arguments): Additional parameters to be passed to the pipeline.
+
+    Returns:
+    - `pd.DataFrame`: The resulting DataFrame after applying all tasks in the pipeline.
+
+    #### predict(df: pd.DataFrame, \*\*params) -> pd.DataFrame
+
+    Makes predictions using the fitted pipeline on the specified test DataFrame.
+
+    Parameters:
+    - `df` (pd.DataFrame): The test DataFrame for making predictions.
+    - `params` (keyword arguments): Additional parameters to be passed to the pipeline.
+
+    Returns:
+    - `pd.DataFrame`: The resulting DataFrame of predictions.
+    
+    """
+
 
     mode: PipelineMode
 
