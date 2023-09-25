@@ -55,6 +55,14 @@ tsad.utils.trainTestSplitting module
    :undoc-members:
    :show-inheritance:
 
+tsad.utils.visualization module
+-------------------------------
+
+.. automodule:: tsad.utils.visualization
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

@@ -18,8 +18,6 @@ class ScalingTask(Task):
     Это не реальная таска, а Олега изобретение чтобы тестить пайплайн
     """
 
-    descretization_result: TimeDiscretizationResult
-
     def __init__(self, name: str | None = None):
 
         from sklearn.preprocessing import StandardScaler
@@ -264,15 +262,15 @@ class SplitByNaNTask(Task):
     def __init__(self, 
                  name: str | None = None, 
                  ):
-            """
-            Класс задачи предварительной обработки данных в части разбиения исходной выборки 
-            на отдельные выборки по принципу неразрывности данных. То есть исходный df разбивается 
-            на выборки максимальной длины, а пропуски из-за которых датасет разбивается вообще удаляются, 
-            то есть непрерывная часть слева и справа от пропуска есть 2 выборки, которые получились из-за
-            этого пропуска. Нужен для работы с последовательностями из-за требования: по отсутствию 
-            пропусков и по одинаковой частоте дискретизации. 
-            """
-        super().__init__(name)        
+        """
+        Класс задачи предварительной обработки данных в части разбиения исходной выборки 
+        на отдельные выборки по принципу неразрывности данных. То есть исходный df разбивается 
+        на выборки максимальной длины, а пропуски из-за которых датасет разбивается вообще удаляются, 
+        то есть непрерывная часть слева и справа от пропуска есть 2 выборки, которые получились из-за
+        этого пропуска. Нужен для работы с последовательностями из-за требования: по отсутствию 
+        пропусков и по одинаковой частоте дискретизации. 
+        """
+        super().__init__(name)      
         
     def fit(self, df: pd.DataFrame,time_result:ResampleProcessingResult) -> tuple[pd.DataFrame, SplitByNaNResult]:
         """
@@ -360,7 +358,7 @@ class PrepareSeqSamplesTask(Task):
         super().__init__(name)   
         self.kwargs=kwargs    
         
-    def fit(self, dfs: pd.DataFrame | list[pd.DataFrame]) -> tuple[pd.DataFrame | list[pd.DataFrame], PrepareSeqSamplesResult]:
+    def fit(self, df: pd.DataFrame | list[pd.DataFrame]) -> tuple[pd.DataFrame | list[pd.DataFrame], PrepareSeqSamplesResult]:
         """
         Fit the PrepareSeqSamplesTask. 
 
@@ -381,8 +379,8 @@ class PrepareSeqSamplesTask(Task):
         """
         result = PrepareSeqSamplesResult()
         from ..utils.trainTestSplitting import ts_train_test_split_dfs 
-        dfs = ts_train_test_split_dfs(dfs,**self.kwargs)
-        return dfs, result
+        df = ts_train_test_split_dfs(df,**self.kwargs)
+        return df, result
 
     def predict(self, df: pd.DataFrame, result: PrepareSeqSamplesResult) -> tuple[pd.DataFrame, PrepareSeqSamplesResult]:
         """
@@ -391,7 +389,7 @@ class PrepareSeqSamplesTask(Task):
         Parameters
         ----------
 
-        dfs : pd.DataFrame | list[pd.DataFrame]
+        df : pd.DataFrame | list[pd.DataFrame]
             Входной датасет/входные датасеты
 
         result : PrepareSeqSamplesResult
@@ -399,13 +397,17 @@ class PrepareSeqSamplesTask(Task):
 
         Returns
         -------
-        dfs : lpd.DataFrame | list[pd.DataFrame] | list[list[pd.DataFrame]]
-            Выходной датасеты последовательностей
+        df : lpd.DataFrame | list[pd.DataFrame] | list[list[pd.DataFrame]]
+            Выходные датасеты последовательностей
         
         result : PrepareSeqSamplesResult
             Объект сохраненных результатов задачи PrepareSeqSamplesTask
             
         """
         from ..utils.trainTestSplitting import ts_train_test_split_dfs 
-        dfs = ts_train_test_split_dfs(dfs,**self.kwargs)
-        return dfs, result
+        if not 'test_size' in self.kwargs:
+            self.kwargs['test_size'] = 0 
+        if not 'what_to_shuffle' in self.kwargs:
+            self.kwargs['what_to_shuffle'] = 'nothing'
+        df = ts_train_test_split_dfs(df,**self.kwargs)
+        return df, result

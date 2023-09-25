@@ -13,35 +13,15 @@ from IPython import display
 from .eda import HighLevelDatasetAnalysisResult
 
 
-class ResidualAnomalyDetectionResult(TaskResult):
+class DeepLeaningTimeSeriesForecastingResult(TaskResult):
 
     def show(self) -> None:
 
         pass
 
 
-# class TrainTestSplitTask(Task):
 
-#     def __init__(self, 
-#                  name: str | None = None, 
-#                  **kwargs,
-#                  ):
-#         super().__init__(name)   
-#         self.kwargs=kwargs    
-        
-#     def fit(self, dfs: pd.DataFrame) -> tuple[pd.DataFrame, TrainTestSplitResult]:
-#         result = TrainTestSplitResult()
-#         from ..utils.TrainTestSplitting import ts_train_test_split_dfs 
-#         dfs = ts_train_test_split_dfs(dfs,**self.kwargs)
-#         return dfs, result
-
-#     def predict(self, df: pd.DataFrame, result: TrainTestSplitResult) -> tuple[pd.DataFrame, TrainTestSplitResult]:
-#         from ..utils.TrainTestSplitting import ts_train_test_split_dfs 
-#         dfs = ts_train_test_split_dfs(dfs,**self.kwargs)
-#         return dfs, result
-
-
-class ResidualAnomalyDetectionTask(Task):
+class DeepLeaningTimeSeriesForecastingTask(Task):
     """        
     Pipeline Time Series Anomaly Detection based on 
     SOTA deep learning forecasting algorithms.
@@ -104,33 +84,6 @@ class ResidualAnomalyDetectionTask(Task):
   
         
 
-
-
-
-
-
-
-
-
-
-    def _get_anomaly_timestamps(self,dfs):
-        """
-        Вспомогательная функция для  генерации всего
-
-        """
-        X, _, y_true, _ = dfs
-
-        all_data_iterator = self.Loader(X, y_true, self.batch_size, shuffle=False)
-        y_pred = self.model.run_epoch( all_data_iterator,     
-                                None, None, phase='forecast', points_ahead=self.points_ahead,
-                                      device=self.device)
-        residuals = self.generate_res_func(y_pred, np.array(y_true))
-        point_ahead_for_residuals = 0  # мы иногда прогнозим на 10 точек вперед, ну интересует все равно на одну точку впреред
-        res_indices = [y_true[i].index[point_ahead_for_residuals] for i in range(len(y_true))]
-        df_residuals = pd.DataFrame(residuals[:, point_ahead_for_residuals, :], columns=self.columns,
-                                    index=res_indices).sort_index()
-        return df_residuals
-
     # -----------------------------------------------------------------------------------------
     #     Формирование сутевой части класса
     # -----------------------------------------------------------------------------------------
@@ -142,9 +95,6 @@ class ResidualAnomalyDetectionTask(Task):
             model=None,
             optimiser = None,
             criterion = None,
-            preproc=None,
-            generate_res_func=None,
-            res_analys_alg=None,
             Loader = None,
             points_ahead = 1,
             n_epochs = 5, 
@@ -237,19 +187,7 @@ class ResidualAnomalyDetectionTask(Task):
             args = optimiser[1]
             args['params'] = self.model.parameters()
             optimiser = optimiser[0](**args)
-        
 
-        if preproc is None:
-            from sklearn.preprocessing import MinMaxScaler
-            self.preproc = MinMaxScaler()
-
-        if generate_res_func is None:
-            from ..utils.ResidualAnomalyDetectionUtils.generateResidual import absoluteResidual
-            self.generate_res_func = absoluteResidual
-
-        if res_analys_alg is None:
-            from ..utils.ResidualAnomalyDetectionUtils.stastics import Hotelling
-            self.res_analys_alg = Hotelling()
 
         if Loader is None:
             from ..utils.iterators import Loader
@@ -348,21 +286,13 @@ class ResidualAnomalyDetectionTask(Task):
                                                           encod_decode_model=self.encod_decode_model, device=self.device))
                 print(f'Test Loss: {np.mean(test_loss):.3f}')
 
+        all_data_iterator = self.Loader(X_train, y_train, self.batch_size, shuffle=False)
+        y_pred = self.model.run_epoch( all_data_iterator,     
+                                None, None, phase='forecast', points_ahead=self.points_ahead,
+                                    device=self.device)
 
-        # -----------------------------------------------------------------------------------------
-        #     Генерация остатков
-        # -----------------------------------------------------------------------------------------
-        print('asdasdas',len(dfs))
-        df_residuals = self._get_anomaly_timestamps(dfs=dfs)
-        self.anomaly_timestamps = self.res_analys_alg.fit_predict(df_residuals, show_figure=show_figures)
-        self.statistic = self.res_analys_alg.statistic
-        self.ucl = self.res_analys_alg.ucl
-        self.lcl = self.res_analys_alg.lcl
-
-        at = pd.Series(self.anomaly_timestamps).to_frame()
-        result = ResidualAnomalyDetectionResult()
-
-        return at, result
+        result = DeepLeaningTimeSeriesForecastingResult()
+        return y_pred, result
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -371,7 +301,7 @@ class ResidualAnomalyDetectionTask(Task):
     # накосячил тут с прогнозом на одну точку вперед. Могут быть проблемы если ahead !=1
     def predict(self,
                 dfs,
-                result:ResidualAnomalyDetectionResult,
+                result:DeepLeaningTimeSeriesForecastingResult,
                 points_ahead = None, 
                 n_epochs = None, 
                 len_seq = None, 
@@ -417,15 +347,14 @@ class ResidualAnomalyDetectionTask(Task):
         # -----------------------------------------------------------------------------------------
         #     Генерация остатков
         # -----------------------------------------------------------------------------------------
-        df_residuals = self._get_anomaly_timestamps(dfs=dfs)
-        self.anomaly_timestamps = self.res_analys_alg.predict(df_residuals, show_figure=show_figures)
-        self.statistic = self.res_analys_alg.statistic
-
+        X_train, X_test, y_train, y_test = dfs # тут нужен только X_train
+        all_data_iterator = self.Loader(X_train, X_train, self.batch_size, shuffle=False) 
         
-        at = pd.Series(self.anomaly_timestamps).to_frame()
-        result = ResidualAnomalyDetectionResult()
+        y_pred = self.model.run_epoch( all_data_iterator,     
+                                None, None, phase='forecast', points_ahead=self.points_ahead,
+                                    device=self.device)
 
-        return at, result
+        return y_pred, result
 
     def forecast(self, df, points_ahead=None, show_figures=True):
         """

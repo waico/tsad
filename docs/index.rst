@@ -18,9 +18,16 @@ Welcome to tsad's documentation!
 .. toctree::
    :maxdepth: 2
    :hidden:
-   :caption: Examples
-
+   :caption: Evaluating
+   
    waico_md/Evaluating
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Tutorials
+
+   Tutorials
 
 .. toctree::
    :maxdepth: 2
