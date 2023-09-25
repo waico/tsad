@@ -1,4 +1,4 @@
-# DAta and weights
+# Data and weights
 data/
 *.csv
 *.slsx
@@ -6,6 +6,7 @@ data/
 *.parquet
 *.pth
 *.pt
+*.h5
 
 #Files
 typical_script.bat
@@ -18,8 +19,6 @@ __pycache__/
 
 # C extensions
 *.so
-
-
 
 # Distribution / packaging
 .Python

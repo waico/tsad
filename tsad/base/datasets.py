@@ -61,7 +61,7 @@ def load_skab_teaser() -> Dataset:
     Returns
     -------
     Dataset
-        A dataset object with the folowing structure:
+        A dataset object with the following structure:
             name : str
             description : str
             task : str
@@ -101,7 +101,7 @@ def load_skab() -> Dataset:
     Returns
     -------
     Dataset
-        A dataset object with the folowing structure:
+        A dataset object with the following structure:
             name : str
             description : str
             task : str
@@ -136,7 +136,7 @@ def load_turbofan_jet_engine() -> Dataset:
     Returns
     -------
     Dataset
-        A dataset object with the folowing structure:
+        A dataset object with the following structure:
             name : str
             description : str
             task : str
@@ -186,7 +186,7 @@ def load_tep() -> Dataset:
     Returns
     -------
     Dataset
-        A dataset object with the folowing structure:
+        A dataset object with the following structure:
             name : str
             description : str
             task : str
@@ -219,7 +219,7 @@ def load_pwr_anomalies() -> Dataset:
     Returns
     -------
     Dataset
-        A dataset object with the folowing structure:
+        A dataset object with the following structure:
             name : str
             description : str
             task : str
@@ -251,7 +251,7 @@ def load_transformer_rul() -> Dataset:
     Returns
     -------
     Dataset
-        A dataset object with the folowing structure:
+        A dataset object with the following structure:
             name : str
             description : str
             task : str
