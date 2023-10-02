@@ -22,62 +22,77 @@ class DeepLeaningTimeSeriesForecastingResult(TaskResult):
 
 
 class DeepLeaningTimeSeriesForecastingTask(Task):
-    """        
-    Pipeline Time Series Anomaly Detection based on 
-    SOTA deep learning forecasting algorithms.
-    
-    Данный пайплайн избавит вас от проблем написания кода для: \n
-    1) формирование выборок для подачи в sequence модели \n
-    2) обучения моделей \n
-    3) поиска аномалий в невязках \n
-    
-    Данный пайплайн позволяет: \n
-    1) пронгозировать временные ряды, в том числе многомерные. \n
-    2) вычислять невязку между прогнозом и настоящими значениями \n
-    3) анализировать невязку, и возращать разметку аномалиями \n
-    
-    Parameters
-    ----------
-    preproc : object, default = sklearn.preprocessing.MinMaxScaler()
-        Объект предобратки значений временного ряда.
-        Требования к классу по методами атрибутам одинаковы с default.
-    
-    generate_res_func : func, default = generate_residuals.abs
-        Функция генерация невязки. На вход y_pred, y_true. В default это
-        абсолютная разница значений. Требования к функциям описаны в 
-        generate_residuals.py. 
-        
-    res_analys_alg : object, default=stastics.Hotelling().
-        Объект поиска аномалий в остатках. В default это
-        статистика Хоттелинга.Требования к классам описаны в 
-        generate_residuals.py. 
-        
-    
-    Attributes
-    ----------
-    
-    
-    Return 
-    ----------
-    object : object Объект этого класса DL_AD
-
-    References
-    ----------
-    
-    Links to the papers 
-
-    Examples
-    --------
-    https://github.com/waico/tsad/tree/main/examples 
-    """
-
 
     def __init__(self,
                  name: str | None = None,
                 ):
+        
+        """Time Series Forecasting Task based on 
+        SOTA deep learning forecasting algorithms.
+            
+        Parameters
+        ----------
+            Fit params
+
+        dfs : {{df*,ts*}, list of {df*,ts*}}
+            df*,ts* are pd.core.series.Series or pd.core.frame.DataFrame data type.
+            Initial data. The data should not contain np.nan at all, but have a constant
+            and the same frequency of df.index and at the same time have no gaps. The problem with
+            skipping solves splitting one df into list of dff.             
+        
+        model : object of torch.nn.Module class, default=models.SimpleLSTM()
+            Used neural network model. 
+        
+        criterion : object of torch.nn class, default=nn.MSELoss()
+            Error calculation criterion for optimization 
+        
+        optimiser : tuple = (torch.optim class ,default = torch.optim.Adam,
+            dict  (dict of arguments without params models) , default=default)
+            Example of optimiser : optimiser=(torch.optim.Adam,{'lr':0.001})
+            Neural network optimization method and its parameters specified in
+            documentation to torch.
+            
+        batch_size :  int, default=64
+            Batch size (Number of samples over which the gradient is averaged)
+        
+        len_seq : int, default=10
+            Window size (number of consecutive points in a row) on which
+            the model really works. Essentially an analogue of order in autoregression.
+        
+        points_ahead : int, default=5
+            Horizon forecasting 
+        
+        n_epochs :  int, default=100 
+            Quantity epochs
+            
+            
+        shuffle : bool, default=True
+            Whether or not to shuffle the data before splitting. If shuffle=False
+        
+        show_progress : bool, default=True
+            Whether or not to show learning progress with detail by epoch. 
+
+        
+        show_figures : bool, default=True
+            Show or not show train and validation curve by epoch. 
+        
+        
+        best_model_file : string, './best_model.pt'
+            Path to the file where the best model weights will be stored
+        
+        Loader : class, default=ufesul.iterators.Loader.
+            The type of loader that will be used as an iterator in the future,
+            thanks to which, it is possible to hit the bachi .
+
+        Attributes
+        ----------
+
+        Return 
+        ----------
+        Forecast results in tensor form
+
         """
-        Данные класс реализуем алгоритм обработки аномйлий
-        """
+        
         
         super().__init__(name) 
 
@@ -108,75 +123,14 @@ class DeepLeaningTimeSeriesForecastingTask(Task):
             best_model_file='./best_model.pt',
             ):
         """
-        Обучение модели как для задачи прогнозирования так и для задачи anomaly
-        detection на имеющихся данных. fit = fit_predict_anmaloy 
-        
-        Parameters
-        ----------
-        dfs : {{df*,ts*}, list of {df*,ts*}}
-            df*,ts* are pd.core.series.Seriesor or pd.core.frame.DataFrame data type.
-            Исходные данные. Данные не долнжны содержать np.nan вовсе, иметь постоянную 
-            и одинковую частоту of df.index и при этом не иметь пропусков. Проблему с 
-            пропуском решают дробление одно df на list of df.             
-        
-        model : object of torch.nn.Module class, default=models.SimpleLSTM()
-            Используемая модель нейронной сети. 
-        
-        criterion : object of torch.nn class, default=nn.MSELoss()
-            Критерий подсчета ошибки для оптмизации. 
-        
-        optimiser : tuple = (torch.optim class ,default = torch.optim.Adam,
-            dict  (dict of arguments without params models) , default=default)
-            Example of optimiser : optimiser=(torch.optim.Adam,{'lr':0.001})
-            Метод оптимизации нейронной сети и его параметры, указанные в 
-            документации к torch.
-            
-        batch_size :  int, default=64
-            Размер батча (Число сэмплов по которым усредняется градиент)
-        
-        len_seq : int, default=10
-            Размер окна (количество последовательных точек ряда), на котором
-            модель реально работает. По сути аналог порядка в авторегрессии. 
-        
-        points_ahead : int, default=5
-            Горизонт прогнозирования. 
-        
-        n_epochs :  int, default=100 
-            Количество эпох.
-         
-            
-        shuffle : bool, default=True
-            Whether or not to shuffle the data before splitting. If shuffle=False
-        
-        show_progress : bool, default=True
-            Показывать или нет прогресс обучения с детализацией по эпохам. 
-
-        
-        show_figures : bool, default=True
-            Показывать или нет результаты решения задачии anomaly detection 
-            и кривую трейна и валидации по эпохам. 
-        
-        
-        best_model_file : string, './best_model.pt'
-            Путь до файла, где будет хранится лучшие веса модели
-        
-        Loader : class, default=ufesul.iterators.Loader.
-            Тип загрузчика, которую будет использовать как итератор в будущем, 
-            благодаря которому, есть возможность бить на бачи.
-    
-        Attributes
-        ----------
-
-        Return 
-        ----------
-        list of pd.datetime anomalies on initial dataset
+        Метод fit
         """
 
         
         self.columns = result_base_eda.columns 
 
         if model is None:
-            from ..utils.MLmodels.DeepLearningRegressors import SimpleLSTM
+            from ..utils.ml_models.deeplearning_regressors import SimpleLSTM
             model = SimpleLSTM(len(self.columns), len(self.columns), seed=random_state)
         self.model = model
         
@@ -314,7 +268,7 @@ class DeepLeaningTimeSeriesForecastingTask(Task):
                 best_model_file = None):
 
         """
-        Поиск аномалий в новом наборе данных
+        Метод predict 
         
         Parameters
         ----------

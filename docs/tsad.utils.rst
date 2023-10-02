@@ -7,10 +7,10 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   tsad.utils.MLmodels
    tsad.utils.ResidualAnomalyDetectionUtils
    tsad.utils.evaluating
    tsad.utils.featproc
+   tsad.utils.ml_models
 
 Submodules
 ----------

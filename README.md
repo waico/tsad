@@ -1,5 +1,6 @@
 
-![Downloads](https://static.pepy.tech/badge/tsad)![Downloads](https://static.pepy.tech/badge/tsad/month)
+![Downloads](https://static.pepy.tech/badge/tsad) ![Downloads](https://static.pepy.tech/badge/tsad/month)  ![pypi version](https://img.shields.io/pypi/v/tsad) ![python](https://img.shields.io/pypi/pyversions/tsad.svg) [![License](https://img.shields.io/badge/license-%20%20GNU%20GPLv3%20-green?style=plastic)](https://www.gnu.org/licenses/gpl-3.0.html)
+
 
 # TSAD
 

@@ -4,34 +4,34 @@ import numpy as np
 from ..base.task import Task, TaskResult
 
 
+
 class HighLevelDatasetAnalysisResult(TaskResult):
-    """Это результаты работы задачи HighLevelDatasetAnalysisTask:  
-    
+    """This is the result of the HighLevelDatasetAnalysisTask:
+
     Attributes
     ----------
     start_time : pd.DatetimeIndex
-        Первый временной индекс в исходном датасете
+        The first time index in the source dataset
 
     end_time : pd.DatetimeIndex
-        Последний временной индекс в исходном датасете. 
+        The last time index in the source dataset.
 
     duration : pd.Timedelta
-        Временной охват в исходном датасете.
-    
+        The overall duration in the source dataset.
+
     length : int
-        Количество сэмплов в исходном датасете.
+        The number of samples in the source dataset.
 
     columns_num : int
-        Количесто колонок в исходном датасете.
+        The number of columns in the source dataset.
 
     columns : list[str]
-        Список колонок в исходном датасете.
+        The list of columns in the source dataset.
 
     types : pd.Series
-        Таблица типов данных колонок
+        The table of data types of columns.
 
     """
-
 
     start_time: pd.DatetimeIndex
     end_time: pd.DatetimeIndex
@@ -41,80 +41,74 @@ class HighLevelDatasetAnalysisResult(TaskResult):
     types: pd.Series
 
     def show(self) -> None:
+        """Displays the result of the HighLevelDatasetAnalysisTask"""
 
         from IPython.display import display
 
-        display(f"Датасет размером {self.length}, признаков: {self.columns_num}")
-        display(f"В период с {self.start_time} по {self.end_time}")
-        display(f"Общей длительностью {self.duration}")
-        
+        display(f"Dataset size: {self.length}, features: {self.columns_num}")
+        display(f"Time index from {self.start_time} to {self.end_time}")
+        display(f"Total duration: {self.duration}")
+
         display(self.types.value_counts())
         display(self.types.sort_values())
 
 
 class HighLevelDatasetAnalysisTask(Task):
     """
-    Класс задачи разведочного анализа данных в области оценки общей информации о датасете. 
+    Class for exploratory data analysis task to evaluate general information about the dataset.
     """
-    
+
     def __init__(self, name: str | None = None):
-        """ Класс задачи разведочного анализа данных в области оценки общей информации о датасете. 
-        Осуществляет анализ, вывод и сохранение верхнеуровневой информации о датасете.
-        Сохранение осуществляется через HighLevelDatasetAnalysisResult для 
-        использование полученной информации в последующих задачах, востребованных в рамках 
-        верхнеуровневого пайплайна.
-        
+        """Class for exploratory data analysis task to evaluate general information about the dataset.
+        Performs analysis, output, and saving of high-level information about the dataset.
+        Saving is done through HighLevelDatasetAnalysisResult for
+        using the obtained information in subsequent tasks demanded within
+        the high-level pipeline.
+
         Notes
         -----
-        При вызове метода fit происходит сохранение следующей информации в 
-        HighLevelDatasetAnalysisResult:  
-            start_time : Первый временной индекс в исходном датасете
-            end_time : Последний временной индекс в исходном датасете. 
-            duration : Временной охват в исходном датасете.
-            length : Количество сэмплов в исходном датасете.
-            columns_num : Количесто колонок в исходном датасете.
-            columns : Список колонок в исходном датасете.
-            types : Таблица типов данных колонок
+        When the fit method is called, the following information is saved in
+        HighLevelDatasetAnalysisResult:
+            start_time : The first time index in the source dataset
+            end_time : The last time index in the source dataset.
+            duration : The time span in the source dataset.
+            length : The number of samples in the source dataset.
+            columns_num : The number of columns in the source dataset.
+            columns : The list of columns in the source dataset.
+            types : The table of data types of columns
         """
-        
-        super().__init__(name)
 
- 
+        super().__init__(name)
 
     def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, HighLevelDatasetAnalysisResult]:
         """
-        Fit the HighLevelDatasetAnalysisTask. 
+        Fit the HighLevelDatasetAnalysisTask.
 
         Notes
-        -----        
-        В данном случае метод производит 
-        сохранение информации в HighLevelDatasetAnalysisResult следующей информации: 
-            start_time : Первый временной индекс в исходном датасете
-            end_time : Последний временной индекс в исходном датасете. 
-            duration : Временной охват в исходном датасете.
-            length : Количество сэмплов в исходном датасете.
-            columns_num : Количесто колонок в исходном датасете.
-            columns : Список колонок в исходном датасете.
-            types : Таблица типов данных колонок
-
+        -----
+        In this case, the method saves the following information in HighLevelDatasetAnalysisResult:
+            start_time : The first time index in the source dataset
+            end_time : The last time index in the source dataset.
+            duration : The time span in the source dataset.
+            length : The number of samples in the source dataset.
+            columns_num : The number of columns in the source dataset.
+            columns : The list of columns in the source dataset.
+            types : The table of data types of columns
         """
 
-        from pandas.api.types import is_datetime64_any_dtype
+        start_time = df.index.min()
+        end_time = df.index.max()
+        duration = end_time - start_time
+        length = len(df)
+        columns_num = len(df.columns)
+        columns = list(df.columns)
+        types = df.dtypes
 
-        assert is_datetime64_any_dtype(df.index)
-        assert (df.index ==  sorted(df.index)).all
-        assert len(df) > 1
-
-        result = HighLevelDatasetAnalysisResult()
-        result.start_time = df.index[0]
-        result.end_time = df.index[-1]
-        result.duration = df.index[-1] - df.index[0]
-        result.length = df.shape[0]
-        result.columns_num = df.shape[1]
-        result.columns = df.columns
-        result.types = df.dtypes.sort_index()
+        result = HighLevelDatasetAnalysisResult(start_time=start_time, end_time=end_time, duration=duration,
+                                                length=length, columns_num=columns_num, columns=columns, types=types)
 
         return df, result
+    
     
     def predict(self, df: pd.DataFrame, result: HighLevelDatasetAnalysisResult) -> tuple[pd.DataFrame, HighLevelDatasetAnalysisResult]:
         """
@@ -122,7 +116,7 @@ class HighLevelDatasetAnalysisTask(Task):
         В данном методе ничего не происходит. Нужен для реализации верхнеуровневых пайплайнов. 
         """
         return df, result
-
+    
 
 class TimeDiscretizationResult(TaskResult):
     """Это результаты работы задачи TimeDiscretizationTask:  

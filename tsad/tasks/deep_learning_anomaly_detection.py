@@ -225,7 +225,7 @@ class ResidualAnomalyDetectionTask(Task):
         self.columns = result_base_eda.columns 
 
         if model is None:
-            from ..utils.MLmodels.DeepLearningRegressors import SimpleLSTM
+            from ..utils.ml_models.deeplearning_regressors import SimpleLSTM
             model = SimpleLSTM(len(self.columns), len(self.columns), seed=random_state)
         self.model = model
         

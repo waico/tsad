@@ -163,7 +163,7 @@ class SimpleLSTM(nn.Module):
             return torch.cat(all_y_preds).detach().cpu().numpy()
 
 
-class lstm(nn.Module):
+class LSTM(nn.Module):
     def __init__(self, in_features, n_hidden, seed=None):        
         super().__init__()
         set_determenistic(seed)
