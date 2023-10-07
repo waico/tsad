@@ -61,7 +61,7 @@ class FeatureGenerationTask(Task):
             raise ValueError("The 'config' parameter must be a list of dictionaries.")
 
 
-    def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, FeatureGenerationResult]:
+    def fit_predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, FeatureGenerationResult]:
         """
         Fit the feature generation task to the input data.
 

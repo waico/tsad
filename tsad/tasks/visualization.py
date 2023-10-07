@@ -85,7 +85,7 @@ class VisualizationTimeseriesTask(Task):
         self.scale_columns = scale_columns
         self.show_fig = show_fig
 
-    def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, VisualizationTimeseriesResult]:
+    def fit_predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, VisualizationTimeseriesResult]:
         """
         Fit the time series visualization task to the input data.
 

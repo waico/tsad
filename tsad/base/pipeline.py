@@ -9,7 +9,7 @@ from .exceptions import ArgumentNotFoundException, UnsupportedTaskResultExceptio
 
 
 class PipelineMode(Enum):
-    FIT = "FIT"
+    FIT_PREDICT = "FIT_PREDICT"
     PREDICT = "PREDICT"
 
 
@@ -19,7 +19,7 @@ class Pipeline():
     
     ## Pipeline
 
-    The `Pipeline` class represents a data processing pipeline that consists of multiple tasks. It allows for fitting the pipeline on a training dataset and making predictions on a test dataset.
+    The `Pipeline` class represents a data processing pipeline that consists of multiple tasks. It allows for fitting the pipeline and predict on a training dataset and making predictions on a test dataset.
 
     ### Parameters
 
@@ -29,8 +29,8 @@ class Pipeline():
 
     ### Attributes
 
-    - `mode` (PipelineMode): The current mode of the pipeline. Can be "FIT" or "PREDICT".
-    - `run_arguments` (dict[str, any]): The arguments passed to the `fit` or `predict` method.
+    - `mode` (PipelineMode): The current mode of the pipeline. Can be "FIT_PREDICT" or "PREDICT".
+    - `run_arguments` (dict[str, any]): The arguments passed to the `fit_predict` or `predict` method.
 
     ### Methods
 
@@ -89,12 +89,12 @@ class Pipeline():
     Raises:
     - `Exception`: If the pipeline mode is not supported.
 
-    #### fit(df: pd.DataFrame, \*\*params) -> pd.DataFrame
+    #### fit_predict(df: pd.DataFrame, \*\*params) -> pd.DataFrame
 
-    Fits the pipeline on the specified training DataFrame.
+    Fits and predicts the pipeline on the specified training DataFrame.
 
     Parameters:
-    - `df` (pd.DataFrame): The training DataFrame for fitting the pipeline.
+    - `df` (pd.DataFrame): The training DataFrame for fitting the pipeline and predict.
     - `params` (keyword arguments): Additional parameters to be passed to the pipeline.
 
     Returns:
@@ -167,7 +167,7 @@ class Pipeline():
                 arguments[name] = self.run_arguments[name]
             
             elif not parameter.kind == inspect.Parameter.VAR_KEYWORD and parameter.default == signature.empty:
-                raise ArgumentNotFoundException(f'Unable to inject named argument {name}. Add it to fit/predict Pipeline method or set default value.')
+                raise ArgumentNotFoundException(f'Unable to inject named argument {name}. Add it to fit_predict/predict Pipeline method or set default value.')
 
         return arguments
 
@@ -182,9 +182,9 @@ class Pipeline():
             task.mode = self.mode
             self._annotate_task_results(task)
             
-            if self.mode == PipelineMode.FIT:
-                parameters = self._create_method_parameters(task.fit, task_df)
-                task_result = task.fit(**parameters)
+            if self.mode == PipelineMode.FIT_PREDICT:
+                parameters = self._create_method_parameters(task.fit_predict, task_df)
+                task_result = task.fit_predict(**parameters)
             elif self.mode == PipelineMode.PREDICT:
                 parameters = self._create_method_parameters(task.predict, task_df)
                 task_result = task.predict(**parameters)
@@ -215,9 +215,9 @@ class Pipeline():
         return task_df
 
 
-    def fit(self, df: pd.DataFrame, **params) -> pd.DataFrame:
+    def fit_predict(self, df: pd.DataFrame, **params) -> pd.DataFrame:
         
-        self.mode = PipelineMode.FIT
+        self.mode = PipelineMode.FIT_PREDICT
         return self._run(df, **params)
     
 

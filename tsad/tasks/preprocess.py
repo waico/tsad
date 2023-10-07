@@ -75,7 +75,7 @@ class ValueRangeProcessingTask(Task):
         return df
         
         
-    def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
+    def fit_predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
         """
         Fit the ValueRangeProcessingTask.
         The method finds the minimum and maximum values of the input dataframe and replaces the values outside the allowed range with NaN.
@@ -159,7 +159,7 @@ class ResampleProcessingTask(Task):
         self.freq_tobe = freq_tobe
         
         
-    def fit(self, df: pd.DataFrame, time_result:TimeDiscretizationResult) -> tuple[pd.DataFrame, ResampleProcessingResult]:
+    def fit_predict(self, df: pd.DataFrame, time_result:TimeDiscretizationResult) -> tuple[pd.DataFrame, ResampleProcessingResult]:
         """
         Fit the ResampleProcessingTask.
         The method resamples the input dataframe according to freq_tobe or the frequency found in the TimeDiscretizationTask.
@@ -245,7 +245,7 @@ class SplitByNaNTask(Task):
                  ):
         super().__init__(name)      
         
-    def fit(self, df: pd.DataFrame,time_result:ResampleProcessingResult) -> tuple[pd.DataFrame, SplitByNaNResult]:
+    def fit_predict(self, df: pd.DataFrame,time_result:ResampleProcessingResult) -> tuple[pd.DataFrame, SplitByNaNResult]:
         """
         Fits the SplitByNaNTask.
 
@@ -404,7 +404,7 @@ class PrepareSeqSamplesTask(Task):
         self.kwargs['what_to_shuffle'] = what_to_shuffle
 
         
-    def fit(self, df: pd.DataFrame | list[pd.DataFrame]) -> tuple[pd.DataFrame | list[pd.DataFrame], PrepareSeqSamplesResult]:
+    def fit_predict(self, df: pd.DataFrame | list[pd.DataFrame]) -> tuple[pd.DataFrame | list[pd.DataFrame], PrepareSeqSamplesResult]:
         """
         Fit the PrepareSeqSamplesTask. 
 

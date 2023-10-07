@@ -70,7 +70,7 @@ class ResidualAnomalyDetectionTask(Task):
         return df_residuals
 
 
-    def fit(self,
+    def fit_predict(self,
             dfs,
             result_base_eda: HighLevelDatasetAnalysisResult,
             model=None,

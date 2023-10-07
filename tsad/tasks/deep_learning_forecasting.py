@@ -36,7 +36,7 @@ class DeepLeaningTimeSeriesForecastingTask(Task):
                 ):
         super().__init__(name) 
 
-    def fit(self,
+    def fit_predict(self,
             dfs,
             result_base_eda: HighLevelDatasetAnalysisResult,
             model=None,
@@ -266,7 +266,6 @@ class DeepLeaningTimeSeriesForecastingTask(Task):
         result : DeepLeaningTimeSeriesForecastingResult
             Result of DeepLeaningTimeSeriesForecastingTask.
         """
-        print(len(dfs[0]))
         self.batch_size = batch_size if batch_size is not None else self.batch_size
         self.device  = device if device is not None else self.device
         

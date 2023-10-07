@@ -78,7 +78,7 @@ class HighLevelDatasetAnalysisTask(Task):
 
         super().__init__(name)
 
-    def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, HighLevelDatasetAnalysisResult]:
+    def fit_predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, HighLevelDatasetAnalysisResult]:
         """
         Fit the HighLevelDatasetAnalysisTask.
         
@@ -262,7 +262,7 @@ class TimeDiscretizationTask(Task):
 
 
 
-    def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TimeDiscretizationResult]:
+    def fit_predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TimeDiscretizationResult]:
         """
         Fit the TimeDiscretizationTask. 
 
@@ -492,7 +492,7 @@ class FindNaNTask(Task):
     def __init__(self, name: str | None = None):
         super().__init__(name)
 
-    def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, FindNaNResult]:
+    def fit_predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, FindNaNResult]:
         """
         Fit the FindNaNTask. 
 
@@ -628,7 +628,7 @@ class EquipmentDowntimeTask(Task):
     def __init__(self, name: str | None = None):
         super().__init__(name)
 
-    def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, EquipmentDowntimeResult]:
+    def fit_predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, EquipmentDowntimeResult]:
         """
         Fit the EquipmentDowntimeTask. 
 

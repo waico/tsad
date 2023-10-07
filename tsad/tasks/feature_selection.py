@@ -79,7 +79,7 @@ class FeatureSelectionTask(Task):
         super().__init__()
 
 
-    def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, FeatureSelectionResult]:
+    def fit_predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, FeatureSelectionResult]:
         """
         Fit the feature selection model and select features.
 

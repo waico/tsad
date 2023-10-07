@@ -54,14 +54,14 @@ class Task(abc.ABC):
     ### Методы:
 
     - __init__(name: str | None = None) -> None: конструктор класса, инициализирующий атрибуты name и status.
-    - fit(df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]: абстрактный метод, выполняющий обучение задачи на наборе данных и возвращающий результаты обучения вместе с обновленным набором данных.
+    - fit_predict(df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]: абстрактный метод, выполняющий обучение задачи на наборе данных и возвращающий результаты обучения вместе с обновленным набором данных.
     - predict(df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]: абстрактный метод, выполняющий предсказание задачи на наборе данных и возвращающий результаты предсказания вместе с исходным набором данных.
 
     ### Пример использования:
 
     ```python
     class CustomTask(Task):
-        def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
+        def fit_predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
             # реализация обучения задачи
             result = TaskResult()
             # ...
@@ -75,7 +75,7 @@ class Task(abc.ABC):
 
     task = CustomTask("Моя задача")
     df = pd.DataFrame(...)
-    output_df, result = task.fit(df)
+    output_df, result = task.fit_predict(df)
     print(output_df)
     result.show()
 
@@ -88,7 +88,7 @@ class Task(abc.ABC):
         self.name = name
 
     @abc.abstractmethod
-    def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
+    def fit_predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
         pass
 
     @abc.abstractmethod

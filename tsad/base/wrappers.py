@@ -28,7 +28,7 @@ def SklearnWrapper(sklearnClass):
             return new_df
             
             
-        def fit(self,df:pd.DataFrame,sklearn_kwargs={}):
+        def fit_predict(self,df:pd.DataFrame,sklearn_kwargs={}):
             self.sklearnClass.fit(df,**sklearn_kwargs)
             new_df = self._sklearn_predict(df)
             return new_df
