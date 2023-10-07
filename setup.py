@@ -1,14 +1,15 @@
-__version__ = "1.0.2"
+__version__ = "0.19.1"
 
 from setuptools import setup, find_packages
  
 setup(name='tsad',
-      version='1.0.0',
+      version=__version__,
+      python_requires = '==3.10',
       url='https://github.com/waico/tsad',
-      license='Attribution-NonCommercial-NoDerivatives 4.0 International',
+      license='GNU GPLv3',
       packages=find_packages(),
       #packages=['tsad'],
-      author='Vyacheslav Kozitsin, Oleg Berezin, Iurii Katser, Ivan Maximov',
+      author='Viacheslav Kozitsin, Oleg Berezin, Iurii Katser, Ivan Maximov',
       author_email='rfptk2525@yandex.ru',
       description='Time Series Analysis for Simulation of Technological Processes',
       #packages=find_packages(exclude=['tests']),
