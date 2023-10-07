@@ -1,12 +1,10 @@
 
-![Downloads](https://static.pepy.tech/badge/tsad) ![Downloads](https://static.pepy.tech/badge/tsad/month)  ![pypi version](https://img.shields.io/pypi/v/tsad) ![python](https://img.shields.io/pypi/pyversions/tsad.svg) [![License](https://img.shields.io/badge/license-%20%20GNU%20GPLv3%20-green?style=plastic)](https://www.gnu.org/licenses/gpl-3.0.html)
+![Maual python](https://img.shields.io/badge/python-3.10-blue)![Downloads](https://static.pepy.tech/badge/tsad) ![Downloads](https://static.pepy.tech/badge/tsad/month)  ![pypi version](https://img.shields.io/pypi/v/tsad)  [![License](https://img.shields.io/badge/license-%20%20GNU%20GPLv3%20-green?style=plastic)](https://www.gnu.org/licenses/gpl-3.0.html) ![python](https://img.shields.io/pypi/pyversions/tsad.svg)
 
 
 # TSAD
 
 **Time Series Analysis for Simulation of Technological Processes**
-
-Python 3.10
 
 **The primary purpose** of the TSAD (Python module) is to make life easier for researchers who use ML techniques to solve the following problems: 
 
