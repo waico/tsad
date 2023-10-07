@@ -1,7 +1,7 @@
 from tsad.tasks.eda import HighLevelDatasetAnalysisTask, TimeDiscretizationTask
 from tsad.tasks.eda import FindNaNTask, EquipmentDowntimeTask
-from tsad.tasks.preprocess import ScalingTask, ValueRangeProcessingTask, ResampleProcessingTask 
-from tsad.tasks.preprocess import FeatureProcessingTask, SplitByNaNTask, PrepareSeqSamplesTask
+from tsad.tasks.preprocess import ResampleProcessingTask 
+from tsad.tasks.preprocess import SplitByNaNTask, PrepareSeqSamplesTask
 from tsad.tasks.deep_learning_anomaly_detection import ResidualAnomalyDetectionTask
 from tsad.tasks.deep_learning_forecasting import DeepLeaningTimeSeriesForecastingTask
 
@@ -19,7 +19,6 @@ multivatiateTimeSeriesDeepLearningForecastingTaskSet = [
     EquipmentDowntimeTask(),
     ResampleProcessingTask(),
     StandardScalerTask(),
-    FeatureProcessingTask(),
     SplitByNaNTask(),
     PrepareSeqSamplesTask(len_seq=10),
     DeepLeaningTimeSeriesForecastingTask(),

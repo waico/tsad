@@ -1,5 +1,5 @@
 """
-Данный модуль описывает варианты работы с трейн тест разбиением последовательности. 
+This module describes options for working with train test sequence splitting.
 """
 
 import numpy as np
@@ -8,61 +8,69 @@ import pandas as pd
 
  
 def ts_train_test_split(df, len_seq, 
-                     points_ahead=1, gap=0, shag=1, intersection=True,
+                     points_ahead=1, gap=0, step=1, intersection=True,
                      test_size=None,train_size=None, random_state=None, what_to_shuffle='train'):
     """
-    A function that splits the time series into train and test subsets  
+    A function that splits the time series into train and test sequence subsets.   
 
     Parameters
     ----------
     df : pd.DataFrame
         Array of shape (n_samples, n_features) with pd.timestamp index.
+
+    len_seq : int
+        Length of the sequence, which is used to predict the next point/points.
     
     points_ahead : int, default=0
         How many points ahead we predict, reflected in y
          
     gap :  int, default=0
-        How many points between train and test. Relatively speaking, 
-        if the "right" point of train is t, then the first point of the test 
-        is t + gap +1. The parameter is designed to be able to predict 
-        one point after a large additional time interval.
+        The gap between last point of sequence, which we used as input 
+        for prediction and first point of potential model output sequence
+        (prediction).If the last point of input sequence is t, then the 
+        first point of the output sequence is t + gap +1. The parameter 
+        is designed to be able to predict sequence after a additional time 
+        interval.
     
-    shag :  int, default=1.
+    step :  int, default=1.
         Sample generation step. If the first point was t for 
-        the 1st sample of the train, then for the 2nd sample of the train 
-        it will be t + shag if intersection=True, otherwise the same 
-        but without intersections of the series values.
+        the 1st sample (sequence) of the train, then for the 2nd sample 
+        (sequence) of the train it will be t + step if intersection=True,
+        otherwise the same but without intersections of the series values.
 
     intersection :  bool, default=True
-       The presence of series values (of one point in time) in different 
-       samples for the train set and and separately for the test test. 
-       The train and the test never have common points.
+        The presence of one point in time in different samples (sequences) 
+        for the train set and and separately for the test test. 
+        If True, the train and the test never have common time points.
     
-    test_size : float or int or timestamp for df, or list of timestamps, default=0.25. 
-        If float, should be between 0.0 and 1.0 and represent the proportion
-        of the dataset to include in the test split. 
-        If int, represents the absolute number of test samples. If None, the value is set to the
-        complement of the train size. If ``train_size`` is also None, it will
-        be set to 0.25. *
-        If timestamp for df, for X_test we will use set from df[t:] 
-        If list of timestamps [t1,t2], for X_test we will use set from df[t1:t2] 
-        Can be 0, then it will return the X,y values in X_train, y_train. 
+    test_size : float or int or timestamp for df, or list of timestamps, default=0.25.
+        The size of the test set. 
+          - If float, should be between 0.0 and 1.0 and represent the proportion
+            of the dataset to include in the test split. 
+          - If int, represents the absolute number of test samples. If None, the value is set to the
+            complement of the train size. 
+          - If 0, then it will return the X,y values in X_train, y_train. 
+          - If timestamp, for X_test we will use set from df[t:] 
+          - If list of timestamps [t1,t2], for X_test we will use set from df[t1:t2] 
+          - If ``train_size`` is None, it will be set to 0.25. *
+
         
-    train_size : float or int, default=None
-        If float, should be between 0.0 and 1.0 and represent the
-        proportion of the dataset to include in the train split. If
-        int, represents the absolute number of train samples. If None,
-        the value is automatically set to the complement of the test size. 
-        If timestamp for df, for X_train we will use set for train from df[:t] 
-        If list of timestamps [t1,t2], for X_train we will use set for train from df[t1:t2] 
-        Can be 0, then it will return the X,y values in X_test, y_test.
+    train_size : float or int, default=None.
+        The size of the train set.
+          - If float, should be between 0.0 and 1.0 and represent the
+            proportion of the dataset to include in the train split. 
+          - If int, represents the absolute number of train samples. 
+          - If 0, then it will return the X,y values in X_test, y_test.  
+          - If timestamp for df, for X_train we will use set for train from df[:t]  
+          - If list of timestamps [t1,t2], for X_train we will use set for train from df[t1:t2]  
+          - If None,the value is automatically set to the complement of the test size.
         
     what_to_shuffle: {'nothing', 'all','train'}, str. Default = 'train'. 
-        In the case of 'train' we random shuffle only X_train, and y_train. 
-        Test samples are unused for the shuffle. Any sample from X_test is later 
-        than any sample from X_train. This is also true for respectively
-        In case of 'all' in analogy with sklearn.model_selection.train_test_split
-        In case of 'nothing' shuffle is not performed.
+          - If 'train' we random shuffle only X_train, and y_train. 
+            Test samples are unused for the shuffle. Any sample from X_test is later
+            than any sample from X_train. This is also true for respectively
+          - If 'all' in analogy with sklearn.model_selection.train_test_split
+          - If 'nothing' shuffle is not performed.
         
     random_state : int, RandomState instance or None, default=None
         Controls the shuffling applied to the data before applying the split.
@@ -73,18 +81,10 @@ def ts_train_test_split(df, len_seq,
     -------
     (X_train, X_test, y_train, y_test) : tuple 
         Tuple containing train-test split of inputs
-    
-    
-    Examples
-    --------
-    >>> X = np.ones((4, 3))
-    >>> y = np.ones(4)
-    >>> sklearn_template(X, y)
-    (z, xmin, xmax)  # this should match the actual output
     """
     
-    
-      # проблема вклюения правых границ
+    # TODO
+    # there is a problem of including of right boundaries 
         
     
     
@@ -98,30 +98,30 @@ def ts_train_test_split(df, len_seq,
 
 
 
-    ####### Part I: Вычисление подряд возможных samples
+    ####### Part I: Calculation of consecutive possible samples
     x_start=0
     x_end= x_start + len_seq
     y_start = x_end + gap 
     y_end = y_start + points_ahead
     if intersection:
-        # ради вычислительной нагрузки такой кастыль
-        def compute_new_x_start(x_start,y_end,shag):
-            return x_start + shag
+        # for simplyfing the computional complexity
+        def compute_new_x_start(x_start,y_end,step):
+            return x_start + step
     else:
-        def compute_new_x_start(x_start,y_end,shag):
-            return y_end + shag -1
+        def compute_new_x_start(x_start,y_end,step):
+            return y_end + step -1
     X = []
     y = []
     while y_end <= len(df):
         X.append(df[x_start:x_end])
         y.append(df[y_start:y_end])
 
-        x_start= compute_new_x_start(x_start,y_end,shag)
+        x_start= compute_new_x_start(x_start,y_end,step)
         x_end= x_start + len_seq
         y_start = x_end + gap
         y_end = y_start + points_ahead
 
-    ####### Part 2: Выход на train_sample_numbers и test_sample_numbers 
+    ####### Part 2: Make train_sample_numbers и test_sample_numbers 
 
     train_sample_numbers = None 
     test_sample_numbers  = None
@@ -223,10 +223,14 @@ def ts_train_test_split(df, len_seq,
 
 
 def ts_train_test_split_dfs( dfs, len_seq,
-                            points_ahead=1, gap=0, shag=1, intersection=True,
+                            points_ahead=1, gap=0, step=1, intersection=True,
                             test_size=None,train_size=None, random_state=None, what_to_shuffle='train'):
         """
-        Вспомогательная функция, избавляющая от дубляжа
+        An auxiliary function that eliminates duplication.
+
+        Parameters
+        ----------
+        params : see ts_train_test_split  
         """
 
         if (type(dfs) == pd.core.series.Series) | (type(dfs) == pd.core.frame.DataFrame):
@@ -236,7 +240,7 @@ def ts_train_test_split_dfs( dfs, len_seq,
                                                                        len_seq=len_seq,
                                                                        points_ahead=points_ahead,
                                                                        gap=gap,
-                                                                       shag=shag,
+                                                                       step=step,
                                                                        intersection=intersection,
                                                                        test_size=test_size,
                                                                        train_size=train_size,
@@ -259,7 +263,7 @@ def ts_train_test_split_dfs( dfs, len_seq,
                 _X_train, _X_test, _y_train, _y_test = ts_train_test_split(df, len_seq,
                                                                                points_ahead=points_ahead,
                                                                                gap=gap,
-                                                                               shag=shag,
+                                                                               step=step,
                                                                                intersection=intersection,
                                                                                test_size=test_size,
                                                                                train_size=train_size,
@@ -272,7 +276,8 @@ def ts_train_test_split_dfs( dfs, len_seq,
                 y_test += _y_test
 
             print(
-                f'Пропущено {_k} датастов, из-за того что saples слишком малов в датасете. (len_seq + points_ahead + gap -1 <= len(df))')
+                f'Skipped {_k} datasets because the number of samples is too small in the dataset. (len_seq + points_ahead + gap -1 <= len(df))'
+                )
 
         else:
             raise NameError('Type of dfs is unsupported')

@@ -20,104 +20,42 @@ class ResidualAnomalyDetectionResult(TaskResult):
         pass
 
 
-# class TrainTestSplitTask(Task):
-
-#     def __init__(self, 
-#                  name: str | None = None, 
-#                  **kwargs,
-#                  ):
-#         super().__init__(name)   
-#         self.kwargs=kwargs    
-        
-#     def fit(self, dfs: pd.DataFrame) -> tuple[pd.DataFrame, TrainTestSplitResult]:
-#         result = TrainTestSplitResult()
-#         from ..utils.TrainTestSplitting import ts_train_test_split_dfs 
-#         dfs = ts_train_test_split_dfs(dfs,**self.kwargs)
-#         return dfs, result
-
-#     def predict(self, df: pd.DataFrame, result: TrainTestSplitResult) -> tuple[pd.DataFrame, TrainTestSplitResult]:
-#         from ..utils.TrainTestSplitting import ts_train_test_split_dfs 
-#         dfs = ts_train_test_split_dfs(dfs,**self.kwargs)
-#         return dfs, result
-
-
 class ResidualAnomalyDetectionTask(Task):
     """        
     Pipeline Time Series Anomaly Detection based on 
     SOTA deep learning forecasting algorithms.
-    
-    Данный пайплайн избавит вас от проблем написания кода для: \n
-    1) формирование выборок для подачи в sequence модели \n
-    2) обучения моделей \n
-    3) поиска аномалий в невязках \n
-    
-    Данный пайплайн позволяет: \n
-    1) пронгозировать временные ряды, в том числе многомерные. \n
-    2) вычислять невязку между прогнозом и настоящими значениями \n
-    3) анализировать невязку, и возращать разметку аномалиями \n
-    
-    Parameters
-    ----------
-    preproc : object, default = sklearn.preprocessing.MinMaxScaler()
-        Объект предобратки значений временного ряда.
-        Требования к классу по методами атрибутам одинаковы с default.
-    
-    generate_res_func : func, default = generate_residuals.abs
-        Функция генерация невязки. На вход y_pred, y_true. В default это
-        абсолютная разница значений. Требования к функциям описаны в 
-        generate_residuals.py. 
-        
-    res_analys_alg : object, default=stastics.Hotelling().
-        Объект поиска аномалий в остатках. В default это
-        статистика Хоттелинга.Требования к классам описаны в 
-        generate_residuals.py. 
-        
-    
-    Attributes
-    ----------
-    
-    
-    Return 
-    ----------
-    object : object Объект этого класса DL_AD
 
-    References
-    ----------
     
-    Links to the papers 
-
-    Examples
-    --------
-    https://github.com/waico/tsad/tree/main/examples 
+    This task allows us:\n
+     1) forecast time series, including multivariate ones. \n
+     2) calculate the residuals between the forecast and real values \n
+     3) compare the residuals and, thaks to to it, make the anomaly labelling \n
     """
 
 
     def __init__(self,
                  name: str | None = None,
                 ):
-        """
-        Данные класс реализуем алгоритм обработки аномйлий
-        """
-        
         super().__init__(name) 
-
-  
-        
-
-
-
-
-
-
-
-
 
 
     def _get_anomaly_timestamps(self,dfs):
         """
-        Вспомогательная функция для  генерации всего
+        Computes the residuals of a deep learning model's predictions on a dataset, and returns them as a pandas DataFrame.
+        Helper function to reduce code duplication.
 
+        Parameters:
+        ----------
+            dfs : tuple of pandas.DataFrame
+                A tuple containing four pandas DataFrames: X, X_val, y_true, y_val. 
+                Only the first two are used.
+
+        Returns:
+        ----------
+            df_residuals : pandas.DataFrame
+                A pandas DataFrame containing the residuals of the model's predictions on the dataset. 
         """
+
         X, _, y_true, _ = dfs
 
         all_data_iterator = self.Loader(X, y_true, self.batch_size, shuffle=False)
@@ -125,19 +63,15 @@ class ResidualAnomalyDetectionTask(Task):
                                 None, None, phase='forecast', points_ahead=self.points_ahead,
                                       device=self.device)
         residuals = self.generate_res_func(y_pred, np.array(y_true))
-        point_ahead_for_residuals = 0  # мы иногда прогнозим на 10 точек вперед, ну интересует все равно на одну точку впреред
+        point_ahead_for_residuals = 0  # We sometimes forecast 10 points ahead, but we’re still interested in one point forward
         res_indices = [y_true[i].index[point_ahead_for_residuals] for i in range(len(y_true))]
         df_residuals = pd.DataFrame(residuals[:, point_ahead_for_residuals, :], columns=self.columns,
                                     index=res_indices).sort_index()
         return df_residuals
 
-    # -----------------------------------------------------------------------------------------
-    #     Формирование сутевой части класса
-    # -----------------------------------------------------------------------------------------
-
 
     def fit(self,
-            df:pd.DataFrame,
+            dfs,
             result_base_eda: HighLevelDatasetAnalysisResult,
             model=None,
             optimiser = None,
@@ -157,68 +91,78 @@ class ResidualAnomalyDetectionTask(Task):
             best_model_file='./best_model.pt',
             ):
         """
-        Обучение модели как для задачи прогнозирования так и для задачи anomaly
-        detection на имеющихся данных. fit = fit_predict_anmaloy 
-        
+        Fit Anomaly Detection Algorithm based on Deep Learning and residual analysis.
+
         Parameters
         ----------
-        df : {{df*,ts*}, list of {df*,ts*}}
-            df*,ts* are pd.core.series.Seriesor or pd.core.frame.DataFrame data type.
-            Исходные данные. Данные не долнжны содержать np.nan вовсе, иметь постоянную 
-            и одинковую частоту of df.index и при этом не иметь пропусков. Проблему с 
-            пропуском решают дробление одно df на list of df.             
+        dfs : {{df*,ts*}, list of {df*,ts*}}
+            df*,ts* are pd.core.series.Series or pd.core.frame.DataFrame data type.
+            Initial data. The data should not contain np.nan at all, but have a constant
+            and the same frequency of df.index and at the same time have no gaps. The problem with
+            skipping solves splitting one df into list of dff.       
+
+        result_base_eda : HighLevelDatasetAnalysisResult
+            Result of HighLevelDatasetAnalysisTask.
         
         model : object of torch.nn.Module class, default=models.SimpleLSTM()
-            Используемая модель нейронной сети. 
-        
-        criterion : object of torch.nn class, default=nn.MSELoss()
-            Критерий подсчета ошибки для оптмизации. 
+            Used neural network model. 
         
         optimiser : tuple = (torch.optim class ,default = torch.optim.Adam,
             dict  (dict of arguments without params models) , default=default)
             Example of optimiser : optimiser=(torch.optim.Adam,{'lr':0.001})
-            Метод оптимизации нейронной сети и его параметры, указанные в 
-            документации к torch.
+            Neural network optimization method and its parameters specified in
+            documentation to torch.
+
+        criterion : object of torch.nn class, default=nn.MSELoss()
+            Error calculation criterion for optimization 
+
+        generate_res_func : function, default=absoluteResidual
+            Function for calculating the residuals between the forecast and real values.
+        
+        res_analys_alg : object of class, default=Hotelling()
+            Statistical method for analyzing residuals and detecting anomalies.
+
+        Loader : class, default=ufesul.iterators.Loader.
+            The type of loader that will be used as an iterator in the future,
+            thanks to which, it is possible to hit the bachi .
             
         batch_size :  int, default=64
-            Размер батча (Число сэмплов по которым усредняется градиент)
+            Batch size (Number of samples over which the gradient is averaged)
         
         len_seq : int, default=10
-            Размер окна (количество последовательных точек ряда), на котором
-            модель реально работает. По сути аналог порядка в авторегрессии. 
+            Window size (number of consecutive points in a row) on which
+            the model really works. Essentially an analogue of order in autoregression.
         
         points_ahead : int, default=5
-            Горизонт прогнозирования. 
+            Horizon forecasting 
         
         n_epochs :  int, default=100 
-            Количество эпох.
-         
+            Quantity epochs
+            
             
         shuffle : bool, default=True
             Whether or not to shuffle the data before splitting. If shuffle=False
         
         show_progress : bool, default=True
-            Показывать или нет прогресс обучения с детализацией по эпохам. 
+            Whether or not to show learning progress with detail by epoch. 
 
         
         show_figures : bool, default=True
-            Показывать или нет результаты решения задачии anomaly detection 
-            и кривую трейна и валидации по эпохам. 
+            Show or not show train and validation curve by epoch. 
         
         
         best_model_file : string, './best_model.pt'
-            Путь до файла, где будет хранится лучшие веса модели
+            Path to the file where the best model weights will be stored
         
-        Loader : class, default=ufesul.iterators.Loader.
-            Тип загрузчика, которую будет использовать как итератор в будущем, 
-            благодаря которому, есть возможность бить на бачи.
-    
-        Attributes
-        ----------
 
-        Return 
+
+        Returns 
         ----------
-        list of pd.datetime anomalies on initial dataset
+        y_pred : torch.tensor
+            Tensor of predictions.
+        result : DeepLeaningTimeSeriesForecastingResult
+            Result of DeepLeaningTimeSeriesForecastingTask.
+
         """
 
         
@@ -273,7 +217,6 @@ class ResidualAnomalyDetectionTask(Task):
         # -----------------------------------------------------------------------------------------
         #     Формирование train_iterator и val_iteraror
         # -----------------------------------------------------------------------------------------
-        dfs = df
         X_train, X_test, y_train, y_test = dfs
 
         train_iterator = self.Loader(X_train, y_train, batch_size, shuffle=shuffle)
@@ -365,43 +308,39 @@ class ResidualAnomalyDetectionTask(Task):
 
     # накосячил тут с прогнозом на одну точку вперед. Могут быть проблемы если ahead !=1
     def predict(self,
-                df,
+                dfs,
                 result:ResidualAnomalyDetectionResult,
-                points_ahead = None, 
-                n_epochs = None, 
-                len_seq = None, 
                 batch_size = None, 
-                encod_decode_model = None, 
-                random_state = None, 
-                shuffle = None, 
                 show_progress = None, 
                 show_figures = None, 
-                best_model_file = None):
+                best_model_file = None,
+                 device=None,):
 
+        """Predict by ResidualAnomalyDetectionTask.
+        
+        Parameters:
+        ----------
+        dfs : tuple
+            Tuple of train and test data.
+        result : ResidualAnomalyDetectionResult
+            Result of ResidualAnomalyDetectionResult.
+        batch_size : int, default=None
+            Batch size (Number of samples over which the gradient is averaged)
+        device : str, default=None
+            Device to use for prediction.
+
+
+        Returns:
+        ----------
+        y_pred : torch.tensor
+            Tensor of predictions.
+        result : ResidualAnomalyDetectionResult
+            Result of ResidualAnomalyDetectionResult.
+        
         """
-        Поиск аномалий в новом наборе данных
         
-        Parameters
-        ----------
-        см self.fit() dockstring
-        
-        
-        Return
-        ----------
-        anomaly_timestamps : list of df.index.dtype
-            Возвращает список временных меток аномалий                
-        
-        Attributes
-        ----------
-        
-        """
-        self.points_ahead = points_ahead if points_ahead is not None else self.points_ahead
-        self.n_epochs = n_epochs if n_epochs is not None else self.n_epochs
-        self.len_seq = len_seq if len_seq is not None else self.len_seq
         self.batch_size = batch_size if batch_size is not None else self.batch_size
-        self.encod_decode_model = encod_decode_model if encod_decode_model is not None else self.encod_decode_model
-        self.random_state = random_state if random_state is not None else self.random_state
-        self.shuffle = shuffle if shuffle is not None else self.shuffle
+        self.device  = device if device is not None else self.device
         self.show_progress = show_progress if show_progress is not None else self.show_progress
         self.show_figures = show_figures if show_figures is not None else self.show_figures
         self.best_model_file = best_model_file if best_model_file is not None else self.best_model_file
@@ -412,9 +351,8 @@ class ResidualAnomalyDetectionTask(Task):
         # -----------------------------------------------------------------------------------------
         #     Генерация остатков
         # -----------------------------------------------------------------------------------------
-        dfs = df
         df_residuals = self._get_anomaly_timestamps(dfs=dfs)
-        self.anomaly_timestamps = self.res_analys_alg.predict(df_residuals, show_figure=show_figures)
+        self.anomaly_timestamps = self.res_analys_alg.predict(df_residuals, show_figure=self.show_progress)
         self.statistic = self.res_analys_alg.statistic
 
         
@@ -424,37 +362,37 @@ class ResidualAnomalyDetectionTask(Task):
         return at, result
 
 
-    def save(self, path='./pipeline.pcl'):
-        """
-        Method for saving pipeline.
-        It may be required for example after training.
-        CPU.
+    # def save(self, path='./pipeline.pcl'):
+    #     """
+    #     Method for saving pipeline.
+    #     It may be required for example after training.
+    #     CPU.
         
-        Parameters
-        ----------
-            path : str
-        Путь до файла, для сохранения пайплайна. 
-        Пайлайн сохраняется в формате pickle
-        """
+    #     Parameters
+    #     ----------
+    #         path : str
+    #     Путь до файла, для сохранения пайплайна. 
+    #     Пайлайн сохраняется в формате pickle
+    #     """
 
-        self.model.run_epoch(self.Loader(torch.zeros((1, self.len_seq, self.model.in_features), dtype=float),
-                                        torch.zeros((1, self.len_seq, self.model.in_features), dtype=float),
-                                        batch_size=1),
-                             None, None, phase='forecast', points_ahead=1, device=self.device)
-        with open(path, 'wb') as f:
-            pickle.dump(self, f)
+    #     self.model.run_epoch(self.Loader(torch.zeros((1, self.len_seq, self.model.in_features), dtype=float),
+    #                                     torch.zeros((1, self.len_seq, self.model.in_features), dtype=float),
+    #                                     batch_size=1),
+    #                          None, None, phase='forecast', points_ahead=1, device=self.device)
+    #     with open(path, 'wb') as f:
+    #         pickle.dump(self, f)
 
-    def load(self, path='./pipeline.pcl'):
-        """
-        Method for loading pipeline.
-        It may be required for example after training.
+    # def load(self, path='./pipeline.pcl'):
+    #     """
+    #     Method for loading pipeline.
+    #     It may be required for example after training.
         
-        Parameters
-        ----------
-            path : str
-        Путь до сохраненного файла пайплайна. 
-        Пайлайн должен быть в формате pickle
-        """
-        with open(path, 'rb') as f:
-            pipeline = pickle.load(f)
-        self.__dict__.update(pipeline.__dict__)
+    #     Parameters
+    #     ----------
+    #         path : str
+    #     Путь до сохраненного файла пайплайна. 
+    #     Пайлайн должен быть в формате pickle
+    #     """
+    #     with open(path, 'rb') as f:
+    #         pipeline = pickle.load(f)
+    #     self.__dict__.update(pipeline.__dict__)

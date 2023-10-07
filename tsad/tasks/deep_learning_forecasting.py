@@ -14,26 +14,51 @@ from .eda import HighLevelDatasetAnalysisResult
 
 
 class DeepLeaningTimeSeriesForecastingResult(TaskResult):
+    """
+    A class representing the result of a deep learning time series forecasting task.
+    """
 
     def show(self) -> None:
-
+        """
+        Displays the result of the task.
+        """
         pass
 
 
 
 class DeepLeaningTimeSeriesForecastingTask(Task):
+    """ Multivariate Time Series Forecasting Task 
+    based on SOTA deep learning forecasting algorithms. 
+    """
 
     def __init__(self,
                  name: str | None = None,
                 ):
-        
-        """Time Series Forecasting Task based on 
-        SOTA deep learning forecasting algorithms.
-            
+        super().__init__(name) 
+
+    def fit(self,
+            dfs,
+            result_base_eda: HighLevelDatasetAnalysisResult,
+            model=None,
+            optimiser = None,
+            criterion = None,
+            Loader = None,
+            points_ahead = 1,
+            n_epochs = 5, 
+            len_seq = 10,  # Need to be fixed, need to be calculated from Result train_test_split
+            batch_size = 128, 
+            encod_decode_model = False, 
+            random_state=None,
+            shuffle=False,
+            show_progress=True,
+            show_figures=True,
+            best_model_file='./best_model.pt',
+            ):
+        """
+        Fit DeepLeaningTimeSeriesForecastingTask.
+
         Parameters
         ----------
-            Fit params
-
         dfs : {{df*,ts*}, list of {df*,ts*}}
             df*,ts* are pd.core.series.Series or pd.core.frame.DataFrame data type.
             Initial data. The data should not contain np.nan at all, but have a constant
@@ -84,47 +109,15 @@ class DeepLeaningTimeSeriesForecastingTask(Task):
             The type of loader that will be used as an iterator in the future,
             thanks to which, it is possible to hit the bachi .
 
-        Attributes
+        Returns 
         ----------
-
-        Return 
-        ----------
-        Forecast results in tensor form
+        y_pred : torch.tensor
+            Tensor of predictions.
+        result : DeepLeaningTimeSeriesForecastingResult
+            Result of DeepLeaningTimeSeriesForecastingTask.
 
         """
         
-        
-        super().__init__(name) 
-
-  
-        
-
-    # -----------------------------------------------------------------------------------------
-    #     Формирование сутевой части класса
-    # -----------------------------------------------------------------------------------------
-
-
-    def fit(self,
-            dfs,
-            result_base_eda: HighLevelDatasetAnalysisResult,
-            model=None,
-            optimiser = None,
-            criterion = None,
-            Loader = None,
-            points_ahead = 1,
-            n_epochs = 5, 
-            len_seq = 10, 
-            batch_size = 128, 
-            encod_decode_model = False, 
-            random_state=None,
-            shuffle=False,
-            show_progress=True,
-            show_figures=True,
-            best_model_file='./best_model.pt',
-            ):
-        """
-        Метод fit
-        """
 
         
         self.columns = result_base_eda.columns 
@@ -168,7 +161,7 @@ class DeepLeaningTimeSeriesForecastingTask(Task):
             show_progress_text = ""
 
         # -----------------------------------------------------------------------------------------
-        #     Формирование train_iterator и val_iteraror
+        #     Forming train_iterator and val_iteraror
         # -----------------------------------------------------------------------------------------
 
         X_train, X_test, y_train, y_test = dfs
@@ -177,12 +170,8 @@ class DeepLeaningTimeSeriesForecastingTask(Task):
         val_iterator = self.Loader(X_test, y_test, batch_size, shuffle=shuffle)
 
         # -----------------------------------------------------------------------------------------
-        #     Обучение моделей
+        #     Fit the model
         # -----------------------------------------------------------------------------------------
-
-        
-
-
 
         history_train = []
         history_val = []
@@ -232,7 +221,7 @@ class DeepLeaningTimeSeriesForecastingTask(Task):
                                                  encod_decode_model=self.encod_decode_model, device=self.device)
                 print(f'Test Loss: {test_loss:.3f}')
             except:
-                print('Весь X_test не помещается в память, тестим усреднением по батчам')
+                print('The entire X_test does not fit in memory, we test by averaging over batches')
                 test_iterator = self.Loader(X_test, y_test, batch_size, shuffle=False)
                 test_loss = []
                 for epoch in range(n_epochs):
@@ -248,59 +237,39 @@ class DeepLeaningTimeSeriesForecastingTask(Task):
         result = DeepLeaningTimeSeriesForecastingResult()
         return y_pred, result
 
-    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     # накосячил тут с прогнозом на одну точку вперед. Могут быть проблемы если ahead !=1
     def predict(self,
                 dfs,
                 result:DeepLeaningTimeSeriesForecastingResult,
-                points_ahead = None, 
-                n_epochs = None, 
-                len_seq = None, 
                 batch_size = None, 
-                encod_decode_model = None, 
-                random_state = None, 
-                shuffle = None, 
-                show_progress = None, 
-                show_figures = None, 
-                best_model_file = None):
+                device=None,):
+        
+        """Predict by DeepLeaningTimeSeriesForecastingTask
+        
+        Parameters:
+        ----------
+        dfs : tuple
+            Tuple of train and test data.
+        result : DeepLeaningTimeSeriesForecastingResult
+            Result of DeepLeaningTimeSeriesForecastingTask.
+        batch_size : int, default=None
+            Batch size (Number of samples over which the gradient is averaged)
+        device : str, default=None
+            Device to use for prediction.
 
+
+        Returns:
+        ----------
+        y_pred : torch.tensor
+            Tensor of predictions.
+        result : DeepLeaningTimeSeriesForecastingResult
+            Result of DeepLeaningTimeSeriesForecastingTask.
         """
-        Метод predict 
-        
-        Parameters
-        ----------
-        см self.fit() dockstring
-        
-        
-        Return
-        ----------
-        anomaly_timestamps : list of df.index.dtype
-            Возвращает список временных меток аномалий                
-        
-        Attributes
-        ----------
-        
-        """
-        self.points_ahead = points_ahead if points_ahead is not None else self.points_ahead
-        self.n_epochs = n_epochs if n_epochs is not None else self.n_epochs
-        self.len_seq = len_seq if len_seq is not None else self.len_seq
+        print(len(dfs[0]))
         self.batch_size = batch_size if batch_size is not None else self.batch_size
-        self.encod_decode_model = encod_decode_model if encod_decode_model is not None else self.encod_decode_model
-        self.random_state = random_state if random_state is not None else self.random_state
-        self.shuffle = shuffle if shuffle is not None else self.shuffle
-        self.show_progress = show_progress if show_progress is not None else self.show_progress
-        self.show_figures = show_figures if show_figures is not None else self.show_figures
-        self.best_model_file = best_model_file if best_model_file is not None else self.best_model_file
-
-
-
-        len_seq = self.len_seq
-        # -----------------------------------------------------------------------------------------
-        #     Генерация остатков
-        # -----------------------------------------------------------------------------------------
+        self.device  = device if device is not None else self.device
+        
         X_train, X_test, y_train, y_test = dfs # тут нужен только X_train
         all_data_iterator = self.Loader(X_train, X_train, self.batch_size, shuffle=False) 
         
@@ -310,102 +279,3 @@ class DeepLeaningTimeSeriesForecastingTask(Task):
 
         return y_pred, result
 
-    def forecast(self, df, points_ahead=None, show_figures=True):
-        """
-        Прогнозирование временного ряда, в том числе векторного.
-        
-        Parameters
-        ----------
-        df : pd.core.series.Series or pd.core.frame.DataFrame data type
-            Исходные данные. Данные не долнжны содержать np.nan вовсе, иметь постоянную 
-            и одинковую частоту of df.index и при этом не иметь пропусков.         
-                
-        points_ahead : int, default=5
-            Горизонт прогнозирования. 
-               
-        show_figures : bool, default=True
-            Показывать или нет результаты решения задачии anomaly detection 
-            и кривую трейна и валидации по эпохам. 
-        
-        
-        Loader : class, default=iterators.Loader.
-            Тип загрузчика, которую будет использовать как итератор в будущем, 
-            благодаря которому, есть возможность бить на бачи.
-        
-                
-        
-
-        
-        Attributes
-        ----------
-        
-        """
-
-        df = df.copy()
-        points_ahead = points_ahead if points_ahead is not None else self.points_ahead
-        len_seq = self.len_seq
-        batch_size = self.batch_size
-
-        assert (type(df) == pd.core.series.Series) | (type(df) == pd.core.frame.DataFrame)
-        df = df.copy() if type(df) == pd.core.frame.DataFrame else pd.DataFrame(df)
-        df = df[-len_seq:]
-        assert not self._init_preproc
-        preproc_values = self.preproc.transform(df)
-
-        iterator = self.Loader(np.expand_dims(preproc_values, 0), np.expand_dims(preproc_values, 0),
-                          # ничего страшного, 'y' все равно не используется
-                          batch_size, shuffle=False)
-
-        y_pred = self.model.run_epoch(iterator, None, None, phase='forecast', points_ahead=points_ahead, device=self.device)[
-            0]
-        y_pred = self.preproc.inverse_transform(y_pred)
-
-        t_last = np.datetime64(df.index[-1])
-        delta_dime = np.timedelta64(df.index[-1] - df.index[-2])
-        new_index = pd.to_datetime(t_last + np.arange(1, points_ahead + 1) * delta_dime)
-        y_pred = pd.DataFrame(y_pred, index=new_index, columns=df.columns)
-
-        if show_figures:
-            pd.concat([df, y_pred])[-3 * points_ahead:].plot()
-            plt.axvspan(t_last, y_pred.index[-1], alpha=0.2, color='green', label='forecast')
-            plt.xlabel('Datetime')
-            plt.ylabel('Value')
-            plt.legend()
-            plt.show()
-
-        return y_pred
-
-    def save(self, path='./pipeline.pcl'):
-        """
-        Method for saving pipeline.
-        It may be required for example after training.
-        CPU.
-        
-        Parameters
-        ----------
-            path : str
-        Путь до файла, для сохранения пайплайна. 
-        Пайлайн сохраняется в формате pickle
-        """
-
-        self.model.run_epoch(self.Loader(torch.zeros((1, self.len_seq, self.model.in_features), dtype=float),
-                                        torch.zeros((1, self.len_seq, self.model.in_features), dtype=float),
-                                        batch_size=1),
-                             None, None, phase='forecast', points_ahead=1, device=self.device)
-        with open(path, 'wb') as f:
-            pickle.dump(self, f)
-
-    def load(self, path='./pipeline.pcl'):
-        """
-        Method for loading pipeline.
-        It may be required for example after training.
-        
-        Parameters
-        ----------
-            path : str
-        Путь до сохраненного файла пайплайна. 
-        Пайлайн должен быть в формате pickle
-        """
-        with open(path, 'rb') as f:
-            pipeline = pickle.load(f)
-        self.__dict__.update(pipeline.__dict__)
