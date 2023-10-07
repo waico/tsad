@@ -10,8 +10,10 @@ data/
 
 #Files
 typical_script.bat
-__src__kozitsin/
+__src__/
 my.lnk
+generate_doc.lnk
+sent_to_pypi.lnk
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
