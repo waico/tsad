@@ -32,11 +32,26 @@ https://tsad.readthedocs.io/
 
 ---
 
+#### Installation
+
+Install the latest stable version of `tsad` using `pip`:
+
+```bash
+pip install -U tsad
+```
+
+Alternatively you can install the development version:
+
+```bash
+pip install git+https://github.com/waico/tsad.git
+```
+
+
 #### Getting Started
 
-**Installation** through [PyPi](https://pypi.org/project/tsad): 
+<!-- **Installation** through [PyPi](https://pypi.org/project/tsad): 
 
-`pip install -U tsad`
+`pip install -U tsad` -->
 
 ```python
 import pandas as pd

@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
  
 setup(name='tsad',
       version=__version__,
-      python_requires = '==3.10',
+      python_requires = '>=3.10.0',
       url='https://github.com/waico/tsad',
       license='GNU GPLv3',
       packages=find_packages(),
