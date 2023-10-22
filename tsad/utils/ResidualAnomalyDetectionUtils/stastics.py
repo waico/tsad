@@ -53,7 +53,6 @@ class Hotelling():
             plt.axvline(anom,c='pink',label=f'Anomalies, total {len(anomalies)} events')
             plt.xlabel('Datetime')
             plt.ylabel('Hotelling statistic')
-            plt.title('Аномалии в нормальном режиме')
             plt.xticks(rotation=30)
             plt.legend()
             plt.show()            

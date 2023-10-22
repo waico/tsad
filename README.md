@@ -39,37 +39,28 @@ https://tsad.readthedocs.io/
 `pip install -U tsad`
 
 ```python
-import pandas as pd
+# Import 
+import sys
+sys.path.insert(1, '../')
 from tsad.base.pipeline import Pipeline
-from tsad.tasks.eda import HighLevelDatasetAnalysisTask, TimeDiscretizationTask
-from tsad.tasks.eda import FindNaNTask, EquipmentDowntimeTask
-from tsad.tasks.preprocess import ScalingTask, ValueRangeProcessingTask, ResampleProcessingTask 
-from tsad.tasks.preprocess import FeatureProcessingTask, SplitByNaNTask, TrainTestSplitTask
-from tsad.tasks.anomalyDetection import ResidualAnomalyDetectionTask
-from tsad.base.datasets import load_tsad_example
+from tsad.base.datasets import load_skab
+from tsad.pipelines import ResidualAnomalyDetectionTaskSet
 
+# loading data
+dataset = load_skab()
+targets = dataset.target_names 
+data = dataset.frame.drop(columns=targets).droplevel(level=0)
 
-data = load_tsad_example().frame
-
-pipeline = Pipeline([
-    HighLevelDatasetAnalysisTask(),
-    TimeDiscretizationTask(),
-    FindNaNTask(),
-    EquipmentDowntimeTask(),
-    ResampleProcessingTask(),
-    FeatureProcessingTask(),
-    SplitByNaNTask(),
-    PrepareSeqSamplesTask(len_seq=10),
-    ResidualAnomalyDetectionTask(),
-], show=False)
-df = pipeline.fit(data)
+# Fit and predict
+pipeline = Pipeline(ResidualAnomalyDetectionTaskSet)
+pred = pipeline.fit_predict(data,n_epochs=5)
 ```
 
 After that, you can see:
 
 ![image-1](./docs/waico_pics/readme/1.png)
 
-
+![image-1](./docs/waico_pics/readme/2.png)
 
 More details you can find [here](https://github.com/waico/tsad/tree/main/Tutorials)
 
