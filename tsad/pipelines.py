@@ -23,3 +23,16 @@ multivatiateTimeSeriesDeepLearningForecastingTaskSet = [
     PrepareSeqSamplesTask(len_seq=10),
     DeepLeaningTimeSeriesForecastingTask(),
 ]
+
+
+ResidualAnomalyDetectionTaskSet = [
+    HighLevelDatasetAnalysisTask(),
+    TimeDiscretizationTask(freq_tobe_approach='most_frequent'),
+    FindNaNTask(),
+    EquipmentDowntimeTask(),
+    ResampleProcessingTask(),
+    StandardScalerTask(),
+    SplitByNaNTask(),
+    PrepareSeqSamplesTask(len_seq=10),
+    ResidualAnomalyDetectionTask(),
+]

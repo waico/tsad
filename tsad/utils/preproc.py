@@ -2,9 +2,25 @@ import pandas as pd
 
 def value_counts_interval(array,itervals):
     """
-    input : np.array, list of values
-    retrun : pd.series
+    Returns a pandas Series containing the count of values in the 
+    input array that fall within each interval.
+
+    Parameters:
+    ----------
+    array : numpy.ndarray | list of values
+        Input array of values.
+    intervals (list): 
+        List of interval boundaries. The first interval is defined 
+        as values less than the first boundary, and the last interval 
+        is defined as values greater than or equal to the last boundary.
+
+    Returns:
+    -------
+    ts : pandas.Series
+        A Series containing the count of values in the input array 
+        that fall within each interval.
     """
+
     names = [f"до {itervals[0]}"]
     quantity = [len(array[array < itervals[0]])]
     for i in range(len(itervals)-1):
@@ -17,44 +33,22 @@ def value_counts_interval(array,itervals):
 
 
 
-# def (df,num_points):
-#     """ 
-#     Посмотреть среднее расстояние между всеми парами точек (сэмлов) 
-#     в первых num_points точках
-#     в последних num_points точках
-#     и одновременно в первых и последжних num_points точках.
-#     """
-#     import itertools
-#     import scipy 
-#     array1 = df.iloc[:num_points].values
-#     array2 = df.iloc[num_points:int(2*num_points)].values
-
-#     indexes = list(range(len(array1)))
-#     pairs = list(set(itertools.permutations(indexes, 2)))
-#     list1 = array1[np.array(pairs)[:,0]]
-#     list2 = array1[np.array(pairs)[:,1]]
-#     print('Claster 1', scipy.spatial.distance.cdist(list1,list2).mean())
-
-
-#     indexes = list(range(len(array2)))
-#     pairs = list(set(itertools.permutations(indexes, 2)))
-#     list1 = array2[np.array(pairs)[:,0]]
-#     list2 = array2[np.array(pairs)[:,1]]
-#     print('Claster 2', scipy.spatial.distance.cdist(list1,list2).mean())
-
-#     common_array = np.concatenate([array1,array2])
-#     indexes = list(range(len(common_array)))
-#     pairs = list(set(itertools.permutations(indexes, 2)))
-#     list1 = common_array[np.array(pairs)[:,0]]
-#     list2 = common_array[np.array(pairs)[:,1]]
-#     print('Claster common', scipy.spatial.distance.cdist(list1,list2).mean())
-
-
         
 def split_by_repeated(series,df=None):
     """
-    retrun dict with lists of ts whwre keys is unique values
-    ts[ts.diff()!=0]  побыстрее будет
+    Splits a pandas series into sub-series based on repeated values.
+
+    Parameters:
+    ----------
+    series : pandas.Series
+        The series to be split.
+    df (, optional): pandas.DataFrame. Defaults is None.
+        The dataframe to be used to retrieve the original rows. 
+
+    Returns:
+    -------
+
+    dict: A dictionary where the keys are the unique values in the series and the values are lists of sub-series.
     """
     series = series.copy().dropna()
     if len(series.unique())==1:
@@ -101,43 +95,44 @@ def df2dfs(df,  # Авторы не рекомендуют так делать,
             plot = False,
             col = None):
     """
-    Функция которая преообратает raw df до требований к входу на DL_AD    
-    то есть разбивает df на лист of dfs by gaps 
+    Function that splits df into a list of dfs by gaps. That is it makes raw df 
+    satisfying to the input requirements with the lack of gaps and different 
+    frequencies of discretization.
+    Does not resample as it is a heavy task, but if the frequency is less than 
+    koef_freq_of_gap of thereshold_gap, it is perceived as a skip. 
+    The main idea: if the signal comes more often, then it does not slip too much, 
+    and therefore does not lead to anomalies, but if it is rare, it leads to anomalies, 
+    so it is perceived as a skip. 
     
-    Не ресемлирует так как это тяжелая задача, но если частота реже чем 
-    koef_freq_of_gap of thereshold_gap то это воспринимается как пропуск. 
-    Основной посыл: если сигнал приходит чаще, то он не уползает сильно, 
-    а значит не приводит к аномалии, а если редко то приводит, поэтому воспри-
-    нимается как пропуск. 
-    
-    plot - очень долго
+    plot - very long
     
     Parameters
     ----------   
     df : pd.DataFrame
-        Исходный временной ряд полностью за всю историю   
+        The original time series for the entire history.   
         
     resample_freq: pd.TimeDelta (optional, default=None)
-        Частота дискретизации временного ряда. 
-        Если default то самая частая частота дискретизации. При этом, 
-        если нет выраженной частоты вылетит ошибка. 
+        The frequency of time series discretization. 
+        If default, then the most frequent frequency of discretization. 
+        If there is no pronounced frequency, an error will occur. 
     thereshold_gap : pd.TimeDelta (optional, default=None)
-        Порог периода, превышая который функция будет воспринимать
-        данный период как пропуск. 
+        The threshold period, exceeding which the function will perceive 
+        this period as a skip. 
     koef_freq_of_gap : float or int (optional if thereshold_gap==None,
         default=1.2)  
         thereshold_gap = koef_freq_of_gap * resample_freq
-    plot : bool (optional, default=True)
-        If true, then отрисуется нарезка
-        If false, then не отрисуется нарезка   
+    plot : bool (optional, default=False)
+        Plot the cut, but it is need very long time. 
+        If true, then the cut will be drawn.
+        If false, then the cut will not be drawn.   
     col : int of str (optional, default=True)
-        Название или номер колонки для отрисовки
-        Если None первая колонка
+        The name or number of the column to draw.
+        If None, the first column is used.
     Returns
     -------
     dfs : list of pd.DataFrame
-        Список времменных рядов без пропусков с относительно стабильной 
-        частотой дискретизации. 
+        A list of time series without gaps with a relatively stable 
+        frequency of discretization. 
     """
 
     df = df.dropna(how='all').dropna(axis=1,how='all')
@@ -148,7 +143,7 @@ def df2dfs(df,  # Авторы не рекомендуют так делать,
             resample_freq  = dts_dist.index[0]
         else: 
             print(dts_dist)
-            raise Exception("Необходимо самостоятельно обработать функцию так как нет преобладающей частоты дискретизации")
+            raise Exception("It is necessary to process the function yourself since there is no prevailing sampling frequency")
     # print(resample_freq,koef_freq_of_gap )
     # print(koef_freq_of_gap )
     thereshold_gap = pd.Timedelta(resample_freq)*koef_freq_of_gap if thereshold_gap is None else thereshold_gap
