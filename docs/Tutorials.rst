@@ -8,6 +8,15 @@ Test New Functionalities
    waico_jups/Test-new-functionalities.ipynb 
  
  
+Data Problems 
+============ 
+ 
+.. toctree:: 
+   :maxdepth: 5 
+ 
+   waico_jups/data-problems.ipynb 
+ 
+ 
 Datasets Importing 
 ============ 
  

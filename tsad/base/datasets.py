@@ -9,6 +9,7 @@ class Dataset():
     description: str
     task: str
     frame: pd.DataFrame | list[pd.DataFrame] | list[list[pd.DataFrame]]
+    target: pd.DataFrame | list[pd.DataFrame] | list[list[pd.DataFrame]]
     feature_names: list
     target_names: list
 
@@ -26,7 +27,8 @@ def list_of_datasets():
                         'NASA Turbofan Jet Engine Data Set':'load_turbofan_jet_engine()',
                         'TEP (Tennessee Eastman process)':'load_tep()',
                         'Pressurized Water Reactor (PWR) Dataset for Fault Detection':'load_pwr_anomalies()',
-                        'NPP Power Transformer RUL':'load_transformer_rul()'}
+                        'NPP Power Transformer RUL':'load_transformer_rul()',
+                        'Exhauster Fault Detection dataset':'load_exhauster_faults()'}
     return list_of_datasets
 
 def load_combines() -> Dataset:
@@ -127,7 +129,8 @@ def load_skab() -> Dataset:
                      'Temperature', 'Thermocouple', 'Voltage', 'Volume Flow RateRMS']
     target_names = ['anomaly', 'changepoint']
     
-    return Dataset(name=name, description=description, task=task, frame=frame, feature_names=feature_names, target_names=target_names)
+    return Dataset(name=name, description=description, task=task, 
+                   frame=frame, feature_names=feature_names, target_names=target_names)
 
 def load_turbofan_jet_engine() -> Dataset:
     '''
@@ -177,7 +180,8 @@ def load_turbofan_jet_engine() -> Dataset:
     - In test dataset there are 100 engines as well. But this time, failure cycle was not provided.'''
     task = 'Remaining useful life prediction'
     
-    return Dataset(name=name, description=description, task=task, frame=[frame_train, frame_test, y_test], feature_names=feature_names, target_names=target_names)
+    return Dataset(name=name, description=description, task=task, frame=[frame_train, frame_test, y_test], 
+                   feature_names=feature_names, target_names=target_names)
 
 def load_tep() -> Dataset:
     '''
@@ -298,3 +302,64 @@ def load_transformer_rul() -> Dataset:
     target_names = ['predicted']
     
     return Dataset(name=name, description=description, task=task, frame=[X_train, X_test, y_train, y_test], feature_names=feature_names, target_names=target_names)
+
+
+def load_exhauster_faults(equipment_number=1) -> Dataset:
+    '''
+    Loads and slightly preprocesses raw data of Exhauster data. 
+    Telemetry Time Series Dataset for Fault Detection of Exhauster sintering machines.
+
+    Parameters:
+    -----------
+    equipment_number : int
+        Number of equipment (dataset) to load data for. 
+        Possible values are {1, 2, 3, 4, 5, 6}
+    
+    Returns
+    -------
+    Dataset
+        A dataset object with the following structure:
+            name : str
+            description : str
+            task : str
+            frame: pd.DataFrame
+            target: pd.DataFrame
+            feature_names : list
+            target_names : list
+    
+    References
+    ----------
+
+    '''
+    get_link = 'https://getfile.dokpub.com/yandex/get/'
+    links = {
+        1 : 'https://disk.yandex.ru/d/NUPXNgancdY-kw',
+        2 : 'https://disk.yandex.ru/d/16moKa1JyR5UOg',
+        3 : 'https://disk.yandex.ru/d/_pIk_m2DVdqYXw',
+        4 : 'https://disk.yandex.ru/d/KKnuyNbDMf2kyA',
+        5 : 'https://disk.yandex.ru/d/LWsbxXmJFC0hbg',
+        6 : 'https://disk.yandex.ru/d/IOerYX7eQuyB8Q',
+        }
+    
+    url = get_link + links[equipment_number]
+    frame = pd.read_parquet(url)
+    target_names = ['anomaly', 'anomaly_category']
+    target = frame[target_names]
+    frame = frame.drop(columns=target_names)
+
+    name = 'Exhauster Fault Detection dataset'
+    description = 'Telemetry Time Series Dataset for Fault Detection of Exhauster sintering machines.'
+    task = 'Process monitoring (changepoint detection)'
+    feature_names = ['Rotor Current 1', 'Rotor Current 2', 'Stator Current',
+           'Oil Pressure in System', 'Bearing Temperature on Support 1',
+           'Bearing Temperature on Support 2', 'Bearing Temperature on Support 3',
+           'Bearing Temperature on Support 4', 'Oil Temperature in System',
+           'Oil Temperature in Oil Block', 'Vibration on Support 1',
+           'Vibration on Support 2', 'Vibration on Support 3',
+           'Vibration on Support 3. Longitudinal.', 'Vibration on Support 4',
+           'Vibration on Support 4. Longitudinal.', 'anomaly', 'anomaly_category']
+    
+    
+    return Dataset(name=name, description=description, task=task, 
+                   frame=frame, feature_names=feature_names, 
+                   target=target, target_names=target_names)
