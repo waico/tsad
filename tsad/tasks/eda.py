@@ -184,7 +184,7 @@ class TimeDiscretizationResult(TaskResult):
         The proportion of unique periods among the total number of samples.
 
     """
-
+    dataset_analysis_result: HighLevelDatasetAnalysisResult
     index_freq_climed = None
     most_frequent_diff_value = None
     most_frequent_diff_amount_cases: int
