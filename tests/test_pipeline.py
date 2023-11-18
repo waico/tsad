@@ -23,7 +23,7 @@ class FirstTestTaskResult(TaskResult):
 
 class FistTestTask(Task):
 
-    def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
+    def fit_predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
         result = FirstTestTaskResult()
         result.length = len(df)
         return df, result
@@ -37,7 +37,7 @@ class TestParamsTask(Task):
 
     __test__ = False
 
-    def fit(self, df: pd.DataFrame, multiply: int) -> tuple[pd.DataFrame, TaskResult]:
+    def fit_predict(self, df: pd.DataFrame, multiply: int) -> tuple[pd.DataFrame, TaskResult]:
         return df * multiply, None
 
     def predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
@@ -48,7 +48,7 @@ class UnsupportedResultsTask(Task):
 
     __test__ = False
 
-    def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
+    def fit_predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
         return df
 
     def predict(self, df: pd.DataFrame | list[pd.DataFrame]) -> tuple[pd.DataFrame, TaskResult]:
@@ -63,7 +63,7 @@ def test_pipeline():
 
     pipeline = Pipeline(tasks)
 
-    pipeline.fit(df)
+    pipeline.fit_predict(df)
     predict_df = pipeline.predict(df)
 
     assert len(predict_df) == 3
@@ -75,9 +75,9 @@ def test_params():
     pipeline = Pipeline([TestParamsTask()])
 
     with pytest.raises(ArgumentNotFoundException):
-        pipeline.fit(df)
+        pipeline.fit_predict(df)
 
-    pipeline.fit(df, multiply=7)
+    pipeline.fit_predict(df, multiply=7)
 
 
 def test_data_types():
@@ -86,10 +86,10 @@ def test_data_types():
 
     with pytest.raises(UnsupportedTaskResultException):
         df = pd.Series([1, 2, 3])
-        pipeline.fit(df)
+        pipeline.fit_predict(df)
 
     df = pd.DataFrame([1, 2, 3])
-    pipeline.fit(df)
+    pipeline.fit_predict(df)
     pipeline.predict(df)
 
     assert len(pipeline.results) == 0
