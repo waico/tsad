@@ -142,7 +142,7 @@ Ensure that your system meets the following hardware specifications for optimal 
 - **Minimum Processor Frequency (GHz):** 2.0
 - **Minimum RAM Size (GB):** 4.0
 - **Minimum Video Memory Size (for an external video adapter) (MB):** 512
-- **RAID Configuration Type and Minimum Array Size (GB):** RAID 5; 500
+- **RAID Configuration Type and Minimum HDD Space (GB):** RAID 5; 500
 
 These requirements are intended to provide a guideline for the minimum hardware specifications that should be available on the system where TSAD is deployed. Adjustments may be needed based on the size and complexity of the time series data being processed.
 
