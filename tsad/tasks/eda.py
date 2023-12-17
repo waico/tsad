@@ -199,6 +199,7 @@ class TimeDiscretizationResult(TaskResult):
     def show(self) -> None:
         """Prints the results of the TimeDiscretizationTask."""
         from IPython.display import display
+        print(dir(self))
 
         display(f"During the period from {self.dataset_analysis_result.start_time} to {self.dataset_analysis_result.end_time}")
         display(f"With a total duration of {self.dataset_analysis_result.duration}")
