@@ -54,7 +54,7 @@ def load_combines() -> Dataset:
     task = ''
     target_names=None
     
-    return Dataset(name=name, description=description, task=task, frame=frame, feature_names=list(frame.columns), target_names=target_names)
+    return Dataset(name=name, description=description, task=task, frame=frame, target=None, feature_names=list(frame.columns), target_names=target_names)
 
 def load_skab_teaser() -> Dataset:
     '''
@@ -94,7 +94,7 @@ def load_skab_teaser() -> Dataset:
     task = 'Process monitoring (changepoint detection)'
     target_names=None
     
-    return Dataset(name=name, description=description, task=task, frame=[frame, y_test], feature_names=list(frame.columns), target_names=target_names)
+    return Dataset(name=name, description=description, task=task, frame=[frame, y_test], target=None, feature_names=list(frame.columns), target_names=target_names)
 
 def load_skab() -> Dataset:
     '''
@@ -130,7 +130,7 @@ def load_skab() -> Dataset:
     target_names = ['anomaly', 'changepoint']
     
     return Dataset(name=name, description=description, task=task, 
-                   frame=frame, feature_names=feature_names, target_names=target_names)
+                   frame=frame, target=None, feature_names=feature_names, target_names=target_names)
 
 def load_turbofan_jet_engine() -> Dataset:
     '''
@@ -180,7 +180,7 @@ def load_turbofan_jet_engine() -> Dataset:
     - In test dataset there are 100 engines as well. But this time, failure cycle was not provided.'''
     task = 'Remaining useful life prediction'
     
-    return Dataset(name=name, description=description, task=task, frame=[frame_train, frame_test, y_test], 
+    return Dataset(name=name, description=description, task=task, frame=[frame_train, frame_test, y_test], target=None,
                    feature_names=feature_names, target_names=target_names)
 
 def load_tep() -> Dataset:
@@ -214,7 +214,7 @@ def load_tep() -> Dataset:
     task = 'Outlier detection'
     target_names=None
     
-    return Dataset(name=name, description=description, task=task, frame=frame, feature_names=list(frame.columns), target_names=target_names)
+    return Dataset(name=name, description=description, task=task, frame=frame, target=None, feature_names=list(frame.columns), target_names=target_names)
 
 def load_pwr_anomalies() -> Dataset:
     '''
@@ -246,7 +246,7 @@ def load_pwr_anomalies() -> Dataset:
     task = 'Anomaly detection'
     target_names=None
     
-    return Dataset(name=name, description=description, task=task, frame=frame, feature_names=list(frame.columns), target_names=target_names)
+    return Dataset(name=name, description=description, task=task, frame=frame, target=None, feature_names=list(frame.columns), target_names=target_names)
 
 def load_transformer_rul() -> Dataset:
     '''
@@ -301,7 +301,7 @@ def load_transformer_rul() -> Dataset:
     feature_names = ['H2', 'CO', 'C2H4', 'C2H2']
     target_names = ['predicted']
     
-    return Dataset(name=name, description=description, task=task, frame=[X_train, X_test, y_train, y_test], feature_names=feature_names, target_names=target_names)
+    return Dataset(name=name, description=description, task=task, frame=[X_train, X_test, y_train, y_test], target=None, feature_names=feature_names, target_names=target_names)
 
 
 def load_exhauster_faults(equipment_number=1) -> Dataset:

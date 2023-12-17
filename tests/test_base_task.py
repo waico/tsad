@@ -12,7 +12,7 @@ class DummyTaskResult(TaskResult):
 
 
 class DummyTask(Task):
-    def fit(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
+    def fit_predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
         return df, DummyTaskResult()
 
     def predict(self, df: pd.DataFrame) -> tuple[pd.DataFrame, TaskResult]:
@@ -36,10 +36,10 @@ def test_task_init():
     assert task.name is None
 
 
-def test_task_fit():
+def test_task_fit_predict():
     task = DummyTask()
     df = pd.DataFrame()
-    result_df, result = task.fit(df)
+    result_df, result = task.fit_predict(df)
     assert result_df.equals(df)
     assert isinstance(result, DummyTaskResult)
 
