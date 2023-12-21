@@ -1,24 +1,24 @@
 
 ![Maual python](https://img.shields.io/badge/python-3.10-blue)  ![Downloads](https://static.pepy.tech/badge/tsad)  ![Downloads](https://static.pepy.tech/badge/tsad/month)  ![pypi version](https://img.shields.io/pypi/v/tsad)  [![License](https://img.shields.io/badge/license-%20%20GNU%20GPLv3%20-green?style=plastic)](https://www.gnu.org/licenses/gpl-3.0.html)  <!-- ![python](https://img.shields.io/pypi/pyversions/tsad.svg) -->
 
-[![ru](https://img.shields.io/badge/lang-ru-red.svg)](README.ru.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](README.md)
 
 # Time Series Analysis for Simulation of Technological Processes - TSAD
 
-## Table of Contents
+## Содержание
 
-  - [Table of Contents](#table-of-contents)
-  - [Introduction](#introduction)<!-- - [Features](#features) -->
-  - [Documentation](#documentation)
-  - [Getting Started](#getting-started)
-    - [System Requirements](#system-requirements)
-    - [Installation](#installation)
-    - [Example API Usage](#example-api-usage)
-  - [Comparison with Related Libraries](#comparison-with-related-libraries)
-  - [References](#references)
-  - [Citing TSAD](#citing-tsad)
+  - [Содержание](#содержание)
+  - [Вступление](#вступление)
+  - [Документация](#документация)
+  - [Приступая к работе](#приступая-к-работе)
+    - [Системные требования](#системные-требования)
+    - [Установка](#установка)
+    - [Пример использования API](#пример-использования-api)
+  - [Сравнение со похожими библиотеками](#сравнение-со-похожими-библиотеками)
+  - [Рекомендации](#рекомендации)
+  - [Цитирование TSAD](#цитирование-tsad)
 
-## Introduction
+## Вступление
 
 TSAD is a powerful Python module designed to simplify the work of researchers utilizing machine learning techniques, specifically tailored for addressing key challenges in industrial domains.
 
@@ -112,7 +112,7 @@ Explore the powerful features offered by TSAD for comprehensive testing, evaluat
 
 
 
-## Documentation
+## Документация
 
 The [TSAD Documentation](https://tsad.readthedocs.io/) covers a wide range of topics, including:
 - **Getting Started:**
@@ -131,11 +131,11 @@ The [TSAD Documentation](https://tsad.readthedocs.io/) covers a wide range of to
   - Comprehensive documentation of the TSAD API.
   - Detailed descriptions of classes, methods, and parameters for advanced users.
 
-## Getting Started
+## Приступая к работе
 
 This section will guide you through the process of getting started with the TSAD library.
 
-### System Requirements
+### Системные требования
 
 Ensure that your system meets the following hardware specifications for optimal performance of TSAD:
 
@@ -150,7 +150,7 @@ These requirements are intended to provide a guideline for the minimum hardware 
 Keep in mind that these specifications are recommended for optimal performance, and deviations may impact the efficiency of the library.
 
 
-### Installation
+### Установка
 
 Install the latest stable version of `tsad` using `pip` for `Python 3.10`:
 
@@ -164,7 +164,7 @@ Alternatively, you can install the latest development version directly from the 
 pip install git+https://github.com/waico/tsad.git
 ```
 
-### Example API Usage
+### Пример использования API
 
 To quickly see TSAD in action, consider using a simple example in your Python script. Below is a basic example:
 <!-- #### Getting Started -->
@@ -220,7 +220,7 @@ We welcome active participation from the community and value your feedback on th
 Your input and collaboration are vital in shaping the future development of TSAD. We encourage you to share your thoughts, suggestions, and contributions to enhance the functionality and versatility of the library. Together, we can continue to advance time series analysis within the TSAD community.
 
 
-## Comparison with Related Libraries
+## Сравнение со похожими библиотеками
 
 Explore how TSAD compares with other libraries in various aspects:
 
@@ -249,7 +249,7 @@ Explore how TSAD compares with other libraries in various aspects:
     ├───tsad       # files of library
 ``` -->
 
-## References
+## Рекомендации
 
 Explore related libraries and resources:
 
@@ -275,7 +275,7 @@ Explore related libraries and resources:
 
 https://pypi.org/project/catalyst/  -->
 
-## Citing TSAD
+## Цитирование TSAD
 If you're using TSAD in your research or applications, please cite using this BibTeX:
 ```
 @misc{TSAD2013,
