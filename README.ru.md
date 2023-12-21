@@ -8,7 +8,7 @@
 ## Содержание
 
   - [Содержание](#содержание)
-  - [Вступление](#вступление)
+  - [Введение](#введение)
   - [Документация](#документация)
   - [Приступая к работе](#приступая-к-работе)
     - [Системные требования](#системные-требования)
@@ -18,147 +18,140 @@
   - [Рекомендации](#рекомендации)
   - [Цитирование TSAD](#цитирование-tsad)
 
-## Вступление
+## Введение
 
-TSAD is a powerful Python module designed to simplify the work of researchers utilizing machine learning techniques, specifically tailored for addressing key challenges in industrial domains.
+TSAD - это мощный модуль на Python, предназначенный для упрощения работы исследователей, использующих методы машинного обучения, специально разработанные для решения ключевых задач в промышленных областях.
 
-The primary objective of TSAD is to empower researchers with effective tools for solving complex problems related to:
+Основная цель TSAD - предоставить исследователям эффективные инструменты для решения сложных проблем, связанных с:
 
-- **Fault Detection in Industrial Equipment:**
-  - Identify and address faults in industrial machinery with precision, ensuring optimal equipment performance and reliability.
+- **Обнаружение неисправностей в промышленном оборудовании:**
+  - Точно выявляйте и устраняйте неисправности в промышленном оборудовании, обеспечивая оптимальную производительность и надежность оборудования..
 
-- **Improvement of Technological Processes:**
-  - Boost overall performance to enhance operational efficiency.
-  - Implement cost-effective measures to reduce operational expenses.
-  - Strengthen quality control and management practices for superior outcomes.
+- **Совершенствование технологических процессов:**
+  - Повысить общую производительность для повышения операционной эффективности.
+  - Внедрить экономически эффективные меры по сокращению операционных расходов.
+  - Усилить контроль качества и методы управления для достижения превосходных результатов.
 
+### Решение проблемы обнаружения неисправностей
 
+В TSAD проблема обнаружения неисправностей сводится к проблеме обнаружения аномалий временных рядов с использованием хорошо известной методики:
 
-
-### Solving Fault Detection problem
-
-In TSAD, the problem of fault detection is reduced to the problem of detecting time series anomalies using a well-known technique:
-
-- Forecast a multivariate Time Series (TS) one point ahead (Also works for univariate TS)
-- Compute residuals between forecast and true values
-- Apply analysis of residuals and thus find anomalies
+- Прогнозирование многомерного временного ряда (TS) на один пункт вперед (также работает для одномерных TS)
+- Вычисление остатков между прогнозируемыми и истинными значениями
+- Применяйте анализ остатков и, таким образом, находите аномалии
 
 ![image-2](./docs/waico_pics/readme/Useful.jpg)
 
-### Applications
+### Применение
 
 1. **Predictive and Prescriptive Analysis:**
-   - Predict the development of situations based on data analysis.
-   - Automate decision-making for equipment diagnostics and repairs.
+   - Прогнозировать развитие ситуаций на основе анализа данных.
+   - Автоматизировать принятие решений по диагностике и ремонту оборудования.
 
-2. **Predictive Equipment Maintenance:**
-   - Utilize mathematical modeling methods, including machine learning.
-   - Reduce equipment breakdown frequency and associated damages.
-   - Decrease costs for diagnostics and maintenance of machinery and industrial equipment.
-   - Create artificial intelligence systems for predictive maintenance.
+2. **Прогнозируемое техническое обслуживание оборудования:**
+   - Использование методов математического моделирования, включая машинное обучение.
+   - Снижение частоты поломок оборудования и связанных с ними повреждений.
+   - Снижение затрат на диагностику и техническое обслуживание машин и промышленного оборудования.
+   - Создание систем искусственного интеллекта для прогнозируемого технического обслуживания.
 
-3. **Ultra-Short-Term Forecasting:**
-   - Analyze real-time data streams.
-   - Forecast abnormal situations.
-   - Implement artificial intelligence systems for real-time monitoring.
+3. **Ультракороткосрочное прогнозирование:**
+   - Анализ потоков данных в режиме реального времени.
+   - Прогнозирование нештатных ситуаций.
+   - Внедрение систем искусственного интеллекта для мониторинга в режиме реального времени.
 
-4. **Detection of Anomalies in Production Processes:**
-   - Identify anomalies in manufacturing processes.
-   - Investigate the root causes of anomalies.
-   - Develop artificial intelligence systems based on mathematical modeling algorithms, machine learning, and historical data.
+4. **Обнаружение аномалий в производственных процессах:**
+   - Выявление аномалий в производственных процессах.
+   - Исследование первопричин аномалий.
+   - Разработка систем искусственного интеллекта на основе алгоритмов математического моделирования, машинного обучения и исторических данных.
 
-5. **Wide-Scope Time Series Forecasting:**
-   - Forecast time series broadly, beyond technical system diagnostics.
+5. **Широкомасштабное прогнозирование временных рядов:**
+   - Прогнозирование временных рядов в широком смысле, выходящее за рамки диагностики технических систем.
 
-6. **Anomaly Detection in a Broad Context:**
-   - Detect anomalies in various contexts, not limited to technical system diagnostics.
+6. **Обнаружение аномалий в широком контексте:**
+   - Обнаружение аномалий в различных контекстах, не ограничиваясь диагностикой технической системы.
 
-7. **Sensor Failure Detection:**
-   - Detect malfunctioning sensors.
+7. **Обнаружение неисправности датчика:**
+   - Обнаружение неисправных датчиков.
 
-8. **Creation of Virtual Sensors:**
-   - Develop virtual sensors.
+8. **Создание виртуальных датчиков:**
+   - Разработка виртуальных датчиков.
 
-9. **Quality Production Forecasting:**
-   - Forecast the quality of production.
+9. **Прогнозирование качества продукции:**
+   - Прогноз качества продукции.
 
-These applied use cases showcase the versatility of TSAD in addressing a wide range of scenarios within industrial data analysis. Whether it's predicting equipment failures, monitoring real-time data streams, or forecasting production quality, TSAD provides powerful solutions for enhancing decision-making and optimizing operational processes.
+Эти примеры прикладного использования демонстрируют универсальность TSAD в решении широкого спектра сценариев анализа промышленных данных. Будь то прогнозирование отказов оборудования, мониторинг потоков данных в режиме реального времени или прогнозирование качества продукции, TSAD предоставляет мощные решения для повышения эффективности принятия решений и оптимизации операционных процессов.
 
+### Ключевые функции
 
-### Key Features
+Ознакомьтесь с мощными возможностями, предлагаемыми TSAD для всестороннего тестирования, оценки и точного анализа данных:
 
-Explore the powerful features offered by TSAD for comprehensive testing, evaluation, and data analysis refinement:
+#### Возможности тестирования:
 
-#### Testing Capabilities:
+- Оцените TSAD с помощью вашего собственного набора данных.
+- Протестируйте пользовательские алгоритмы обнаружения аномалий и прогнозирования.
 
-- Evaluate TSAD with your own dataset.
-- Test custom anomaly detection and forecasting algorithms.
+#### Разведочный анализ данных:
 
-#### Exploratory Data Analysis:
+- Анализ распределения, отсутствующих данных и закономерностей.
 
-- Analyze distributions, missing data, and patterns.
+#### Эффективное решение проблем с данными:
 
-#### Effective Data Issue Resolution:
+- Выявляйте и решайте проблемы с данными с помощью оценочных метрик.
 
-- Identify and resolve data problems with measurable metrics.
+#### Применение машинного обучения:
 
-#### Application of Machine Learning:
+- Используйте машинное обучение для задач обнаружения аномалий и прогнозирования.
 
-- Utilize machine learning for anomaly detection and forecasting tasks.
+#### Оценка производительности:
 
-#### Performance Evaluation:
-
-- Assess the quality of anomaly detection algorithms.
-
-
+- Оценка качества алгоритмов обнаружения аномалий.
 
 ## Документация
 
-The [TSAD Documentation](https://tsad.readthedocs.io/) covers a wide range of topics, including:
-- **Getting Started:**
-  - A step-by-step guide on installing TSAD and setting up your environment.
-  - Quick start examples to get you up and running with minimal effort.
+[Документация](https://tsad.readthedocs.io/) охватывает широкий круг тем, включая::
+- **Начало работы:**
+  - Пошаговое руководство по установке TSAD и настройке вашей среды.
+  - Примеры быстрого запуска, которые помогут вам начать работу с минимальными усилиями.
 
-- **Library Overview:**
-  - In-depth explanations of the core components and concepts within the TSAD library.
-  - Understanding the structure and design philosophy for effective utilization.
+- **Обзор библиотеки:**
+  - Подробные объяснения основных компонентов и концепций библиотеки TSAD.
+  - Понимание структуры и дизайна архитектуры для эффективного использования.
 
-- **Usage Guides and Tutorials:**
-  - Detailed guides on utilizing specific functionalities of the library.
-  - Practical examples and use cases to demonstrate real-world applications.
+- **Руководства по использованию и туториалы:**
+  - Подробные руководства по использованию конкретных функций библиотеки.
+  - Практические примеры и варианты использования для демонстрации реальных приложений.
 
-- **API Reference:**
-  - Comprehensive documentation of the TSAD API.
-  - Detailed descriptions of classes, methods, and parameters for advanced users.
+- **Ссылка на API:**
+  - Полная документация по TSAD API.
+  - Подробные описания классов, методов и параметров для продвинутых пользователей.
 
 ## Приступая к работе
 
-This section will guide you through the process of getting started with the TSAD library.
+В этом разделе вы ознакомитесь с процессом начала работы с библиотекой TSAD.
 
 ### Системные требования
 
-Ensure that your system meets the following hardware specifications for optimal performance of TSAD:
+Убедитесь, что ваша система соответствует следующим спецификациям оборудования для обеспечения оптимальной производительности TSAD:
 
-- **Minimum Number of Processors (Intel):** 2
-- **Minimum Processor Frequency (GHz):** 2.0
-- **Minimum RAM Size (GB):** 4.0
-- **Minimum Video Memory Size (for an external video adapter) (MB):** 512
-- **RAID Configuration Type and Minimum HDD Space (GB):** RAID 5; 500
+- **Минимальное количество процессоров (Intel):** 2
+- **Минимальная частота процессора (ГГц):** 2,0
+- **Минимальный объем оперативной памяти (ГБ):** 4,0
+- **Минимальный объем видеопамяти (для внешнего видеоадаптера) (МБ):** 512
+- **Тип конфигурации RAID и минимальное пространство на жестком диске (ГБ):** RAID 5; 500
 
-These requirements are intended to provide a guideline for the minimum hardware specifications that should be available on the system where TSAD is deployed. Adjustments may be needed based on the size and complexity of the time series data being processed.
+Эти требования призваны обеспечить руководство по минимальным техническим характеристикам оборудования, которые должны быть доступны в системе, в которой развернут TSAD. Могут потребоваться корректировки в зависимости от размера и сложности обрабатываемых данных временных рядов.
 
-Keep in mind that these specifications are recommended for optimal performance, and deviations may impact the efficiency of the library.
-
+Имейте в виду, что эти спецификации рекомендуются для обеспечения оптимальной производительности, и отклонения могут повлиять на эффективность работы библиотеки.
 
 ### Установка
 
-Install the latest stable version of `tsad` using `pip` for `Python 3.10`:
+Установите последнюю стабильную версию `tsad`, используя `pip` для `Python 3.10`:
 
 ```bash
 pip install -U tsad
 ```
 
-Alternatively, you can install the latest development version directly from the GitHub repository:
+В качестве альтернативы вы можете установить последнюю версию для разработки непосредственно из репозитория GitHub:
 
 ```bash
 pip install git+https://github.com/waico/tsad.git
@@ -166,74 +159,68 @@ pip install git+https://github.com/waico/tsad.git
 
 ### Пример использования API
 
-To quickly see TSAD in action, consider using a simple example in your Python script. Below is a basic example:
-<!-- #### Getting Started -->
-
-<!-- **Installation** through [PyPi](https://pypi.org/project/tsad): 
-
-`pip install -U tsad` -->
+Чтобы быстро увидеть TSAD в действии, начните с использования простого примера в вашем скрипте на Python. Ниже приведен базовый пример:
 
 ```python
-# Import necessary modules
+# Импорт необходимых модулей
 import sys
 sys.path.insert(1, '../')
 from tsad.base.pipeline import Pipeline
 from tsad.base.datasets import load_skab
 from tsad.pipelines import ResidualAnomalyDetectionTaskSet
 
-# Loading data
+# Загрузка данных
 dataset = load_skab()
 targets = dataset.target_names 
 data = dataset.frame.drop(columns=targets).droplevel(level=0)
 
-# Create a pipeline and fit/predict
+# Создайте конвейер и обучите/спрогнозируйте
 pipeline = Pipeline(ResidualAnomalyDetectionTaskSet)
 pred = pipeline.fit_predict(data,n_epochs=5)
 ```
 
-After that, you can see:
+После этого вы сможете увидеть:
 
 ![image-1](./docs/waico_pics/readme/1.png)
 
 ![image-1](./docs/waico_pics/readme/2.png)
 
 
-Visit the [Tutorials section](https://github.com/waico/tsad/tree/main/Tutorials) in the TSAD GitHub repository for hands-on examples and practical insights.
+Посетите [Руководство](https://github.com/waico/tsad/tree/main/Tutorials) в репозитории TSAD на GitHub, чтобы ознакомиться с практическими примерами и идеями.
 
+## Дорожная карта и будущие разработки
 
-## Roadmap and Future Developments
+Мы приветствуем активное участие сообщества и ценим ваши отзывы о желаемых функциях TSAD. Наши текущие планы развития включают:
 
-We welcome active participation from the community and value your feedback on the desired functionalities of TSAD. Our ongoing development plans include:
+1. **Усовершенствованная предварительная обработка временных рядов:**
+   - Изучение более сложных методов предварительной обработки, в частности решение проблем, связанных с сокращением временных рядов до одной частоты дискретизации, особенно в случаях неравномерно распределенных временных рядов.
 
-1. **Advanced Time Series Preprocessing:**
-   - Exploring more sophisticated preprocessing techniques, particularly addressing challenges related to the reduction of time series to a single sampling rate, especially in cases of unevenly spaced time series.
+2. **Внедрение самых современных алгоритмов (SOTA):**
+   - Постоянные усилия по интеграции дополнительных самых современных алгоритмов в TSAD, гарантирующие, что библиотека остается актуально в анализе временных рядов.
 
-2. **Incorporation of State-of-the-Art (SOTA) Algorithms:**
-   - Continuous efforts to integrate additional state-of-the-art algorithms into TSAD, ensuring that the library remains at the forefront of time series analysis.
+3. **Гибкая реализация модели:**
+   - Предоставление функции, которая позволяет пользователям легко внедрять и интегрировать свои модели в наш конвейер, предоставляя прямую ссылку на их репозитории на GitHub. Эта функция направлена на облегчение сотрудничества между исследователями, которые часто стремятся проверить и сравнить свои модели с другими.
 
-3. **Flexible Model Implementation:**
-   - Introducing a feature that allows users to seamlessly implement and integrate their models into our pipeline by providing a straightforward link to their GitHub repositories. This feature aims to facilitate collaboration among researchers who often seek to validate and compare their models with others.
+4. **Интеграция с эталонными показателями:**
+   - Работа над интеграцией TSAD с различными эталонными показателями прогнозирования и обнаружения аномалий. Эта интеграция позволит пользователям оценивать эффективность TSAD в соответствии с установленными стандартами, повышая прозрачность и надежность анализа временных рядов.
 
-4. **Benchmark Integration:**
-   - Working towards the integration of TSAD with various forecasting and anomaly detection benchmarks. This integration will enable users to assess the performance of TSAD against established standards, fostering transparency and reliability in time series analysis.
-
-Your input and collaboration are vital in shaping the future development of TSAD. We encourage you to share your thoughts, suggestions, and contributions to enhance the functionality and versatility of the library. Together, we can continue to advance time series analysis within the TSAD community.
+Ваш вклад и сотрудничество имеют важное значение для формирования будущего развития TSAD. Мы рекомендуем вам делиться своими мыслями, предложениями и вкладами в повышение функциональности и универсальности библиотеки. Вместе мы сможем продолжать продвигать анализ временных рядов в сообществе TSAD.
 
 
 ## Сравнение со похожими библиотеками
 
-Explore how TSAD compares with other libraries in various aspects:
+Сравнение TSAD с другими библиотеками в различных аспектах:
 
 |  | [Merlion](https://github.com/salesforce/Merlion) | [Alibi Detect](https://github.com/SeldonIO/alibi-detect) | [Kats](https://github.com/facebookresearch/Kats) | [pyod](https://github.com/yzhao062/pyod) | [GluonTS](https://github.com/awslabs/gluon-ts) | RRCF | STUMPY | Greykite | [Prophet](https://github.com/facebook/prophet) | [pmdarima](https://pypi.org/project/pmdarima/) | [deepad](https://github.com/fastforwardlabs/deepad) | TSAD
 :--- | :---: | :---:|  :---:  | :---: | :---: | :---: | :---: | :---: | :----: | :---: | :---: | :---:
-| Forecasting (Прогнозирование) | ✅ | | ✅ |  | ✅ | | | ✅ | ✅ | ✅ | ✅ | ✅ 
-| Anomaly Detection (Поиск аномалий) | ✅ | ✅ | ✅ | ✅ | | ✅ | ✅ | ✅ | ✅ | | ✅ | ✅ 
-| Metrics (Алгоритмы оценки) | ✅ | | | ✅ | ✅ | | | | | | ✅ | ✅
-| Ensembles (Ансамбли) | ✅ | | | ✅ | | ✅  | | | | | | ✅ 
-| Benchmarking (Бенчмарки и датасеты) | ✅ | | | ✅ | ✅ | | | | | | | ✅ 
-| Visualization (Визуализация результатов) | ✅ | | ✅ | ✅ | | | | ✅ | ✅ | | | ✅ | ✅ 
-| Data preprocessing (Предварительная обработка данных) | | | ✅ | | | | | | | | | ✅ 
-| Automated EDA (Автоматизированный разведочный анализ данных) | | | | | | | | | | | | ✅ 
+| Прогнозирование | ✅ | | ✅ |  | ✅ | | | ✅ | ✅ | ✅ | ✅ | ✅ 
+| Поиск аномалий | ✅ | ✅ | ✅ | ✅ | | ✅ | ✅ | ✅ | ✅ | | ✅ | ✅ 
+| Алгоритмы оценки | ✅ | | | ✅ | ✅ | | | | | | ✅ | ✅
+| Ансамбли | ✅ | | | ✅ | | ✅  | | | | | | ✅ 
+| Бенчмарки и датасеты | ✅ | | | ✅ | ✅ | | | | | | | ✅ 
+| Визуализация результатов | ✅ | | ✅ | ✅ | | | | ✅ | ✅ | | | ✅ | ✅ 
+| Предварительная обработка данных | | | ✅ | | | | | | | | | ✅ 
+| Автоматизированный разведочный анализ данных | | | | | | | | | | | | ✅ 
 
 
 <!-- #### Dependencies
@@ -251,7 +238,7 @@ Explore how TSAD compares with other libraries in various aspects:
 
 ## Рекомендации
 
-Explore related libraries and resources:
+Дополнительне материалы и библиотеки для изучения:
 
 1.  https://github.com/salesforce/Merlion 
 2.  https://github.com/fastforwardlabs/deepad
@@ -276,7 +263,9 @@ Explore related libraries and resources:
 https://pypi.org/project/catalyst/  -->
 
 ## Цитирование TSAD
-If you're using TSAD in your research or applications, please cite using this BibTeX:
+
+Если вы используете TSAD в своих исследованиях или приложениях, пожалуйста, укажите, используя этот BibTeX:
+
 ```
 @misc{TSAD2013,
   author = {Viacheslav Kozitsin and Oleg Berezin and Iurii Katser and Ivan Maksimov},
