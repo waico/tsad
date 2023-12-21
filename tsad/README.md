@@ -1,3 +1,5 @@
+[![ru](https://img.shields.io/badge/lang-ru-red.svg)](README.ru.md)
+
 # Time Series Anomaly detection based on Deep Learning
 
 **TSAD** is a Python module created for solving Anomaly Detection problems with time series data. The module is based on deep learning techniques.
