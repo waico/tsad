@@ -1,6 +1,7 @@
 
 ![Maual python](https://img.shields.io/badge/python-3.10-blue)  ![Downloads](https://static.pepy.tech/badge/tsad)  ![Downloads](https://static.pepy.tech/badge/tsad/month)  ![pypi version](https://img.shields.io/pypi/v/tsad)  [![License](https://img.shields.io/badge/license-%20%20GNU%20GPLv3%20-green?style=plastic)](https://www.gnu.org/licenses/gpl-3.0.html)  <!-- ![python](https://img.shields.io/pypi/pyversions/tsad.svg) -->
 
+[![ru](https://img.shields.io/badge/lang-ru-red.svg)](README.ru.md)
 
 # Time Series Analysis for Simulation of Technological Processes - TSAD
 
