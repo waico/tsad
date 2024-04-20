@@ -1,4 +1,4 @@
-__version__ = "0.19.3"
+__version__ = "0.19.4"
 
 from setuptools import setup, find_packages
  
@@ -24,6 +24,7 @@ setup(
         'plotly-resampler==0.9.1',
         'pyarrow==14.0.1',
         'scikit-learn==1.1.2',
+        'statsmodels==0.14.1',
         'tsfel==0.1.6',
         'tsflex==0.3.0',
         'tsfresh==0.20.1',
