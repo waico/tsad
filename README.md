@@ -224,16 +224,17 @@ Your input and collaboration are vital in shaping the future development of TSAD
 
 Explore how TSAD compares with other libraries in various aspects:
 
-|  | [Merlion](https://github.com/salesforce/Merlion) | [Alibi Detect](https://github.com/SeldonIO/alibi-detect) | [Kats](https://github.com/facebookresearch/Kats) | [pyod](https://github.com/yzhao062/pyod) | [GluonTS](https://github.com/awslabs/gluon-ts) | RRCF | STUMPY | Greykite | [Prophet](https://github.com/facebook/prophet) | [pmdarima](https://pypi.org/project/pmdarima/) | [deepad](https://github.com/fastforwardlabs/deepad) | TSAD
-:--- | :---: | :---:|  :---:  | :---: | :---: | :---: | :---: | :---: | :----: | :---: | :---: | :---:
-| Forecasting (Прогнозирование) | ✅ | | ✅ |  | ✅ | | | ✅ | ✅ | ✅ | ✅ | ✅ 
-| Anomaly Detection (Поиск аномалий) | ✅ | ✅ | ✅ | ✅ | | ✅ | ✅ | ✅ | ✅ | | ✅ | ✅ 
-| Metrics (Алгоритмы оценки) | ✅ | | | ✅ | ✅ | | | | | | ✅ | ✅
-| Ensembles (Ансамбли) | ✅ | | | ✅ | | ✅  | | | | | | ✅ 
-| Benchmarking (Бенчмарки и датасеты) | ✅ | | | ✅ | ✅ | | | | | | | ✅ 
+|  | [Merlion](https://github.com/salesforce/Merlion) | [Alibi Detect](https://github.com/SeldonIO/alibi-detect) | [Kats](https://github.com/facebookresearch/Kats) | [pyod](https://github.com/yzhao062/pyod) | [GluonTS](https://github.com/awslabs/gluon-ts) | RRCF | STUMPY | Greykite | [Prophet](https://github.com/facebook/prophet) | [pmdarima](https://pypi.org/project/pmdarima/) | [deepad](https://github.com/fastforwardlabs/deepad) | [wtphm](https://github.com/lkev/wtphm) | TSAD
+:--- | :---: | :---:|  :---:  | :---: | :---: | :---: | :---: | :---: | :----: | :---: | :---: | :---: | :---:
+| Forecasting (Прогнозирование) | ✅ | | ✅ |  | ✅ | | | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ 
+| Anomaly Detection (Поиск аномалий) | ✅ | ✅ | ✅ | ✅ | | ✅ | ✅ | ✅ | ✅ | | ✅ | ✅ | ✅ 
+| Metrics (Алгоритмы оценки) | ✅ | | | ✅ | ✅ | | | | | | ✅ | | ✅
+| Ensembles (Ансамбли) | ✅ | | | ✅ | | ✅  | | | | | | | ✅ 
+| Benchmarking (Бенчмарки и датасеты) | ✅ | | | ✅ | ✅ | | | | | | | | ✅ 
 | Visualization (Визуализация результатов) | ✅ | | ✅ | ✅ | | | | ✅ | ✅ | | | ✅ | ✅ 
-| Data preprocessing (Предварительная обработка данных) | | | ✅ | | | | | | | | | ✅ 
-| Automated EDA (Автоматизированный разведочный анализ данных) | | | | | | | | | | | | ✅ 
+| Data preprocessing (Предварительная обработка данных) | | | ✅ | | | | | | | | | ✅ | ✅ 
+| Automated EDA (Автоматизированный разведочный анализ данных) | | | | | | | | | | | | | ✅ 
+| PHM tasks (Автоматизация прикладных задач тех диагностики) | | | | | | | | | | | | ✅ | ✅ 
 
 
 <!-- #### Dependencies
