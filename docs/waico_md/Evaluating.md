@@ -11,10 +11,11 @@ try:
 except:
     import sys
     sys.path.insert(1, '../')
-    from tsad.evaluating.evaluating import evaluating
-
+    
 import warnings
 warnings.filterwarnings('ignore')
+
+from tsad.utils.evaluating.evaluating import evaluating
 ```
 
 ## Simple example
